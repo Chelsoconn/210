@@ -1,10 +1,7 @@
+let bar = 1;
 function foo() {
-  function bar() {
-    console.log("BAR");
-  }
-  bar();
-  bar();
+  let bar = 2;
 }
 
 foo();
-//bar();
+console.log(bar);

@@ -1,6 +1,10 @@
-let first_name = prompt('What is your first name?');
+let array = [3,1,5,9,2,6,4,7];
+let indexOfFive = -1;
 
-let last_name = prompt('What is your last name?');
+for (let i= 0; i < array.length; i += 1) {
+  if (array[i] === 5) {
+    indexOfFive = i;
+  }
+}
 
-
-console.log(`Hello ${first_name} ${last_name}`);
+console.log(indexOfFive);
