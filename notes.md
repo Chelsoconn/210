@@ -50,6 +50,59 @@ A general-purpose programming environment, like Node.js, needs the following min
 
 **Stylistic Tips**
 
+*Idiomatic Names*
+
+| Category                                     | Name              | Notes             |
+| :------------------------------------------- | :---------------- | :---------------- |
+| Non-constant variables and object properties | `employee`        |                   |
+|                                              | `number`          |                   |
+|                                              | `fizzBuzz`        |                   |
+|                                              | `speedOfLight`    |                   |
+|                                              | `destinationURL`  | URL is an acronym |
+|                                              | `m00n`            |                   |
+| Constructor functions and classes            | `Cat`             |                   |
+|                                              | `BoxTurtle`       |                   |
+|                                              | `FlightlessBird`  |                   |
+| Other functions                              | `parseURL`        | URL is an acronym |
+|                                              | `goFaster`        |                   |
+| Configuration and magic constants            | `ABSOLUTE_PATH`   |                   |
+|                                              | `TODAY`           |                   |
+| Other `const` names                          | `employeeOfMonth` | Local style       |
+|                                              | `HairyCat`        | Local style       |
+|                                              | `ABSOLUTE_PATH`   | Local style       |
+
+*Valid but Non-Idiomatic Names*
+
+| Category                                     | Name           | Notes                        |
+| :------------------------------------------- | :------------- | :--------------------------- |
+| Universally non-idiomatic                    | `$number`      | Begins with $                |
+|                                              | `fizz_buzz`    | snake_case not allowed       |
+|                                              | `fizzBUZZ`     | BUZZ is not an acronym       |
+|                                              | `_hello`       | Begins with `_`              |
+|                                              | `goodbye_`     | Ends with `_`                |
+|                                              | `milesperhour` | Undifferentiated words       |
+|                                              | `MILESPERHOUR` | Undifferentiated words       |
+| Non-constant variables and object properties | `Employee`     | Begins with capital letter   |
+|                                              | `fizzBUZZ`     | BUZZ is not an acronym       |
+|                                              | `FIZZ_BUZZ`    | SCREAMING_SNAKE_CASE         |
+| Constructor functions and classes            | `cat`          | Begins with lowercase letter |
+|                                              | `makeTurtle`   | Begins with lowercase letter |
+|                                              | `FIZZ_BUZZ`    | SCREAMING_SNAKE_CASE         |
+| Other functions                              | `ParseURL`     | Begins with capital letter   |
+|                                              | `FIZZ_BUZZ`    | SCREAMING_SNAKE_CASE         |
+| Configuration and magic constants            | `absolutePath` | Not SCREAMING_SNAKE_CASE     |
+|                                              | `Today`        | Not SCREAMING_SNAKE_CASE     |
+
+Note that non-idiomatic names are not invalid names. Non-idiomatic  names are commonly used by external libraries to provide names that are  easy to type yet unlikely to conflict with names in other libraries. For instance, the jQuery library uses a function named `$` as well as variables whose name begins with `$`, while the underscore.js library leans heavily on a variable named `_`.
+
+*Invalid Names 
+
+| Name       | Notes                         |
+| :--------- | :---------------------------- |
+| 42ndStreet | Begins with number            |
+| fizz-buzz  | Hyphen not allowed            |
+| fizz.buzz  | Looks like property reference |
+
   - ```javascript
     if (isOk()) {             // good
       // do something
@@ -682,6 +735,9 @@ Variables have values that aren't deeply linked to eachother and changing on doe
     - doesn't work!
 
     - Using constants is a great way to label a value with a name that makes your code more descriptive and easier to understand.
+    
+      - A *magic number* appears out of nowhere with no context, so avoid this. Use descriptive constants when using a repetitive number 
+    
 
 **Variable Scope**
 
@@ -1133,7 +1189,22 @@ greetPeople();
 ```
 
 - Function expressions have one key difference from a function  declaration: you cannot invoke a function expression before it appears  in your program.
+
 - Our example declares a variable named `greetPeople` and assigns it to the function expression after the `=` sign. We can do that since JavaScript functions are **first-class functions**.
+
+  - We can actually assign another variable to the function name and call the function by the other variable name 
+
+    - ```javascript
+      function foo(bar) {
+        console.log(bar, bar, bar);
+      }
+      
+      let bar = foo;
+      
+      foo("hello"); // prints "hello hello hello"
+      bar("hi");    // prints "hi hi hi
+      ```
+
   - The critical feature of first-class functions is that you can treat them like any other value. In fact, **all JavaScript functions are objects**. Thus, you can assign them to variables, pass them as arguments to other functions, and return them from a function call.
 
 ```javascript
@@ -2111,3 +2182,1166 @@ for (var index = 0; index < 5; ++index) {
   - Difference between `forEach` and `map`
 
     - `forEach` and `map` are important methods, but they can confuse beginners. The main thing to remember is that `forEach` performs simple iteration and returns `undefined`, while `map` transforms an array's elements and returns a new array with the transformed values.
+
+- *Filter* (like select)
+
+  - The `filter` method is another array iteration method. It  returns a new array that includes all elements from the calling array  for which the callback returns a truthy value.
+
+  - ```javascript
+    > let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2]
+    > numbers.filter(num => num > 4)
+    = [ 5, 6, 7, 8, 9, 10 ]
+    
+    > numbers
+    = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2 ]
+    ```
+
+  - During each iteration, it invokes the callback function, using the value of the current element as an argument. If the callback returns a truthy value, `filter` appends the element's value to a new array. Otherwise, it ignores the element's value and does nothing
+
+  - it returns the array of *selected* elements: the elements for which the callback returned a truthy value- doesn't mutate the caller 
+
+- *reduce*
+
+  - reduces the contents of an array to a single value. 
+
+  - `reduce` takes two arguments: a callback function and a value that initializes something called the **accumulator**. In its simplest form, the callback function takes two arguments: the  current value of the accumulator and an element from the array. It  returns a value that will be used as the accumulator in the next  invocation of the callback
+
+  - ```javascript
+    > let arr = [2, 3, 5, 7]
+    > arr.reduce((accumulator, element) => accumulator + element, 0)
+    = 17
+    
+    > arr.reduce((accumulator, element) => accumulator * element, 1)
+    = 210
+    ```
+
+  - The first invocation computes the sum of all the values in the array, e.g., `2 + 3 + 5 + 7`. To get us started, we initialize the accumulator to 0. Thus, on the first invocation of the callback function, `accumulator` is `0` and `element` is `2`. The callback returns `2`, which becomes the new `accumulator` value when we invoke the callback again, this time with the element `3`. That invocation, in turn, returns `5`. This process continues until the final return value is `17`.
+
+  ```javascript
+  > let strings = ['a', 'b', 'c', 'd']
+  > strings.reduce((accumulator, element) => {
+  ...   return accumulator + element.toUpperCase()
+  ... }, '');
+  = 'ABCD'
+  ```
+
+- Arrays are objects 
+
+- ```javascript
+  > let arr = [1, 2, 3]
+  > typeof arr
+  = 'object'
+  
+  > let arr = [1, 2, 3]
+  > Array.isArray(arr)
+  = true
+  ```
+
+- If you change an array's `length` property to a new, smaller value, the array gets truncated; JavaScript removes all elements beyond the new final element.
+
+  If you change an array's `length` property to a new, larger value, the array expands to the new size. The new elements **do not get initialized**, which leads to some strange behavior:
+
+
+
+```javascript
+> let arr = []
+> arr.length = 3
+> arr
+= [ <3 empty items> ]
+
+> arr[0]
+= undefined
+
+> arr.filter(element => element === undefined)
+= []
+
+> arr.forEach(element => console.log(element)) // no output
+= undefined
+
+> arr[1] = 3
+> arr
+= [ <1 empty item>, 3, <1 empty item> ]
+
+> arr.length
+= 3
+
+> arr.forEach(element => console.log(element))
+= 3
+= undefined
+
+> Object.keys(arr)
+= ['1']
+
+> arr = [1, 2, 3]
+= [ 1, 2, 3 ]
+
+
+
+
+These "elements" aren't true elements; they are properties on the array object, which we'll discuss later. Only index values (0, 1, 2, 3, and so on) count toward the length of the array.
+
+> arr[-3] = 4
+= 4
+
+> arr
+= [ 1, 2, 3, '-3': 4 ]
+
+> arr[3.1415] = 'pi'
+= 'pi'
+
+> arr["cat"] = 'Fluffy'
+= 'Fluffy'
+
+> arr
+= [ 1, 2, 3, '-3': 4, '3.1415': 'pi', cat: 'Fluffy' ]
+```
+
+- Since arrays are objects, you can use the `Object.keys`  method to return an array's keys -- its index values -- as an array of  strings. Even negative, non-integer, and non-numeric indexes are  included.
+
+- ```javascript
+  > arr = [1, 2, 3]
+  > arr[-3] = 4
+  > arr[3.1415] = 'pi'
+  > arr["cat"] = 'Fluffy'
+  > arr
+  = [ 1, 2, 3, '-3': 4, '3.1415': 'pi', cat: 'Fluffy' ]
+  
+  > Object.keys(arr)
+  = [ '0', '1', '2', '-3', '3.1415', 'cat' ]
+  ```
+
+- One quirk of this method is that it treats unset values in arrays differently from those that merely have a value of `undefined`. Unset values are created when there are "gaps" in the array; they show up as empty items until you try to use their value:
+
+- ```javascript
+  > let a = new Array(3);
+  > a
+  = [ <3 empty items> ]
+  
+  > a[0] === undefined;
+  = true
+  
+  > let b = [];
+  > b.length = 3;
+  > b
+  = [ <3 empty items> ]
+  
+  > b[0] === undefined;
+  = true
+  
+  > let c = [undefined, undefined, undefined]
+  > c
+  = [ undefined, undefined, undefined ]
+  
+  > c[0] === undefined;
+  = true
+  ```
+
+- ```javascript
+  > let aKeys = Object.keys(a)
+  > a.length
+  = 3
+  > aKeys.length;
+  = 0
+  
+  > let bKeys = Object.keys(b)
+  > b.length
+  = 3
+  > bKeys.length;
+  = 0
+  
+  > let cKeys = Object.keys(c)
+  > c.length
+  = 3
+  > cKeys.length;
+  = 3
+  ```
+
+- So it looks like `length` will count empty but and. Undefined, but won't count things defined with keys...?
+
+- And `Object.keys` doesnt count anything empty, but counts everything else 
+
+- Negative and non-integer indexes don't get taken into account when determining an array's length.
+
+- **equality**
+
+  - ```javascript
+    > [1, 2, 3] === [1, 2, 3]
+    = false
+    
+    > let a = [1, 2, 3]
+    > let b = a
+    > a === b
+    
+    ```
+
+  - JavaScript treats two arrays as equal only when they are the same array: they must occupy the same spot in memory. This rule holds for  JavaScript objects in general; objects must be the same object. For this reason, the second example returns `true` while the first one returns `false`. Assigning `a` to `b` makes `b` refer to the same array as `a`; it doesn't create a new array.
+
+*includes*
+
+- The `includes` method determines whether an array includes a given element:
+
+```javascript
+> let a = [1, 2, 3, 4, 5]
+> a.includes(2)
+= true
+
+> a.includes(10)
+= false
+```
+
+*indexOf*
+
+- The `indexOf` method searches an array for an element with a  given value and returns the index of the found element. If the element  is not found, `indexOf` returns `-1`.
+
+```javascript
+> let a = ['a', 'b', 'c', 'd', 'e']
+> a.indexOf('c')
+= 2
+
+> a.indexOf('x')
+= -1
+```
+
+- As with `includes`, `indexOf` internally uses `===` to compare elements of the array with the argument. That means we can't use `indexOf` to check for the existence of a nested array or an object unless we  have a reference to the same object or array we're looking for:
+
+- By default, `indexOf` only looks for the first occurrence of a value in the array. If you want to look beyond the first occurrence, you need to give `indexOf` a starting index:
+
+- ```javascript
+  > let a = ['a', 'b', 'c', 'b', 'e']
+  > a.indexOf('b')
+  = 1
+  
+  > a.indexOf('b', 2)
+  = 3
+  ```
+
+
+
+- *sort*
+- The `sort` method is a handy way to rearrange the elements of an array in sequence. It returns a sorted array. Mutates the caller 
+
+```javascript
+ > let a = ["e", "c", "h", "b", "d", "a"]
+> a.sort()
+= [ 'a', 'b', 'c', 'd', 'e', 'h' ]
+```
+
+- *slice*
+
+  - The `slice` method - not the `splice` method you  met earlier - extracts and returns a copied portion of the array. It  takes two optional arguments. The first is the index at which extraction begins, while the second is where extraction ends:
+
+  - ```javascript
+    > let fruits = ['mango', 'orange', 'banana', 'pear', 'apple']
+    > fruits.slice(1, 3)
+    = [ 'orange', 'banana' ]
+    
+    > fruits.slice(2) // second argument defaults to rest of array
+    = [ 'banana', 'pear', 'apple' ]
+    
+    > fruits.slice() // no arguments duplicates the array
+    = [ 'mango', 'orange', 'banana', 'pear', 'apple' ]
+    ```
+
+- *reverse*
+
+  - ```javascript
+    > let numbers = [1, 2, 3, 4]
+    > numbers.reverse()
+    = [ 4, 3, 2, 1 ]
+    
+    > numbers
+    = [ 4, 3, 2, 1 ]
+    ```
+
+  - Destructive/ mutates the array
+
+  - ```javascript
+    > let numbers = [1, 2, 3, 4]
+    > let reversedNumbers = numbers.slice().reverse();
+    > reversedNumbers
+    = [ 4, 3, 2, 1 ]
+    
+    > numbers
+    = [ 1, 2, 3, 4 ]
+    ```
+
+**Objects**
+
+- **objects** that have **behavior** (they perform actions) and **state** (they have characteristics that distinguish between different objects). 
+
+- Objects store a collection of **key-value pairs**: each item in the collection has a name that we call the **key** and an associated **value**. Contrast this with arrays, which associate values with ordered indexes.
+
+- object's keys are strings or symbols, but the values can be any type,
+
+  -   `1`
+
+  -   `'1'`
+
+  -   `undefined`
+
+  -   `'hello world'`
+
+  -   `true`
+
+  -   `'true'`
+
+    - All are valid keys because JS coerces the non-string key values to strings. `1`and `'1'` are the same and `true` and `'true'` are the same 
+
+    - Be careful! 
+
+      - ```javascript
+        > let myObj = {}
+        > myObj[true] = 'hello'
+        > myObj['true'] = 'world'
+        > myObj[true]
+        = 'world'
+        ```
+
+        
+
+- **object literal**
+
+  - ```javascript
+    let person = {
+      name:    'Jane',
+      age:     37,
+      hobbies: ['photography', 'genealogy'],
+    };
+    
+    > let person = { name: 'Jane', age: 37, hobbies: ['photography', 'genealogy'] }
+    ```
+
+  - Braces (`{}`) delimit the list of key-value pairs contained by the object.
+
+- access value by dot or bracket notation
+
+  - ```javascript
+    > person.name                 // dot notation
+    = 'Jane'
+    
+    > person['age']               // bracket notation
+    = 37
+    ```
+
+  - if you have a variable that contains a key's name, you must use bracket notation:
+
+  - ```javascript
+    > person.height = '5 ft'
+    = '5 ft'
+    
+    > person['gender'] = 'female'
+    = 'female'
+    
+    > person
+    = { name: 'Jane', age: 37, hobbies: ['photography', 'genealogy'], height: '5 ft', gender: 'female' }
+    
+    > delete person.age
+    = true
+    
+    > delete person['gender']
+    = true
+    
+    > delete person['hobbies']
+    = true
+    
+    > person
+    = { name: 'Jane', height: '5 ft' }
+    ```
+
+  - *delete* keyword 
+
+    -  removes the key-value pair from the object and returns `true` unless it cannot delete the property (for instance, if the property is non-configurable).
+
+  - Key-value pairs are also called object **properties** in  JavaScript. We can also use "property" to refer to the key name; the  meaning is typically clear from context. For instance, we can talk about the `name` property for the `person` object without mentioning the value.
+
+  - If a variable declared with `const` is initialized with an  object, you can't change what object that variable refers to. You can,  however, modify that object's properties and property values:
+
+  - ```javascript
+    > const MyObj = { foo: "bar", qux: "xyz" }
+    > MyObj.qux = "hey there"
+    > MyObj.pi = 3.1415
+    > MyObj
+    = { foo: 'bar', qux: 'hey there', pi: 3.1415 }
+    
+    > MyObj = {} // Uncaught TypeError: Assignment to constant variable.
+    ```
+
+  - You can use `Object.freeze` with objects to freeze the property values of an object, just like you can with arrays:
+
+  - ```javascript
+    > const MyObj = Object.freeze({ foo: "bar", qux: "xyz" })
+    > MyObj.qux = "hey there"
+    > MyObj
+    = { foo: 'bar', qux: 'xyz' }
+    ```
+
+  - Objects include, but aren't limited to, the following types:
+
+    -   Simple Objects
+
+    -   Arrays
+
+    -   Dates
+
+    -   Functions
+
+      - This means that functions can be assigned to variables, passed to other functions as arguments, and returned by other functions. 
+
+      - ```javascript
+        function hello() {
+          console.log("Hello there!");
+        }
+        
+        hello();            // Prints "Hello there!"
+        
+        let greet = hello;  // `greet` now points to the `hello` function
+        greet();            // Prints "Hello there!"
+
+  - Objects are complex values composed of primitive values or other objects. For example, an array object (remember: arrays **are** objects) has a `length` property that contains a number: a primitive value. Objects are usually (but not always) mutable: you can add, remove, and change their various component values.
+
+  - We can pass functions around as arguments...
+
+    - Look at the `forEach` method..
+
+    - ```javascript
+      Array.prototype.forEach = function(callback) {
+        for (let index = 0; index < this.length; index += 1) {
+          callback(this[index]);
+        }
+      }
+      
+      let array = [1, 2, 3];
+      array.forEach(function callback(value) { console.log(value) })
+      ```
+
+    - Takes a callback function as an argument and then calls that function once for each element 
+
+  - We can also define functions to return other functions
+
+    - ```javascript
+      function greeter(greeting) {
+        return function(name) {
+          return console.log(`${greeting} ${name}`);
+        }
+      }
+      
+      let hello = greeter('Hello');
+      let hi = greeter('Hi');
+      
+      console.log(hello('Trevor'));  // prints "Hello Trevor"
+      console.log(hello('Ginni'));   // prints "Hello Ginni"
+      console.log(hi('Spencer'));    // prints "Hi Spencer"
+      console.log(hi('Grace'));      // prints "Hi Grace"
+      ```
+
+    - 
+
+**Primitive Values**
+
+- strings, numbers, booleans, `null`, `undefined`, bigints, and symbols.
+- Primitive values are always immutable; they don't have parts that one can change. Such values are said to be **atomic**; they're indivisible
+-  If a variable contains a primitive value, all you can do to that  variable is use it in an expression or reassign it: give it an entirely  new value. All operations on primitive values evaluate as new values.  Even something like `0 + 0` evaluates to a new value of `0`.
+
+**Things that aren't primitive values or objects**
+
+-   variables and other identifiers such as function names
+-   statements such as `if`, `return`, `try`, `while`, and `break`
+-   keywords such as `new`, `function`, `let`, `const`, and `class`
+-   comments
+-   anything else that is neither data nor a function
+
+
+
+**Prototypes**
+
+- An interesting and handy feature of JavaScript objects is that they can **inherit** from other objects
+
+- When an object `bar` inherits from object `foo`, we say that `foo` is the prototype of `bar`
+
+- The practical implication is that `bar` now has access to properties defined on `foo` even though it doesn't define those properties itself.
+
+- inheritance lets one object use the properties defined by another object and that prototypes implement inheritance in JavaScript.
+
+  - **Object.create**
+
+    - static method that allows you to create a new object that inherits from an existing object 
+
+    - `Object.create` creates a new object and sets the prototype for that object to the object passed in as an argument.
+
+    - ```javascript
+      let bob = { name: 'Bob', age: 22 };
+      let studentBob = Object.create(bob);
+      studentBob.year = 'Senior';
+      
+      console.log(studentBob.name); // => 'Bob'
+      ```
+
+    - Our example creates a new object named `studentBob` that uses `bob` as its prototype. That is, it creates an inheritance relationship from `studentBob`, the **child** object, to `bob`, the **parent** object.
+
+    - so studentBob just becomes an empty object and it's not the same as assigning the  variable studentBob directly to bob
+
+IN RUBY 
+
+```ruby
+irb(main):013:0> x = 'hi'
+=> "hi"
+irb(main):014:0> y = String.new(x)
+=> "hi"
+irb(main):015:0> y
+=> "hi"
+irb(main):016:0> x = {hi:'you'}
+=> {:hi=>"you"}
+irb(main):017:0> x
+=> {:hi=>"you"}
+irb(main):018:0> y=Hash.new(x)
+=> {}
+irb(main):019:0> y
+=> {}
+irb(main):020:0> x
+=> {:hi=>"you"}
+irb(main):021:0> 
+
+THIS IS WEIRD??????
+```
+
+So this is what's happening. in Ruby Hash.new accepts a value that will be returned when trying to access a non-existent key, but that value is not included in the new hash
+
+**Iteration with objects**
+
+1. `for/in loop`
+
+   1. The syntax and semantics are easier to understand since you don't need  an initializer, ending condition, or increment clause.  Instead, the  loop iterates over all the keys in the object. In each iteration, it  assigns the key to a variable which you then use to access the object's  values. As always, seeing a concept in action is helpful:
+
+   2. ```javascript
+      let person = {
+        name: 'Bob',
+        age: 30,
+        height: '6 ft',
+      };
+      
+      for (let prop in person) {  //prop is the key so you could just print this too by putting console.log(prop)
+        console.log(person[prop]);
+      }                             // => Bob
+                                    //    30
+                                    //    6 ft
+      ```
+
+   3. We can't use dot notation here since `prop` is a variable that contains a property name. The name `prop` is not the actual property name. 
+
+      1. When we write `person[prop]`, `prop` gets evaluated as a variable. Thus, `person[prop]` gets evaluated as `person['age']`, and that returns the value of the desired property.
+
+   4. ```js
+      let obj1 = { a: 1, b: 2 };
+      let obj2 = Object.create(obj1);
+      obj2.c = 3;
+      obj2.d = 4;
+      
+      for (let prop in obj2) {
+        console.log(obj2[prop]);
+      }         // => 3
+                //    4
+                //    1
+                //    2
+      ```
+
+      - Super weird behavior. It iterates over properties of object's prototypes as well 
+
+      - The first two items output by the above code are the "own properties" of `obj2`, and those are followed by the properties of the prototype object (`obj1`).
+
+      - We can use the `hasOwnProperty` method to get around that problem. It takes the name of a property and returns `true` if it is the name of one of the calling object's own properties, `false` if it is not.
+
+      - ```javascript
+        let obj1 = { a: 1, b: 2 };
+        let obj2 = Object.create(obj1);
+        obj2.c = 3;
+        obj2.d = 4;
+        
+        for (let prop in obj2) {
+          if (obj2.hasOwnProperty(prop)) {
+            console.log(obj2[prop]);
+          }
+        } // => 3
+          //    4
+        ```
+
+   - **Object.keys**
+
+     - The `Object.keys` static method returns an object's keys as an array.
+
+     - Note that `Object.keys` returns the object's own keys: it does not include any keys from the prototype objects.
+
+     - ```js
+       let person = {
+         name: 'Bob',
+         age: 30,
+         height: '6 ft',
+       };
+       
+       let personKeys = Object.keys(person);
+       console.log(personKeys);          // => ['name', 'age', 'height']
+       personKeys.forEach(key => {
+         console.log(person[key]);
+       });                               // => Bob
+                                         //    30
+                                         //    6 ft
+       ```
+
+  - you should only rely on the iteration order when you know that all of the keys will be alphabetic.
+
+    - **Object.values**
+
+      - ```js
+        let person = { name: 'Bob', age: 30, height: '6ft' };
+        let personValues = Object.values(person);
+        console.log(personValues); // => [ 'Bob', 30, '6ft' ]
+        ```
+
+    - **Object.entries**
+
+      - ```js
+        let person = { name: 'Bob', age: 30, height: '6ft' };
+        console.log(Object.entries(person)); // => [[ 'name', 'Bob' ], [ 'age', 30 ], [ 'height', '6ft' ]]
+        ```
+
+    - **Object.assign**
+
+      - ```javascript
+        > let objA = { a: 'foo' }
+        = undefined
+        
+        > let objB = { b: 'bar' }
+        = undefined
+        
+        > Object.assign(objA, objB)
+        = { a: 'foo', b: 'bar' }
+        ```
+
+      - merge two or more objects into a single object. 
+
+      - First object argument is mutated. so objA is now `{ a: 'foo', b: 'bar' }`
+
+      - If this is an issue than assign an empty hash as the first argument as it can take multiple arguments
+
+      - ```javascript
+        > objA = { a: 'foo' }
+        = undefined
+        
+        > objB = { b: 'bar' }
+        = undefined
+        
+        > Object.assign({}, objA, objB)
+        = { a: 'foo', b: 'bar' }
+        
+        > objA
+        = { a: 'foo' }
+        
+        > objB
+        = { b: 'bar' } 
+        
+        //This code mutates neither objA nor objB and returns an entirely new object.
+        
+        ```
+
+  - Should I use an array or an object?
+
+    - Do the individual values have names or labels? If yes, use an object. If the data doesn't have a natural label, an array should suffice.
+    - Does order matter? If yes, use an array.
+    - Do I need a *stack* or *queue* structure? Arrays are good at mimicking simple "last-in-first-out" stacks and "first-in-first-out" queues.
+
+- **Write a hash as an Array**
+
+  - Arrays use positive integers starting with `0` as indexes. An array also must have a `length` property.
+
+  - ```javascript
+    let myArray = {
+      0: 'a',
+      1: 'b',
+      2: 'c',
+      length: 3,
+    };
+    
+    for (let i = 0; i < myArray.length; i += 1) {
+      console.log(myArray[i]);
+    }
+    ```
+
+    
+
+- **Passing a function as an argument**
+
+  - ```javascript
+    function foo(bar) {
+      console.log(bar());
+    }
+    
+    foo();    // Should print 'Welcome'
+    foo();    // Should print 3.1415
+    foo();    // Should print [1, 2, 3]
+    ```
+
+  - ```javascript
+    function foo(bar) {
+      console.log(bar());
+    }
+    
+    foo(function() { return "Welcome" });
+    foo(function() { return 3.1415 });
+    foo(function() { return [1, 2, 3] });
+    ```
+
+  
+
+**Identifying all variables, object property names, primitive values, and objects**
+
+```javascript
+function hello(greeting, name) {
+  return greeting + ' ' + name;
+}
+
+function xyzzy() {
+  return { a: 1, b: 2, c: [3, 4, 5], d: {} };
+}
+
+const howdy = hello('Hi', 'Grace');
+let foo = xyzzy();
+```
+
+1. *Variables*
+
+   1. hello
+   2. howdy
+   3. foo
+   4. xyzzy
+   5. greeting
+   6. name
+
+2. *Object Property Names*
+
+   1. a
+   2. b
+   3. c
+   4. d
+   5. also indexes 0, 1, 2 for array
+
+3. *Primitive Values*
+
+   1. a
+   2. b
+   3. c
+   4. d
+   5. 1
+   6. 2
+   7. 3
+   8. 4
+   9. 5
+   10. 'Hi'
+   11. "Grace"
+   12. " "
+   13. also indexes 0, 1, 2 for array
+
+4. *Objects*
+
+   1. Function hello
+
+   2. Function xyzzy
+
+   3. ```js
+      {}
+      ```
+
+   4. ```js
+      [3, 4, 5]
+      ```
+
+   5. ```js
+      { a: 1, b: 2, c: [3, 4, 5], d: {} }
+      ```
+
+```javascript
+function bar(arg1, arg2) {
+  let foo = 'Hello';
+  const qux = {
+    abc: [1, 2, 3, [4, 5, 6]],
+    def: null,
+    ghi: NaN,
+    jkl: foo,
+    mno: arg1,
+    pqr: arg2,
+  };
+
+  return qux;
+}
+
+let result = bar('Victor', 'Antonina');
+```
+
+1. *Variables*
+
+   1. Bar
+   2. arg1
+   3. Arg2
+   4. Foo
+   5. qux
+   6. Result
+
+2. *Object Property Names*
+
+   1. abc
+   2. def
+   3. ghi
+   4. Jkl
+   5. mno
+   6. pqr
+   7. Indexes for [1,2,3,[4,5,6]] so 0,1,2,3
+   8. also indexes[4,5,6] so 0,1,2
+
+3. *Primitive Values*
+
+   1. 'Hello'
+   2. 1,2,3,4,5,6
+   3. Null 
+   4. NaN
+   5. 'Victor'
+   6. 'Antonina'
+   7. abc
+   8. def
+   9. ghi
+   10. Jkl
+   11. mno
+   12. pqr
+   13. 0,1,2,3 array indexes
+   14. 0,1,2 nested array index
+
+4. *Objects*
+
+   1. Function bar
+
+   2. qux
+
+      1. ```js
+         {
+             abc: [1, 2, 3, [4, 5, 6]],
+             def: null,
+             ghi: NaN,
+             jkl: foo,
+             mno: arg1,
+             pqr: arg2,
+           };
+         ```
+
+   3. ```js
+      [4, 5, 6]
+      ```
+
+   4. ```js
+      [1, 2, 3, [4, 5, 6]],
+      ```
+
+
+
+**Variables as pointers**
+
+- Developers sometimes talk about **references** instead of pointers
+
+-  You can say that a variable points to or references an object in memory, and you can also say that the pointers stored in variables are  references. 
+
+- Every  time a JavaScript program creates a new variable, JavaScript allocates a spot somewhere in its memory to hold its value. With (most) primitive  values, the variable's actual value gets stored in this allocated  memory.
+
+- *Primitive Values and Reassignement*
+
+  - Different than Ruby.... when primitive values are stored they are stored to different memory addresses and reassignement just changes the value in that space..it doesnt point to a new space
+
+  - ```javascript
+    > let a = 5
+    > let b = a
+    > a = 8
+    > a
+    = 8
+    
+    > b
+    = 5
+    ```
+
+  - | Code        | address `a` | `a`  | address `b` | `b`  |
+    | :---------- | :---------: | :--: | :---------: | :--: |
+    | `let a = 5` |   `0x14`    | `5`  |             |      |
+    | `let b = a` |   `0x14`    | `5`  |   `0x76`    | `5`  |
+
+  - | Code        | address `a` | `a`  | address `b` | `b`  |
+    | :---------- | :---------: | :--: | :---------: | :--: |
+    | `let a = 5` |   `0x14`    | `5`  |             |      |
+    | `let b = a` |   `0x14`    | `5`  |   `0x76`    | `5`  |
+    | `a = 8`     |   `0x14`    | `8`  |   `0x76`    | `5`  |
+
+- *Objects and Non-Mutating Operations*
+
+  - What does that look like in the computer? As we learned earlier,  creating new variables causes JavaScript to allocate a spot in its  memory for the value. However, with objects, JavaScript doesn't store  the object's value in the same place. Instead, it allocates additional  memory for the object and places a pointer to the object in the  variable. Thus, we need to follow two pointers to get the value of our  object from its variable name. The process looks like this:
+
+  - In this example, the variable `obj` is always at address `0x1234`. The value at that address is a pointer to the actual object. While the  pointer to the object can change -- we can see it change when `{ b: 2 }` is reassigned to `obj` -- `obj` itself always has the same address. 
+
+  - | Code                  | variable | address  |  value   | referenced object |
+    | :-------------------- | :------: | :------: | :------: | :---------------: |
+    | `let obj = { a: 1 };` |  `obj`   | `0x1234` | `0x1120` |    `{ a: 1 }`     |
+    | `obj = { b: 2 };`     |  `obj`   | `0x1234` | `0x2212` |    `{ b: 2 }`     |
+
+  - Does this act more like Ruby?
+
+    - ```javascript
+      > let c = [1, 2]
+      > let d = c
+      > c = [3, 4]
+      > c
+      = [ 3, 4 ]
+      
+      > d
+      = [ 1, 2 ]
+      ```
+
+    - | Code             | addr `c` -> pointer -> object | addr `d` -> pointer -> object |
+      | :--------------- | :---------------------------: | :---------------------------: |
+      | `let c = [1, 2]` | `0x28` -> `0x34` -> `[1, 2]`  |                               |
+      | `let d = c`      | `0x28` -> `0x34` -> `[1, 2]`  | `0x68` -> `0x34` -> `[1, 2]`  |
+      | `c = [3, 4]`     | `0x28` -> `0x24` -> `[3, 4]`  | `0x68` -> `0x34` -> `[1, 2]`  |
+
+  - Mutating methods like `push`
+
+    - ```javascript
+      > let e = [1, 2]
+      > let f = e
+      > e.push(3, 4)
+      > e
+      = [ 1, 2, 3, 4 ]
+      
+      > f
+      = [ 1, 2, 3, 4 ]
+      ```
+
+    - Pointers have a curious effect when you assign a variable that  references an object to another variable. Instead of copying the object, JavaScript only copies the pointer. Thus, when we initialize `f` with `e`, we're making both `e` and `f` point to the same array: `[1, 2]`. It's not just the same value but the same array in the same memory  location. The two variables are independent, but since they point to the same array, that array is dependent on what you do to both `e` and `f`.
+
+    - Some developers call this aliasing: `e` and `f` are aliases for the same value.
+
+    - assignment of an array to another array doesn't create a new array, but instead copies a reference from the original array (`array1` above) into the target array
+
+    - However, since primitive values are stored in the memory address  allocated for the variable, they can never be aliases for each other. If you give one variable a new primitive value, it doesn't affect the  other.
+
+  - The takeaway of this section is that JavaScript stores primitive values  in variables. Still, it uses pointers for non-primitive values like  arrays and other objects.
+
+  **Using for/in loop for array**
+
+  ```javascript
+  let arr = [ 10, 20, 30 ]
+  for (let value in arr) {
+    console.log(value);
+  }
+  // Output:  0
+  //          1
+  //          2
+  //be careful bc these keys are now strings
+  ```
+
+  Iterates over indexes...
+
+  so do the same:
+
+  ```javascript for (let key in a) {
+  for (let key in a) {
+     console.log(a[key])
+  }  
+  ```
+
+  
+
+**THIS IS A MESS SO USE `for/of` for Arrays**
+
+```javascript
+let arr = [ 10, 20, 30 ]
+for (let value of arr) {
+  console.log(value);
+}
+// Output:  10
+//          20
+//          30
+```
+
+- We can also use this to iterate over strings!
+
+  ```javascript
+  let str = "abc";
+  for (let char of str) {
+    console.log(char);
+  }
+  // Output: a
+  //         b
+  //         c
+  //if we use for/in this will also iterate over the index of letters
+  ```
+
+  
+
+**`.test` in regex**
+
+- ```javascript
+  > /o/.test('bobcat')
+  = true
+  
+  > /l/.test('bobcat')
+  = false
+  ```
+
+**`.match` in regex**
+
+- ```javascript
+  > "bobcat".match(/x/)         // No match
+  = null
+  
+  > "bobcat".match(/[bct]/g)    // Global match
+  = [ 'b', 'b', 'c', 't' ]
+  
+  > "bobcat".match(/b((o)b)/)   // Singular match with groups
+  = [ 'bob', 'ob', 'o', index: 0, input: 'bobcat', groups: undefined ]
+  ```
+
+**Math**
+
+```javascript
+> Math.sqrt(36)
+= 6
+
+> Math.sqrt(2)
+= 1.4142135623730951
+
+> Math.PI
+= 3.141592653589793
+
+> console.log(Math.max(1, 6, 3, 2)); 
+= 6
+```
+
+
+
+**Dates**
+
+- You don't have to work that hard, however. JavaScript's `Date` constructor creates objects that represent a time and date. The objects provide methods that let you work with those values (0 = Sunday)
+
+```javascript
+> let date = new Date('December 25, 2012')
+> date.getDay()
+= 2
+```
+
+
+
+**Failing Silently**
+
+- JavaScript is a forgiving language. It doesn't issue error messages in  scenarios that most other languages do. Instead, it "fails silently" by  returning a value like `NaN`, `undefined`, `null`, or even `-1`.
+
+- There are some situations where JavaScript is less forgiving; that's where **exceptions** come into play. In such cases, JavaScript **raises an error**, or **throws an exception**, then halts the program if the program does not **catch** the exception
+
+- **Exception handling** Exception handling is a process that deals with errors in a manageable and predictable manner. It uses the `try/catch` statement to catch exceptions that the code in the `try` block raises, and lets the programmer deal with the problem in a way  that makes sense and perhaps prevents a catastrophic failure or nasty  bug.
+
+- The reserved words `try` and `catch` (and sometimes `finally`) often occur in real-world JavaScript programs, so you should learn enough to understand what they do.
+
+- ```javascript
+  try {
+    // perform an operation that may produce an error
+  } catch (exception) {
+    // an error occurred. do something about it.
+    // for example, log the error
+  } finally {
+    // Optional 'finally' block; not used often
+    // Executes regardless of whether an exception occurs.
+  }
+  ```
+
+- 
+
+```javascript
+let names = ['bob', 'joe', 'steve', undefined, 'frank'];
+
+names.forEach(name => {
+  try {
+    console.log(`${name}'s name has ${name.length} letters in it.`);
+  } catch (exception) {
+    console.log('Something went wrong');
+  }
+}); // => bob's name has 3 letters in it.
+    //    joe's name has 3 letters in it.
+    //    steve's name has 5 letters in it.
+    //    Something went wrong
+    //    frank's name has 5 letters in it.
+```
+
+**Raise own exception**
+
+```javascript
+function foo(number) {
+  if (typeof number !== "number") {
+    throw new TypeError("expected a number");
+  }
+
+  // we're guaranteed to have a number here
+}
+```
+
+- Don't raise exceptions for preventable conditions. Exceptions are for **exceptional circumstances**: situations that your program can't control very easily, such as not  being able to connect to a remote site in a web application. 
+
+**Syntax Error**
+
+- A special kind of exception occurs if the code can't be handled as valid JavaScript. 
+
+- A `SyntaxError` is special in that it occurs immediately after loading a JavaScript program, but before it begins to run. Unlike a `TypeError` exception that is dependent upon runtime conditions, JavaScript detects syntax errors based solely on the text of your program. Since they are  detected before execution begins, you can't use a `try/catch` statement to catch one.
+
+  -  A `SyntaxError` usually has nothing to do with the values of any of your variables. You can almost always spot the error visually.
+
+  -  A `SyntaxError` can occur long after the point where the error was. In the above example, the error is on line 3 (a missing `{`), but the problem is reported on line 5. There can be many hundreds of  lines between the point where the error is and the point where  JavaScript detects it. Unfortunately, that's more common than you might  think, so be prepared for it.
+
+  -  The code before and after the error does not run. That's because `SyntaxError`s are detected before a program begins running. This also shows that  there are at least two phases in the life of a program -- a preliminary  phase that checks for syntax errors, and an execution phase.
+
+  - This also shows that there are at least two phases in the life of a  program -- a preliminary phase that checks for syntax errors, and an  execution phase.
+
+    
+
+**Stack Trace**
+
+```javascript
+TypeError: Cannot read property 'length' of undefined
+    at names.forEach (repl:2:42)
+    at Array.forEach (<anonymous>)
+```
+
+-  it reports the type of error that occurred, where it occurred, and how  it got there. Such error messages rely on JavaScript's call stack, which we discussed in [the Functions chapter](https://launchschool.com/books/javascript/read/functions#callstack).
+
+
+
+**ECMAScript 6**, or **ES6** as it's commonly known, 
+
+
+
+
+
+**-0 and 0**
+
+```javascript
+> 0 === -0
+= true
+
+> String(-0)
+= '0'
+
+> let value = -0;
+> Object.is(value, 0)
+= false
+
+> Object.is(value, -0)
+= true
+
+>5/0
+=Infinity
+
+>5/-0
+=-Infinity
+
+>Infinity === -Infinity
+=false
+```
+
