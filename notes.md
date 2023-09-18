@@ -243,15 +243,39 @@ Note that non-idiomatic names are not invalid names. Non-idiomatic  names are co
     = 5
     ```
 
+
+**Special Characters**
+
+| Code | Character       |
+| ---- | --------------- |
+| `\n` | New line        |
+| `\t` | Tab             |
+| `\r` | Carriage return |
+| `\v` | Vertical tab    |
+| `\b` | Backspace       |
+
+- let multiline = 'This string...\nspans multiple lines';
+
+- **Escaping quotes**
+
+  - ```javascript
+    let quote = '"It\'s hard to fail, but it is worse never to have tried to succeed." - Theodore Roosevelt';
+    ```
+
     
 
 **Primitive Data Types**:
 
+​		- JavaScript represents them directly at the lowest level of the language implementation. 
+
 -   String
 -   Number
+-   NaN
 -   Undefined
 -   Null
 -   Boolean
+-   Symbols (ES6)
+-   Big integers (ES9)
 
 
 
@@ -285,7 +309,8 @@ undefined           // undefined literal
 1, 2, -3, 4.5, -6.77, 234891234 // Examples of numeric literals
 ```
 
-
+- JavaScript uses a floating point system to represent all numbers
+- 
 
 **Boolean**
 
@@ -392,6 +417,10 @@ undefined           // undefined literal
 
 - **Infinity/ -Infinity**
 
+  
+
+  - JavaScript uses [Double Precision Floats](https://en.wikipedia.org/wiki/Double-precision_floating-point_format), so the largest number that can be precisely stored is 9,007,199,254,740,991 (`Number.MAX_SAFE_INTEGER`). However, the maximum numeric value that can be represented is 1.7976931348623157e+308 (`Number.MAX_VALUE`). Any number greater than this is represented as `Infinity`.
+
   - Any postive number over 0 
 
   - Different than NaN bc NaN is he result of an attempted mathematical operation that is neither a valid number nor an infinite number.
@@ -454,46 +483,176 @@ undefined           // undefined literal
 
     - **Implicit Type Conversion**
       - Unlike Ruby, the number 2 is coerced into a string and then concatenated
+      - No matter what.. undefined, null, Infinity + a string operand will always be coerced and concatenated
 
-**Explicit Type Coercion**
+**Explicit Type Coercion/ Conversion**
 
 - The difference between explicit and implicit coercion is that explicit  coercion lets you decide what you want to do, whereas implicit coercion  lets the engine choose.
 
+- convert primitive JavaScript values into values of different types
+
+- JavaScript primitives are immutable values: JavaScript doesn't actually convert values. Instead, it returns a new value of the proper type.
+
   - ```javascript
-    > Number('1')
+    > Number('1');
     = 1
     
-    > Number('foo')
+    +('123')        // 123
+    +(true)         // 1
+    +(false)        // 0
+    +('')           // 0
+    +(' ')          // 0
+    +('\n')         // 0
+    +(null)         // 0
+    +(undefined)    // NaN
+    +('a')          // NaN
+    +('1a')         // NaN
+    
+    > Number('foo');
     = NaN
     ```
-
+    
   - Unlike Ruby which returns 0 if you run 'hi'.to_i or an error with [1].to_i
-
+  
   - JavaScript fails silently. The programmer must determine whether an error represents a problem.
+  
+- When one of the operands is an object (including arrays and functions),  both operands are converted to strings and concatenated together:
+
+  - ```javascript
+    [1] + 2                     // "12"
+    [1] + '2'                   // "12"
+    [1, 2] + 3                  // "1,23"
+    [] + 5                      // "5"
+    [] + true                   // "true"
+    42 + {}                     // "42[object Object]"
+    (function foo() {}) + 42    // "function foo() {}42"
+    ```
+
+
+- The other arithmetic operators, `-`, `*`, `/`, `%`, are only defined for numbers, so JavaScript converts both operands to numbers:
+
+  - ```javascript
+    1 - true                // 0
+    '123' * 3               // 369 -- the string is coerced to a number
+    '8' - '1'               // 7
+    -'42'                   // -42
+    null - 42               // -42
+    false / true            // 0
+    true / false            // Infinity
+    '5' % 2                 // 1
+    > 9-'hi'
+    NaN
+    > 1-undefined
+    NaN
+    > 1+undefined
+    NaN
+    ```
+
+    
 
 **`parseInt/ parseFloat`**
 
 - It stops converting and ignores everything else once it encounters an invalid character:
 
+- Note that `parseInt` takes an optional `radix` argument. This represents the base in mathematical numeral systems. It is recommended to always specify this parameter to avoid reader confusion and to have more predictable behavior.
+
 - ```javascript
-  > parseInt('12xyz')
+  > parseInt('123.12', 10);  
+  = 123  
+  
+  > parseInt('12xyz');
   = 12
   
-  > parseInt('3.1415')
+  > parseInt('3.1415');
   = 3
   
-  > parseFloat('12.5foo')
+  > parseFloat('12.5foo');
   = 12.5
+  
+  > parseInt(23324.34);
+  = 23324 //also takes number argument
   ```
-
+  
 - If the number in the string is too big or too small to represent as a JavaScript number, `parseInt` returns `Infinity` or `-Infinity`. JavaScript can handle some immensely large and small numeric values.  However, at some point, it runs up against the limitations of its  internal number representation.
 
-**Coerce Number to String**
+**Coerce Number/ Boolean to String**
+
+```javascript
+> String(20); //function
+= '20'
+
+> (123).toString(); //method
+
+//can do this, but avoid it
+
+123 + '';                // "123"
+'' + 123.12;             // "123.12"
+
+
+String(true); 
+= "true"
+
+true.toString(); 
+
+
+There is no direct coercion of strings to booleans.
+> true === 'true'
+false
+> true == 'true'
+false
+let a = 'true';
+let b = 'false';
+a === 'true';            // true
+b === 'true';            // false
+```
+
+**Boolean**
+
+- You can also use the `Boolean` function to convert any value into a boolean value based on the truthy and falsy rules in JavaScript:
 
 - ```javascript
-  > String(20)
-  = '20'
+  Boolean(null);           // false
+  Boolean(NaN);            // false
+  Boolean(0);              // false
+  Boolean('');             // false
+  Boolean(false);          // false
+  Boolean(undefined);      // false
+  Boolean('abc');          // other values will be true
+  Boolean(123);            // true
+  Boolean('true');         // including the string 'true'
+  Boolean('false');        // but also including the string 'false'! = true
   ```
+
+- The double `!` operator provides a simpler way to coerce a truthy or falsy value to its boolean equivalent. The `!` operator returns the opposite of the value's boolean equivalent, so a double `!`returns the value's boolean equivalent:
+
+- ```javascript
+  !!(null);                // false
+  !!(NaN);                 // false
+  !!(0);                   // false
+  !!('');                  // false
+  !!(false);               // false
+  !!(undefined);           // false
+  
+  !!('abc');               // true
+  !!(123);                 // true
+  !!('true');              // true
+  !!('false');             // this is also true! All non-empty strings are truthy in JavaScript
+  ```
+
+- ```javascript
+  1 + true       // true is coerced to the number 1, so the result is 2
+  '4' + 3        // 3 is coerced to the string '3', so the result is '43'
+  false == 0     // false is coerced to the number 0, so the result is true
+  
+  1 + true        // 2
+  1 + false       // 1
+  true + false    // 1
+  null + false    // 0
+  null + null     // 0
+  1 + undefined   // NaN undefined gets coerced to NaN (which is still considered a number)
+  ```
+  
+  
 
 **Data Structures**
 
@@ -512,8 +671,24 @@ undefined           // undefined literal
 
 - Assignements/reassignments 
 
+- An expression is any valid code that resolves to a value.
+
+- The most common expression types are:
+
+  -   Arithmetic: these are expressions that evaluate to a number (i.e. `10 + 13`)
+  -   String: these are expressions that evaluate to a character string (i.e. `'Hello' + ', World'`)
+  -   Logical: these are expressions that evaluate to `true` or `false` (i.e `10 > 9`)
+
+- ```javascrpt
+  'hello';   // a single string is an expression
+  10 + 13;   // arithmetic operations are expressions
+  sum = 10;  // assignments are expressions
+  ```
+
 - When you use the Node or browser console REPL, you type **expressions** at the `>` prompt.
+
 - An expression is anything that JavaScript can evaluate to a value, even if that value is `undefined` or `null`.
+
 - Expressions don't have to involve operators: any value is an expression that evaluates to itself: `"hi"` returns `"hi"`
 
 **Return Values**
@@ -523,6 +698,17 @@ undefined           // undefined literal
 **Statements**
 
 - Statements often include expressions as part of their syntax, but the  statement itself is not an expression -- its value cannot be captured  and reused later in your code.
+
+- They don't resolve to useful values. Instead, they control the execution of the program. statements help to "do something", instead of giving you a value to use.
+
+- ```javascript
+  let a;                // a statement to declare variables
+  let b;
+  let c;
+  let d = (a = 1);      // this works, because assignments are expressions too
+  let e = (let f = 1);  // this gives an error, since a statement can't be used
+                        // as part of an expression
+  ```
 
 - Variable declaration:
 
@@ -540,12 +726,12 @@ undefined           // undefined literal
     console.log(while (true) {});    // SyntaxError: Unexpected token 'while'
     ```
 
-- a **statement** is a line of code commanding a task. Every program consists of a sequence of statements.
+- a **statement** is a line of code commanding a task. Every program consists of a sequence of statements. statements help to "do something", instead of giving you a value to use.
 
   -   variable, function, and class declarations
-  -   loops and `if` statements
+  -   (while/ for) loops and `if` statements/switch statement 
   -   `return` and `break` statements
-  -   assignments: `a = 3;`
+  -   a`ssignments: `a = 3;`
   -   standalone expressions: `console.log("Hello");`
 
 - any syntactic unit of code that expresses an action for the computer to perform.
@@ -848,12 +1034,41 @@ console.log(`Good Morning, ${name}`);
 
 `prompt` function works like `rlSync.question`
 
+The `prompt` method pops up a dialog box with an optional message that asks the user to enter some text. In the browser environment, you can use this method to collect user input.
+
+The dialog lets the user input some text and click `OK` or `Cancel`. If the user clicks `Ok`, `prompt`returns the text as a string; if the user clicks `Cancel`, it returns `null`.
+
 **Input in the browser**
 
 - Working with a browser's input controls requires a working knowledge of  the Document Object Model (DOM), which is outside the scope of this  book. However, you don't need to know about the DOM to get user inputs.  
 - Most browsers implement the `prompt` function which lets a program ask for and obtain text-based input from the user.
 
 **Functions**
+
+A function declaration has the following structure:
+
+1. The `function` keyword
+
+2. The name of the function
+
+3. A list of comma separated parameters
+
+4. A block of statements (the function body)
+
+**If a function does not contain an explicit `return` statement, or the `return` statement does not include a value, the function implicitly returns the value `undefined`. This is a reason why functions are said to "have returned" rather than "finished execution". When we talk about closures in a later course this distinction will become more apparent. For now, just be mindful of the disambiguation between the `return` value (explicit or implicit) of a function and the statement that a *"function that has returned or returns"*.
+
+
+
+**During execution, JavaScript makes the arguments passed to a function available to the function as local variables with the same names as the function's parameters. Within the function body, these local variables are called arguments
+
+**Function names are just local variables, so you can assign it to a new local variable and call the function using a new name 
+
+
+
+1. Calling a function with too few arguments *does not raise an error*.
+2. Within a function, an argument that wasn't provided in the call will have the value `undefined`.
+
+
 
 - Procedure that lets you extract the code and run it as a separate unit. In JavaScript- benefit that functions give us is the ability to make changes in one location
 
@@ -953,7 +1168,7 @@ say();        // => hello!
 
 **CODE EXAMPLES FOR VARIABLE SCOPE**
 
-
+In JavaScript, every function or block creates a new variable scope. Let's examine what this means.
 
 *GLOBAL SCOPE*
 
@@ -1222,7 +1437,7 @@ greetPeople();
    greetPeople();
    
    let add = (a, b) => a + b;
-
+   
     - Implicit Returns 
     - We can omit it in arrow functions *when and only when the function body contains a single expression that is not itself surrounded by curly braces* (the expression may have subexpressions, but the entire expression must evaluate to a single value). 
 
@@ -1271,7 +1486,9 @@ The call stack has a limited size that varies based on the JavaScript implementa
 
 
 
-**Flow Control**
+**Flow Control/ Conditionals**
+
+- Conditional statements are sets of commands that are triggered when a  condition is true. In JavaScript, there are two conditional statements  supported: `if…else` and `switch`.
 
 - When writing programs, you want your data to take the correct path by use of **conditionals**
 
@@ -1317,27 +1534,36 @@ The call stack has a limited size that varies based on the JavaScript implementa
     }
     ```
 
-  - (a==3) is the single `condition`
+  - `if (x ===3)`is a conditional statement 
 
-  - the text that executes when the condition is true is the `clause `
+  - `(x==3)` is the single `condition`/expression that evaluates to a boolean
+
+  - the text that executes when the conditional statement is true is the `clause `
+
+    - `{console.log("x is 3")};` is a block.
+
+    - A block groups statements and is delimited by curly braces. Blocks may have zero or more statements in them
 
   - It's important to understand that the `else` clause is not a separate statement: it's part of the `if` statement.
 
+    - An `if` statement may have an optional `else` clause. The `else` clause runs when the `if` statement's condition evaluates as `false`.
+
   - Examples 3, 4, and 5 show that you don't need a block when the `if` or `else` clause contains a single statement or expression.
-
-  - Examples 6 and 7 both behave the same way. Example 6 uses a nested `if` statement in the `else` clause, while example 7 flattens out the body of the `else` block into an `else if` clause. It's easier to read and maintain example 7 since you don't have the syntactic clutter of extra braces and indentation.
-
   
-
+  - Examples 6 and 7 both behave the same way. Example 6 uses a nested `if` statement in the `else` clause, while example 7 flattens out the body of the `else` block into an `else if` clause. It's easier to read and maintain example 7 since you don't have the syntactic clutter of extra braces and indentation.
+  
+  
+  
   **Comparison Operators**
-
+  
   - Return a boolean value (true or false)
     - The expressions or values that an operator uses are its **operands**. In comparisons, the expressions to the left and right of the operator are the operands. For instance, the equality comparison `x === y` uses the `===` operator with two operands: `x` and `y`.
   - **===**
     - Strict equality operator, or identity operator 
+    - the two operands are only equal if they are both the same type and have the same value:
     - Equivalent to Ruby's `.equal?`
     - Different than Ruby because strings are equal, not just numbers... you can also see this because strings are immutable (primitive values include strings, numbers, and booleans)
-
+  
   ```javascript
   > 5 === 5
   = true
@@ -1366,9 +1592,9 @@ The call stack has a limited size that varies based on the JavaScript implementa
   > '' === 0
   = false
   ```
-
   
-
+  
+  
   - **!==**
     - Strict InEquality Operator returns false when the operands have the same type and value, true otherwise 
   - **==**
@@ -1376,19 +1602,41 @@ The call stack has a limited size that varies based on the JavaScript implementa
     - However, when the operands have different types, `==`  attempts to coerce one of the operands to the other operand's type  before it compares them, and it may coerce both operands in some cases.
 
 ```javascript
-// Compare with the `===` examples.
+When one operand is a string and the other is a number, the string is converted to a number:
 
-> 5 == 5
-= true
+'42' == 42            // true
+42 == '42'            // true
+42 == 'a'             // false -- becomes 42 == NaN
+0 == ''               // true -- becomes 0 == 0
+0 == '\n'             // true -- becomes 0 == 0
 
-> 5 == 4
-= false
+When one operand is a boolean, it is converted to a number:
 
-> 5 == '5'
-= true
+42 == true            // false -- becomes 42 == 1
+0 == false            // true -- becomes 0 == 0
+'0' == false          // true -- becomes '0' == 0, then 0 == 0 (two conversions)
+'' == false           // true -- becomes '' == 0, then 0 == 0
+true == '1'           // true
+true == 'true'        // false -- becomes 1 == 'true', then 1 == NaN
 
-> '' == 0
-= true
+
+When one operand is null and the other is undefined, the non-strict operator always returns true. If both operands are null or both are undefined, the return value is true. Comparing null or undefined to all other values returns false:
+
+null == undefined      // true
+undefined == null      // true
+null == null           // true
+undefined == undefined // true
+undefined == false     // false
+null == false          // false
+undefined == ''        // false
+undefined === null     // false -- strict comparison
+
+When one of the operands is NaN, the comparison always returns false:
+
+NaN == 0              // false
+NaN == NaN            // false
+NaN === NaN           // false -- even with the strict operator
+NaN != NaN            // true -- NaN is the only JavaScript value not equal to itself
 ```
 
   - **!=**
@@ -1442,9 +1690,21 @@ The call stack has a limited size that varies based on the JavaScript implementa
     
     > "42" < 420
     = true
+    
+    The relational operators, <, >, <=, and >= are defined for numbers (numeric comparison) and strings (lexicographic order). There are no strict versions of these operators. When both operands are strings, JavaScript compares them lexicographically. Otherwise, JavaScript converts both operands to numbers before comparing them.
+    
+    11 > '9'              // true -- '9' is coerced to 9
+    '11' > 9              // true -- '11' is coerced to 11
+    123 > 'a'             // false -- 'a' is coerced to NaN; any comparison with NaN is false
+    123 <= 'a'            // also false
+    true > null           // true -- becomes 1 > 0
+    true > false          // true -- also becomes 1 > 0
+    null <= false         // true -- becomes 0 <= 0
+    undefined >= 1        // false -- becomes NaN >= 1
     ```
 
-
+- **Always use explicit type coercions** (covered in the previous topic).
+- **Always use strict equality operators** (`===` and `!==`).
 
 **Logical Operators**
 
@@ -1461,6 +1721,7 @@ The call stack has a limited size that varies based on the JavaScript implementa
   - The **or operator** returns `true` when either operand is `true` and `false` when both operands are `false`.
 - `&&` and `||` don't always return `true` or `false`, but they do when they operate on boolean values. A little later in this chapter we'll see what happens when we use `&&` and `||` with non-boolean values.
 - The `&&` and `||` operators both use a mechanism called **short circuit evaluation** to evaluate their operands.
+  -   As with `a && b`, JavaScript short circuits the evaluation if `a` is `false`, and returns `false` without evaluating `b`.
 
 **Truthiness**
 
@@ -1514,13 +1775,22 @@ if (x = 5) {
   -   `-0`: A negative zero. That's mathematical nonsense, but a real thing in JavaScript.
   -   `0n`: The `BigInt` version of zero.
 
--   An empty string (`''`) - different than ruby 
+- An empty string (`''`) - different than ruby 
 
--   `undefined`
+  - Whats weird is that in an `if` statement `' '` will evaluate to true and `''` will evaluate to false....BUT 
 
--   `null`
+    - ```javascript
+      > ' ' == false
+      true
+      > ''==false
+      true
+      ```
 
--   `NaN`
+- `undefined`
+
+- `null`
+
+- `NaN`
 
 
 
@@ -1816,6 +2086,35 @@ Notice how `while` and the condition are now at the end of the loop. Since the t
 - All 3 components of the `for` loop are optional
 
 ```javascript
+// put initialization outside of the loop
+
+let index = 0;
+for (; index < 10; index += 1) {
+  console.log(index);
+}
+
+// manually check condition and break out of the loop
+// If you omit the condition component in the "for", JavaScript assumes true
+
+for (let index = 0; ; index += 1) {
+  if (index >= 10) {
+    break;
+  }
+
+  console.log(index);
+}
+
+// manually increment the iterator
+
+for (let index = 0; index < 10; ) {
+  console.log(index);
+  index += 1;
+}
+```
+
+
+
+```javascript
 for (initialization; condition; increment) {
   // loop body
 }
@@ -1847,12 +2146,11 @@ for (let index = 0; index < names.length; index += 1) {
 console.log(upperNames); // => ['CHRIS', 'KEVIN', 'NAVEED', 'PETE', 'VICTOR']
 ```
 
-1.  Declare and initialize the `index` variable to `0`.
-2.  If `index` is not less than the array length, go to step 6.
-3.  Execute the loop body.
-4.  Increment `index`.
-5.  Go back to step 2.
-6.  Log the results.
+1.  Execute the initialization statement. Note that the statement may include variable declarations.
+2.  Evaluate the condition. The loop terminates if the condition has a falsy value.
+3.  Execute the body of the loop.
+4.  Execute the increment expression.
+5.  Return to step 2 for the next iteration.
 
 - `for` loops let you see and understand the looping logic at a single glance. The syntax also lets you move the `index` variable from the global scope into the scope of the `for` statement, and it helps make your code cleaner and more organized.
 
@@ -1914,13 +2212,13 @@ increment operator/decrement operator
 
 ```javascript
 > let a = 1;
-> ++a;  //returns next number (post-increment)
+> ++a;  //returns next number (post-increment) If the operator appears before the operand, JavaScript modifies the operand, then evaluates the expression. 
 = 2
 
 > a
 = 2
 
-> a++ //returns same number (pre-increment)
+> a++ //returns same number (pre-increment)  If the operator appears after the operand, JavaScript evaluates the expression, then modifies the operand. postfix increment operator 
 = 2
 
 > a
@@ -3343,5 +3641,259 @@ TypeError: Cannot read property 'length' of undefined
 
 >Infinity === -Infinity
 =false
+```
+
+
+
+**Escape quote**
+
+```javascript
+let quote = '"It\'s hard to fail, but it is worse never to have tried to succeed." - Theodore Roosevelt';
+```
+
+```javascript
+let quote = "\"It's hard to fail, but it is worse never to have tried to succeed.\" - Theodore Roosevelt";
+```
+
+- Use `\` for long strings to connect them (concatenate lines)
+
+**Strings**
+
+- Act like a collection of characters so they can be accessed as such
+
+  - ```javascript
+    'hello'.charAt(1);  // "e"
+    ```
+
+  - ```javascript
+    'hello'[1];         // "e"
+    ```
+
+  - In Ruby [] bracket notation is a method, in JS it is an *operator*
+
+  - Other methods:
+
+    - ```javascript
+      'hello'.length;     // 5
+      
+      x.indexOf('h')      // 0
+      
+      x.toUpperCase() 
+      x.toLowerCase()
+      ```
+
+**Variables**
+
+- Containers that hold data
+-   JavaScript is case-sensitive; `myvariable` is not the same as `myVariable`.
+-   Variable names can be of any length.
+-   It must start with a Unicode letter, an underscore (`_`), or a dollar sign (`$`).
+-   Succeeding characters must be Unicode letters, numbers, dollar signs, or underscores.
+-   It must not be a [reserved word](http://www.ecma-international.org/ecma-262/5.1/#sec-7.6.1.1).
+
+
+
+1. Cant start with a number and cant include other symbols
+
+- **What is *Variable Declaration?***
+
+  - Variables should be declared
+
+  - *Dyanmic Typing*
+
+    - variable may refer to a value of any data typr and can be reassigned to a different type without error
+
+  - After variables are declared, you can reassign using `=` operator 
+
+    - An assignment is a standalone expression that gives a variable a new value; an initializer is the `=` combined with the expression to its right in a variable declaration.
+
+    - A variable that is declared but not initialized or assigned a value has a value of `undefined`
+
+    - ```javascript
+      let myVariable = 'Hello, World'; //with initializer
+      var otherVariable = 23;
+      let anotherVariable = true;
+      const FOO = 42;
+      
+      //or
+      
+      let number; //without initializer 
+      
+      number = 3;  // variable `number` is assigned with value 3
+      ```
+
+  - Primary declared using `let`, `const`, or `var` keywords
+
+  - You must initialize a constant when you declare it bc you cant reassign a constant
+
+    - ```javascript
+      // single declaration
+      let myVariable;
+      
+      // multiple declarations
+      let myVariable;
+      let otherVariable;
+      let anotherVariable;
+      
+      // Constant declaration
+      const FOO = 'hello';
+      
+      // var declaration
+      var myVariable;
+      ```
+
+- **Declaring with `var`**
+
+  -   `var` is the traditional way to declare variables in JavaScript. The `let` and `const` keywords were introduced in ES6.
+  -   When possible, use `let` and `const`. Use `var` if you're working with a program that already uses `var` or if you need to support some very old execution environments.
+  -   `var` is similar to `let` in the way it is used, but there are some important differences that we'll discuss later.
+
+
+
+**Operators**
+
+- Arithmatic, Comparison, Assignment, String, Logical
+
+- Symbol that tells the computer to perform operations on values (operands)
+
+  1. Arithmatic Operators:
+
+     1. Take two numeric values as input and return a single numeric value 
+     2. `+,-,/,*,%`
+
+  2. Comparison Operators 
+
+     1. Compares its operands and returns a boolean value (true or false)
+
+     2. When the operands are of different types, JavaScript tries to implicitly convert them to suitable types (implicit conversion) 
+
+        1. only with `==` and `!=`
+
+        2. Best to use the stricter `===` `!==` so no conversions are performed 
+
+        3. | Operator               | Description                                                  |
+           | ---------------------- | ------------------------------------------------------------ |
+           | Equal (==)             | Returns true if the operands are equal                       |
+           | Not Equal (!=)         | Returns true if the operands are not equal                   |
+           | Strict Equal (===)     | Returns true if the operands are equal and of the same type  |
+           | Strict Not Equal (!==) | Returns true if the operands are not equal and/or not of the same type |
+           | Greater than (>)       | Returns true if the left operand is greater than the right   |
+           | Less than (<)          | Returns true if the left operand is less than the right      |
+
+  3. Assignment Operators
+
+     1. `=`
+
+     2. assigns the value of the right operand to the left operand
+
+     3. *Compound Assignment Operators*
+
+        1. | Name                      | Shorthand Operator | Meaning   |
+           | ------------------------- | ------------------ | --------- |
+           | Addition Assignment       | a += b             | a = a + b |
+           | Subtraction Assignment    | a -= b             | a = a - b |
+           | Multiplication Assignment | a *= b             | a = a * b |
+           | Division Assignment       | a /= b             | a = a / b |
+           | Remainder Assignment      | a %= b             | a = a % b |
+
+  4. String Operators 
+
+     1. You can compare strings just as numbers using lexicographical ordering 
+
+     2. ```javascript
+        'a' < 'b';         // true
+        'Ant' > 'Falcon';  // false
+        // String comparisons use Unicode lexicographical ordering
+        '50' < '6';        // true ('5' precedes '6' lexicographically)
+        
+        let a = 'Hello';
+        a += ', world!';
+        
+        a;       // "Hello, world!"
+        ```
+
+  5. Logical Operators 
+
+     1. You can combine boolean/non boolean values with logical operators
+
+        1. `&&, ||, !`
+
+           1. ```javascript
+              true || true;    // true
+              true || false;   // true
+              false || true;   // true
+              false || false;  // false
+              false || [];     // [] (second operand is non-boolean, it is returned as is)
+              
+              //! returns true if its operand is falsey. false otherwise 
+              //! is a unary operator(takes only one operand)\
+              !true;   // false
+              !false;  // true
+              !!true;  // true
+              !1;      // false
+              ![];     // false
+              ```
+
+              
+
+**Alert method**
+
+- `alert()`method displays a dialog with a message and an `OK` button. Click the `OK` button to dismiss the dialog. Use `alert` to notify the user of an event or item of interest, but don't need any input from the user. Try the following from your browser's JavaScript console:
+
+- ```javascript
+  alert('Hello, world');            // alert dialog box with a message
+  alert();                          // an empty alert dialog box
+  ```
+
+- works in chrome browser
+
+
+
+**WHY?**
+
+- Does a declaration return undefined 
+
+```javascript
+> 5 * undefined
+NaN
+> let foo 
+undefined
+> 5 * let foo
+5 * let foo
+        ^^^
+
+Uncaught SyntaxError: Unexpected identifier 'foo'
+
+```
+
+- With prompt if you don't input anything it returns `null`.
+
+  If you use template literals in node it actually logs `null` but in the chrome console it doesnt log anything 
+
+**Console.log**
+
+The `console.log` method outputs a message to the JavaScript console. You should use this method for debugging purposes; users usually don't look at the console when they use browsers.
+
+
+
+
+
+**BigInt**
+
+- If you want to display a number not in floating point notation than you can append an `n` to tghe end of the operands 
+
+- ```javascript
+  > 23n ** 17n    // 141050039560662968926103n
+  ```
+
+**Replace**
+
+```javascript
+const nonSpace = /\s/g
+const nonAlpha = /[^a-z]/gi
+
+const charCount = phrase.length;
+const nonSpaceCount = phrase.replace(nonSpace, '').length;
+const alphaCount = phrase.replace(nonAlpha, '').length;
 ```
 
