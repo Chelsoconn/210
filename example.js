@@ -1,9 +1,6 @@
-// no other code above
-function assign() {
-   country2 = 'Spain';
+function foo() {
+  console.log("hello");
 }
 
-assign();
-console.log(country2);   // logs: Spain
-   // gets ReferenceError
-// no other code below
+let foo = "hello";
+

@@ -1041,21 +1041,147 @@ The dialog lets the user input some text and click `OK` or `Cancel`. If the user
 **Input in the browser**
 
 - Working with a browser's input controls requires a working knowledge of  the Document Object Model (DOM), which is outside the scope of this  book. However, you don't need to know about the DOM to get user inputs.  
+
 - Most browsers implement the `prompt` function which lets a program ask for and obtain text-based input from the user.
+
+  
 
 **Functions**
 
-A function declaration has the following structure:
+```javascript
+function hello() {
+  return 'hello world!';
+}
+
+console.log(typeof hello);    // function
+```
+
+
+
+A function declaration/statement has the following structure:
 
 1. The `function` keyword
 
-2. The name of the function
+2. The name of the function (local variable type of function)
+   1. It does not require assignment to a variable. The value of the function variable is the function itself.
+   2. This "functional variable" obeys general scoping rules, and we can use it exactly like other JavaScript variables.
+   3. Function declarations are similar to variable declarations. Just as variable declarations must start with `let` or `const`, function declarations must start with `function`.
 
 3. A list of comma separated parameters
+   1. we can also create variables by naming the arguments to a function via its parameters. A function declaration gives us a fourth way: a function declaration declares a variable with the same name as the function, and then assigns the function to that variable. Thus, for every function declaration, a variable is initialized.
 
 4. A block of statements (the function body)
 
 **If a function does not contain an explicit `return` statement, or the `return` statement does not include a value, the function implicitly returns the value `undefined`. This is a reason why functions are said to "have returned" rather than "finished execution". When we talk about closures in a later course this distinction will become more apparent. For now, just be mindful of the disambiguation between the `return` value (explicit or implicit) of a function and the statement that a *"function that has returned or returns"*.
+
+**Function Expression**
+
+```javascript
+const hello = function () {   // We can also use let instead of const
+  return 'hello';
+};
+
+console.log(typeof hello);    // function
+console.log(hello());         // hello
+```
+
+- A function expression defines a function as part of a larger expression syntax (typically a variable assignment).
+
+  - What do we mean by this? Well now `foo` will return a function expression
+
+  - ```javascript
+    let foo = function () {
+      return function () {   // function expression as return value
+        return 1;
+      };
+    };
+    
+    let bar = foo();         // bar is assigned to the returned function
+    
+    bar();                   // 1
+    
+    > foo
+    [Function: foo]
+    > foo()
+    [Function (anonymous)]
+    ```
+
+    
+
+- In this code, we define an anonymous function (one without a name) and assign it to the variable `hello`. We then use the variable to invoke the function
+
+  - Be explicit to refer to it as the anonymous function assigned to a variable.
+
+```javascript
+let hello = function foo() {
+  console.log(typeof foo);   // function
+};
+
+hello();
+
+foo();                       // Uncaught ReferenceError: foo is not defined
+```
+
+- We can also name function expressions, like this
+
+- However, the function's name, `foo`, is only available inside the function (i.e., it can only be used from within the function's local scope). With named function expressions, the name of the function is contained within its own scope (i.e., inside the variable `hello`).
+
+  - Although most function expressions use anonymous functions, named function expressions are useful for debugging. The debugger can show the function's name in the call stack, providing a valuable clue. Named function expressions can also be useful for recursive functions.
+  -  if a *statement* begins with the `function` keyword, then it is a function declaration; otherwise, it is a function expression. even a minor change (adding parentheses) is enough to turn a function declaration into a function expression:
+
+- A function defined using a function declaration must always have a name (it cannot be an anonymous function). In addition to creating a named function, a function declaration also creates a variable with the same name as that function's name. For example, the following two function definitions both define a named function and a variable with the same name as that function.
+
+- ```javascript
+  let foo = function foo() {
+    return 'a named function expression assigned to a variable';
+  };
+  
+  function bar() {
+    return 'a function declaration';
+  }
+  ```
+
+**Arrow Functions**
+
+```javascript
+const multiply = function(a, b) {
+  return a * b;
+};
+
+const multiply = (a, b) => {
+  return a * b;
+};
+
+const multiply = (a, b) => a * b;
+```
+
+BENEFITS:
+
+1) Get rid of `function` keyword and insert `=>`
+2) if its on one line then you can get rid of brackets and `return` keyword
+
+*When to use them?*
+
+- Arrow functions are most often used as **callback functions**.
+- Arrow functions also have another use that makes them immensely popular: they inherit the "execution context" from the surrounding code.
+
+```javascript
+[1, 2, 3].map(function (element) {
+  return 2 * element;
+}); // returns [2, 4, 6]
+
+[1, 2, 3].map((element) => {
+  return 2 * element;
+}); // returns [2, 4, 6]
+
+[1, 2, 3].map((element) => 2* element) // returns [2, 4, 6]
+
+[1, 2, 3].map(element => 2* element) //omit parenthesis if one parameter
+```
+
+- Use arrow functions for callbacks.
+- Use function declarations or function expressions for other functions, but choose one or the other as your primary choice.
+- If you use function expressions, named function expressions are better for debugging purposes. They also help clarify the intent of those functions.
 
 
 
@@ -1225,7 +1351,28 @@ These are a number of ways to create a variable in the current scope:
   // no other code below
   ```
 
-- 
+  - In the above code, `country2` isn't declared anywhere else in the code and it is assigned a value inside the function. Since JavaScript couldn't find a matching variable, it created a new "global" variable and as such it makes it possible to log its value on line 8.
+  - Moreover, similar to the earlier code in the adding variables to the current scope section, `country2` is in the global scope because of the way the source code is written and not because of the scope in which the `assign` function was invoked.
+
+- ```javascript
+  let name = 'Julian';
+  
+  function greet() {
+    let name = 'Logan';
+    console.log(name);
+  } //the variable declaration for name in the greet function shadows the outer name variable. Within greet, you can only access the inner name.
+  ```
+
+- If a function definition has a parameter with the same name as a variable from an outer scope, the parameter shadows the outer variable:
+
+- JavaScript throws a `ReferenceError` exception if it can't find a variable anywhere in the scope hierarchy.
+
+- Remember these important variable scoping rules:
+
+  - Every function definition creates a new local variable scope.
+  - Every block creates a new local variable scope.
+  - Lexical scope uses the structure of the source code to determine the variable's scope. This means that the code doesn't have to be executed for the scope to exist.
+  - All variables in the same or surrounding scopes are visible inside functions and blocks.
 
 
 
@@ -3968,3 +4115,371 @@ const nonSpaceCount = phrase.replace(nonSpace, '').length;
 const alphaCount = phrase.replace(nonAlpha, '').length;
 ```
 
+
+
+**`var` and Hoisting**
+
+- EXAMPLES: https://javascriptweblog.wordpress.com/2010/07/06/function-declarations-vs-function-expressions/
+
+- Just a mental model
+
+  - The behavior that we try to explain with hoisting is merely a consequence of JavaScript's two phases: the creation phase and execution phase.
+  - The creation phase prepares your code for execution. Each time it encounters a variable, function, or class declaration, it adds that identifier to the current scope. Depending on the declaration and where the declaration occurs, the identifier gets added to either the global scope or the local scope (which may be either a function or a block). Thus, at the end of the creation phase, JavaScript knows all of the identifiers in your program and what scopes each one belongs to.
+  - When the execution phase occurs, JavaScript no longer cares about declarations. It does care about initialization and function/class definitions, but not the declarations themselves. The identifiers are already known, and their scope is already known. JavaScript merely needs to look up the identifiers as needed.
+
+  ex/ 
+
+  ```javascript
+  boo();
+  
+  function boo() {
+    console.log("Boo!");
+  }
+  ```
+
+  - During the creation phase, JavaScript only encounters one declaration: the `boo` function on line 3. It puts the name `boo` in the global scope. During the execution phase, the first thing that happens is that JavaScript encounters `boo()` on line 1. Since line 1 is in the global scope, JavaScript looks to the global scope for an identifier named `boo`. That name exists since it was found during the creation phase. Therefore, JavaScript only needs to call the `boo` function.
+
+- What is hoisting?
+
+  - JavaScript engines operate in two main phases: a **creation phase** and an **execution phase**.
+  - The effect of this process is that all the declarations get hoisted -- raised, lifted, moved -- to the top of their defined scope
+
+  
+
+  - JavaScript hoists function declarations to the top of the scope; it hoists the entire function declaration, including the body:
+
+  - Function declarations have function scope. That's another way of saying that hoisting also occurs with nested functions:
+
+  - ```javascript
+    console.log(getName());
+    
+    function getName() {
+      return "Pete";
+    }
+    
+    //gets turned into 
+    
+    function getName() {
+      return "Pete";
+    }
+    
+    console.log(getName());
+    
+    function foo() {
+      return bar();
+    
+      function bar() {
+        return 42;
+      }
+    }
+    
+    //Even though bar is declared at the end of foo, we can still call bar at the beginning of the function. That's because hoisting makes the bar declaration available throughout foo.
+    ```
+
+  - **Function expression and hoisting**
+
+    - Function expressions often involve assigning a function to a declared variable. Therefore, the variables obey the usual hoisting rules for variable declarations. Thus:
+
+    - ```javascript
+      console.log(hello());
+      
+      var hello = function () {
+        return 'hello world';
+      };
+      
+      //is the same as
+      
+      var hello;
+      
+      console.log(hello());    // raises "TypeError: hello is not a function"
+      
+      hello = function () {
+        return 'hello world';
+      };
+      ```
+
+  - It's important to realize that **hoisting doesn't change the program**. It merely executes the program in a manner that acts as though it was changed.
+
+  - When both a variable and a function declaration exist, you can assume that the function declaration is hoisted first; that is, the function declarations are hoisted above the variable declarations. Given the following code block:
+
+  - ```javascript
+    bar();              // logs undefined
+    var foo = 'hello';
+    
+    function bar() {
+      console.log(foo);
+    }
+    
+    //is equivalent to this: 
+    
+    function bar() {
+      console.log(foo);
+    }
+    
+    var foo;
+    
+    bar();          // logs undefined
+    foo = 'hello';
+    ```
+
+  
+
+  *NOW LET"S EXAMINE THIS!*
+
+  - The error messages are different when you try to access a variable that is not defined and when trying to access one BEFORE being defined...
+
+  - This is where the **Temporal Dead Zone**(TDZ) comes in!
+
+    - When a `var` variable is hoisted, JavaScript gives it an initial value of `undefined`.
+
+    - When `let` and `const` variables are hoisted, they are not given an initial value at all. Instead, they are left in an "unset" state; that is, they are "not defined". Don't say "undefined", though - that's confusing.
+
+      - This demonstrates that JavaScript is aware of the `foo` variable in the first snippet and recognizes that it hasn't been set to a value yet. In the second snippet, it can tell that `baz` hasn't been declared at all, so the error message is different.
+
+      - ```javascript
+        console.log(bar); // undefined
+        var bar = 3;
+        console.log(bar); // 3
+        
+        //TEMPORAL DEAD ZONE BELOW
+        
+        console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
+        let foo;
+        
+        console.log(qux); // ReferenceError: Cannot access 'qux' before initialization
+        const qux = 42;
+        ```
+
+  *SUPER WEIRD*
+
+  ```javascript
+  bar();             // logs "world"
+  var bar = 'hello';
+  
+  function bar() {
+    console.log('world');
+  }
+  
+  //becomes
+  
+  function bar() {
+    console.log('world');
+  }
+  
+  bar();
+  bar = 'hello';
+  ```
+
+  ```javascript
+  var bar = 'hello';
+  bar();             // raises "TypeError: bar is not a function"
+  
+  function bar() {
+    console.log('world');
+  }
+  
+  //becomes
+  
+  function bar() {
+    console.log('world');
+  }
+  
+  bar = 'hello'; //becomes reassignement 
+  bar();
+  ```
+
+  - Since function declarations are hoisted first, the variable declaration of the same name becomes redundant (notice that there is no longer a `var bar` in the code snippets). Since the variable declaration is redundant, what remains is the reassignment. Being a reassignment, this becomes a problem for snippet2, since `bar` will no longer be of type `function`, and therefore results in an error when we try to invoke `bar`. bc you cant declare a `let` or `const` variable and a function with the same name ....SO THIS ONLY WORKED AS REASSIGNEMENT BC ITS VAR NOT LET OR CONST
+
+  
+
+  
+
+  - **Creation Phase**- 
+    - before the execution phase begins, the creation phase does some preliminary work. One of those work items is to find all of the variable, function, and class *declarations*.
+    -  That action seems to move the declarations to the top of their respective function or block: function-scoped declarations get moved to the top of the function, and block-scoped declarations get moved to the top of the block. This process is called **hoisting**.
+
+  - **Execution Phase**- 
+    - when the program runs code line-by-line.
+
+- How do `var`, `let`, and `const` interact with hoisting? How do they differ?
+
+- How do functions and classes interact with hoisting? How do they differ?
+
+- What part does hoisting play in the way a specific program works?
+
+- How does hoisting really work?
+
+
+
+
+
+```javascript
+var foo;
+var bar = "qux";
+```
+
+Both of these statements create a variable. The first creates a variable named `foo`, but sets its value to `undefined`.
+
+
+
+```javascript
+var bar = 42;
+console.log(global.bar); // 42
+bar += 1;
+console.log(global.bar); // 43
+
+let foo = 86;
+console.log(global.foo); // undefined
+```
+
+- This example shows that using `var` at the top level of a program creates a property on the global object, e.g., `global` in Node or `window` in a browser. Thus, we can use `global.bar` to examine the value of `bar`. The `let` declaration doesn't add a new property to the global object (or any other object, for that matter). Since the property doesn't exist, we get `undefined` when we examine the value of `global.foo`.
+
+- This behavior shows that `let` is safer than `var` at the top level of a program. Placing properties on the global object may lead to conflicts and bugs; `let` alleviates that issue.
+
+  - If you declare a variable with `var` inside a function, the variable is **not** stored as a property of the global object or any other object.
+
+  - ```javascript
+    function foo() {
+      var bar = 42;
+      console.log(global.bar); // undefined
+    }
+    
+    foo();
+    ```
+
+  - A much more significant difference is that `let` is **block-scoped**, while `var` is **function-scoped**.
+
+- A block-scoped variable is only visible within the block where it is declared; in JavaScript, a block is code delimited by curly braces, `{...}`. (Remember: [not everything between braces is a block](https://launchschool.com/books/javascript/read/variables#variablescope).) A function-scoped variable is visible within the function where it is declared. This difference in scope can lead to unexpected behavior when using `var`:
+
+- ```javascript
+  function foo() {
+    if (true) {
+      var a = 1;
+      let b = 2;
+    }
+  
+    console.log(a); // 1
+    console.log(b); // ReferenceError: b is not defined
+  }
+  
+  foo();
+  ```
+
+  - The `var` statement creates a variable with function scope, while `let` creates a variable with block scope. Thus, `a` is available everywhere in the function, but `b` is only available in the block.
+
+- Lets try this:
+
+  - ```javascript
+    function foo() {
+      if (false) {
+        var a = 1;
+      }
+    
+      console.log(a); // undefined
+    }
+    
+    foo();
+    ```
+
+  - Strangely, even though we don't execute the line where we declare it, the variable is still created and exists in the function.  Bc we dont run the initialization, `a` recieves a default value of `undefined`
+
+- If you run this from a program and `node.js` then it wraps the code in a function and it is no longer defined in global so will output `undefined`
+
+**HOISTING RULES TO LIVE BY**
+
+- Whenever possible, use `let` and `const` instead of `var`: avoid the confusion and subtle behaviors that can occur with `var`.
+
+- If you must use `var`, declare all of the variables at the top of the scope:
+
+  ```javascript
+  function foo() {
+    var a = 1;
+    var b = 'hello';
+    var c;
+  
+    …
+  }
+  ```
+
+- If you can use `let` and `const`, declare them as close to their first usage as possible:
+
+  ```javascript
+  function foo(bar) {
+    console.log("Hello world!");
+  
+    let result;
+    if (bar) {
+      let squaredBar = bar * bar;
+      result = squaredBar + bar;
+    } else {
+      result = "bar hasn't been set";
+    }
+  
+    return result;
+  }
+  
+  console.log(foo(3));           // 12
+  console.log(foo(undefined));   // bar hasn't been set
+  ```
+
+- Declare functions before calling them:
+
+  ```javascript
+  function foo() {
+    return 'hello';
+  }
+  
+  foo();
+  ```
+
+
+
+
+
+- **Global Scope**
+
+  - At the top level of a program -- outside of any function -- function scope refers to the entire file. Some people use the term **global scope** to refer to function scope at the top level.
+
+  - However, it's important to realize that there are no declarations that explicitly create a variable in the global scope. All declarations create variables that either have function scope (`var`, `function`) or block scope (`let`, `const`, `class`). This can lead to some confusion. For instance, consider this top-level code:
+
+  - ```javascript
+    let foo = 1;
+    console.log(foo);
+    ```
+
+  - `foo` is in the global scope in this code. However, it's declared with block scope by the `let` keyword. In fact, we can say that `foo` has block scope, but, in this case, that block scope just happens to coincide with global scope. We can also say that `foo` has global scope, but it was declared with block scope.
+
+  - It helps to think of scope as having two separate but related definitions. One refers to how a variable is declared -- we'll call it the **declared scope** -- while the other concerns the visibility of a variable -- let's call it the **visibility scope**. Note that we're using these terms for convenience. You probably won't find either term used outside of Launch School.
+
+    - **Declared** - Declared scope concerns how a variable is declared: `let`, `const`, `class`, `var`, or `function`.
+
+      - The first three declare variables with block scope while the other two declare variables with function scope. 
+      - We will typically talk about the declared scope when we discuss the scope that results from a declaration.
+
+    - **Visibility** - 
+
+      - Visibility scope concerns where a variable is visible. This can be either global scope or local scope (inside a function or a block). 
+
+      - We will sometimes also talk about function and block scope when discussing the local visibility scope, though this is more about where the variable is visible rather than how it was declared. Thus, something declared with `let` can have function scope when talking about its visibility.
+
+      - ```javascript
+        let foo = 1;        // visibility scope is global
+        var bar = 2;        // visibility scope is global
+        
+        if (true) {
+          let foo = 3;      // visibility scope is local (block)
+          var qux = 4;      // visibility scope is global
+        }
+        
+        function bar() {    // visibility scope is global
+          let foo = 5;      // visibility scope is local (function)
+          var bar = 6;      // visibility scope is local (function)
+        
+          if (true) {
+            let foo = 7;    // visibility scope is local (block)
+            var qux = 8;    // visibility scope is local (function)
+          }
+        }
+        ```
+
+        
