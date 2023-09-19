@@ -1,9 +1,9 @@
-let name = 'Julian';
-
-function greet() {
-  let myName = name;
-  console.log(myName);
+// no other code above
+function assign() {
+   country2 = 'Spain';
 }
 
-console.log(myName);
-
+assign();
+console.log(country2);   // logs: Spain
+   // gets ReferenceError
+// no other code below

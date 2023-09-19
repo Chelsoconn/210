@@ -1170,6 +1170,67 @@ say();        // => hello!
 
 In JavaScript, every function or block creates a new variable scope. Let's examine what this means.
 
+These are a number of ways to create a variable in the current scope:
+
+- Use the `let` or `const` keywords.
+
+- Use the `var` keyword, which we'll introduce later in this lesson.
+
+- Define parameters for a function - each parameter is a local variable.
+
+- A function declaration creates a variable with the same name as the function. We'll talk about that in the next assignment.
+
+- A class declaration also creates a variable with the same name as the class. We'll talk about class declarations in a later course.
+
+  ```javascript
+  function lunch() {    // A function declaration creates a new variable scope
+    let food = 'taco';  // 1. Add a new variable food within the current variable scope
+  }
+  
+  function eat(food) {  // 2. Parameters create variables during function invocation
+    console.log('I am eating ' + food);
+  } //Given lexical scoping rules, its scope is the eat function because of the way the source code is written, not because the function gets invoked. 
+  
+  function drink() {    // 3. Add a new variable drink within the global variable scope
+    console.log('I am drinking a glass of water');
+  }
+  ```
+
+- Variable scoping rules apply to both assignment and referencing equally. This code: checks the current scope and then each higher scope, looking for a variable with the name `country`. JavaScript sets the first `country` variable it finds to `"Liechtenstein"`. 
+
+- ```javascript
+  let country = 'Spain';
+  function update() {
+    country = 'Liechtenstein';
+  }
+  
+  console.log(country);  // logs: Spain
+  
+  update();
+  console.log(country);  // logs: Liechtenstein
+  ```
+
+-  If JavaScript can't find a matching variable, **it creates a new global variable instead**. This is rarely what you want; it can be the source of subtle bugs.
+
+- ```javascript
+  // no other code above
+  function assign() {
+    let country1 = 'Liechtenstein';
+    country2 = 'Spain'; //bc you didnt use `let`!! crazy
+  }
+  
+  assign();
+  console.log(country2);   // logs: Spain
+  console.log(country1);   // gets ReferenceError
+  // no other code below
+  ```
+
+- 
+
+
+
+
+
 *GLOBAL SCOPE*
 
 
@@ -1234,6 +1295,16 @@ console.log(greetingMessage); // raises ReferenceError
 **Limiting Variable Scope**
 
 - Global variables can be helpful in some scenarios, e.g.,  application-wide configuration. However, most developers discourage  their use since they often lead to bugs. In general, you should limit  the scope of your variables as much as possible; smaller scopes limit  the risk that an outer scope might misuse the variable.
+
+
+
+**Lexical Scope (Static Scoping)**
+
+Javascript uses lexical scope to determine where it looks for a variable.  The source code defines the scope.  When you write a function it creates a scope even if the function never gets executed and has no variables of its own. There is a hierachy of scopes from the local scope of the code up to the program's global scope. 
+
+
+
+Javascript searched this hierachy from the bottom to the top when trying to find a variable. When it finds the variable, it stops and returns it.  This means that a lower scope variable can *shadow* or hide a variable with the same name in a higher scope. 
 
 
 
