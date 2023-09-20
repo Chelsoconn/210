@@ -1,6 +1,6 @@
-function foo() {
-  console.log("hello");
-}
+let myWords = ['Hello', 'Goodbye'];
+let myOtherWords = myWords;
+myWords[0] = 'Hi';
 
-let foo = "hello";
-
+console.log(myWords);
+console.log(myOtherWords);

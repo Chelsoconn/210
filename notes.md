@@ -3642,8 +3642,20 @@ let result = bar('Victor', 'Antonina');
 
   - The takeaway of this section is that JavaScript stores primitive values  in variables. Still, it uses pointers for non-primitive values like  arrays and other objects.
 
-  **Using for/in loop for array**
+  
 
+  **Pass by Reference vs Pass  by Value**
+  
+  1. *Pass By Value*
+     1. The concept of "pass-by-value" traditionally means that when you use a variable to pass an argument to a function, the function can't do anything that sets the original variable to a different value. No matter what happens in the function, the variable will still contain the same value that was passed to the function.
+  2. Pass By Reference
+     1.  If JavaScript were purely pass-by-value, there wouldn't be any way for the function to change the original object. 
+        1. When an operation within the function mutates its argument, it affects the original object.
+     2. However, the matter is more complicated when using objects (arrays and plain objects for example). With objects, JavaScript exhibits a combination of behaviors from both pass-by-reference as well as pass-by-value. Some people call this *pass-by- value-of-the-reference* or *call-by-sharing*. Whatever you call it, the most important concept you should remember is:
+     3. Functions and methods that mutate their callers are called destructive functions or methods.
+  
+  **Using for/in loop for array**
+  
   ```javascript
   let arr = [ 10, 20, 30 ]
   for (let value in arr) {
@@ -3654,17 +3666,17 @@ let result = bar('Victor', 'Antonina');
   //          2
   //be careful bc these keys are now strings
   ```
-
+  
   Iterates over indexes...
-
+  
   so do the same:
-
+  
   ```javascript for (let key in a) {
   for (let key in a) {
      console.log(a[key])
   }  
   ```
-
+  
   
 
 **THIS IS A MESS SO USE `for/of` for Arrays**
@@ -4483,3 +4495,26 @@ console.log(global.foo); // undefined
         ```
 
         
+
+
+
+
+
+
+
+**What happens if you dont declare a variable with `let` `const` `var` or `function`?**
+
+​	It becomes global 
+
+```javascript
+function hello() {
+  a = 'hi';
+}
+
+hello();
+console.log(a); //logs hi
+```
+
+**Weird behaviors of Variables**
+
+1) 
