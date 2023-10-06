@@ -270,7 +270,7 @@ Note that non-idiomatic names are not invalid names. Non-idiomatic  names are co
 
 -   String
 -   Number
--   NaN
+-   NaN (considered a number)
 -   Undefined
 -   Null
 -   Boolean
@@ -1002,6 +1002,27 @@ console.log(foo);
 ```
 
 The program logs `bar`. Line 1 initializes a variable named `foo` with the value`'bar'`. Line 2 starts a block, which creates a new scope for `let` variables. The variable on line 1 is still visible at this point, but line 3 declares a new variable named `foo` that shadows (hides) the variable from line 1. This second variable gets initialized to `'qux'`, but it goes out of scope on line 4 when the block ends. That brings `foo` from line 1 back into scope, so line 6 logs its value: `bar`.
+
+
+
+**Shadowing example**
+
+```javascript
+let myVar = 1;
+
+function myFunc(myVar) {
+  myVar = 2;
+}
+
+myFunc();
+console.log(myVar); // 1
+```
+
+- At first glance, this example may look identical to Example 1. There's a key difference, however, which is the function parameter `myVar` on line 3. It's this small detail that leads to the difference in outcome when the code is run.
+
+  The concept at work here is variable scope. When the `myFunc` function is invoked on line 7, JavaScript declares a variable with the name of the parameter `myVar` within the scope of the function. This is a *different* variable to the one initialized on line 1, and initially has a value of `undefined`. The existence of the this variable within the scope of the function 'shadows', or blocks access to, the `myVar` variable in the global scope on line 1. Therefore, line 4 is an initialization of the function-scoped `myVar` rather than a re-assignment of the `myVar` declared and initialized on line 1. When that variable is then logged on line 8, it still has its initial value of `1`.
+
+
 
 
 
@@ -3647,12 +3668,46 @@ let result = bar('Victor', 'Antonina');
   **Pass by Reference vs Pass  by Value**
   
   1. *Pass By Value*
+  
      1. The concept of "pass-by-value" traditionally means that when you use a variable to pass an argument to a function, the function can't do anything that sets the original variable to a different value. No matter what happens in the function, the variable will still contain the same value that was passed to the function.
+  
+     2. ```javascript
+        let word = 'Hello';
+        
+        function myFunc(param) {
+          param = 'Goodbye';
+        }
+        
+        myFunc(word);
+        console.log(word); // 'Hello'
+        ```
+  
+     3. The main underlying concept is the the way in which variables, including function parameters, act as pointers. 
+  
   2. Pass By Reference
+
      1.  If JavaScript were purely pass-by-value, there wouldn't be any way for the function to change the original object. 
+  
         1. When an operation within the function mutates its argument, it affects the original object.
+  
      2. However, the matter is more complicated when using objects (arrays and plain objects for example). With objects, JavaScript exhibits a combination of behaviors from both pass-by-reference as well as pass-by-value. Some people call this *pass-by- value-of-the-reference* or *call-by-sharing*. Whatever you call it, the most important concept you should remember is:
+  
      3. Functions and methods that mutate their callers are called destructive functions or methods.
+  
+     4. ```javascript
+        function changeMyWords(words) {
+          console.log(words);
+          words[0] = 'Hi';
+        }
+        
+        let myWords = ['Hello', 'Goodbye'];
+        changeMyWords(myWords);
+        console.log(myWords);
+        ```
+  
+        1. This will log `['Hello', 'Goodbye']` and then `['Hi', 'Goodbye']` to the console.
+  
+           In this exercise, the `myWords` variable is initialized to an array containing two elements, the strings `'Hello'`and `'Goodbye'`. Because an array is a reference type rather than a primitive, when we pass `myWords` into the `changeMyWords` function invocation, this acts like *pass-by-reference*. The `myWords` variable and the `words`function parameter both point to the *same* array. When we initially log `words` on line 2 we see the same array elements from the array literal to which we initialized `myWords`. We then mutate the array on line 3 by assigning index `0` to the string `'Hi'`. When we subsequently log `myWords` on line 8, we see the mutated array.
   
   **Using for/in loop for array**
   
@@ -4136,8 +4191,11 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
 - Just a mental model
 
   - The behavior that we try to explain with hoisting is merely a consequence of JavaScript's two phases: the creation phase and execution phase.
+    - **hoisting** is the process of finding and associating variable declarations with their respective scope—prior to the execution of all other code. In addition to variable declarations, the JavaScript interpreter also hoists function declarations. However, in contrast to how only the name of a variable is hoisted, with function declarations everything is hoisted, including both the function name and body. This means that the program can execute a function even before declaring it.
+
   - The creation phase prepares your code for execution. Each time it encounters a variable, function, or class declaration, it adds that identifier to the current scope. Depending on the declaration and where the declaration occurs, the identifier gets added to either the global scope or the local scope (which may be either a function or a block). Thus, at the end of the creation phase, JavaScript knows all of the identifiers in your program and what scopes each one belongs to.
   - When the execution phase occurs, JavaScript no longer cares about declarations. It does care about initialization and function/class definitions, but not the declarations themselves. The identifiers are already known, and their scope is already known. JavaScript merely needs to look up the identifiers as needed.
+  - The JavaScript interpreter doesn't "immediately" execute all of a program's code line by line. Instead, it first goes over the code to find and associate variable declarations with their appropriate scope. Visually, this is as if JavaScript moves (or "hoists") each variable declaration to the top of its scope. The assignment operation, however, is not hoisted.
 
   ex/ 
 
@@ -4515,6 +4573,151 @@ hello();
 console.log(a); //logs hi
 ```
 
-**Weird behaviors of Variables**
 
-1) 
+
+
+
+**Closures**
+
+- Closures let a function access a variable that was in scope at the function's definition point even when that variable is no longer in scope. 
+
+-  Technically, they are a mix of lexical and runtime features, but it's easier to understand them as a purely lexical feature for now. They're an artifact of the code's structure, not how the code runs.
+
+  
+
+- What is a closure?
+
+  -  Closures use the scope in effect at a function's definition point to determine what variables that function can access. What variables are in scope during a function's execution depend on the closure formed by the function's definition.
+  - "the combination of a function and the lexical environment within which that function was [defined]."
+  - You can think of closure as a function combined with any variables from its lexical scope that the function needs. In other words, if a function uses a variable that is not declared or initialized in that function, then that variable will be part of the closure (provided it exists).
+
+- What is in a closure?
+
+  - The closure essentially *closes over* its environment -- what's in scope. In effect, the function definition and its scope become a single entity called a closure. 
+  - That is, the function can use variables from the lexical scope where the function was defined. **Even if those variables aren't in the lexical scope where you invoke the function, it can still access them.**
+  - Note that closures only close over the variables that the function needs. If the function uses the variable `foo`, but the outer scope contains both `foo` and `bar`, only `foo` will be included in the closure.
+
+- When is a closure created?
+
+  - Closures are created when you define a function or method.
+
+- What is the relationship between closures and scope?
+
+  - When we say that a variable is no longer in scope, we mean that it isn't in scope at the point in your program where you invoke the function. However, closure and scope are lexical concepts. Where you invoke a function is unimportant; where you define the function is. A closure includes the variables it needs from the scope where you defined the function. Those variables may not be in scope when you invoke the function, but they're still available to the function.
+
+- What do we mean when we say that closures are defined lexically?
+
+  -  "the combination of a function and the lexical environment within which that function was [defined]." You can think of closure as a function combined with any variables from its lexical scope that the function needs. 
+
+- What is partial function application?
+
+  - ```javascript
+    function add(first, second) {
+      return first + second;
+    }
+    
+    function makeAdder(firstNumber) {
+      return function(secondNumber) {
+        return add(firstNumber, secondNumber);
+      };
+    }
+    
+    let addFive = makeAdder(5);
+    let addTen = makeAdder(10);
+    
+    console.log(addFive(3));  // 8
+    console.log(addFive(55)); // 60
+    console.log(addTen(3));   // 13
+    console.log(addTen(55));  // 65
+    ```
+
+    - A function such as `makeAdder` is said to use **partial function application**. It applies some of the function's arguments (the `add` function's `first` argument here) when called, and supplies the remaining arguments when you call the returned function. Partial function application refers to the creation of a function that can call a second function with fewer arguments than the second function expects. The created function supplies the remaining arguments.
+    - Partial function application is most useful when you need to pass a function to another function that won't call the passed function with enough arguments. It lets you create a function that fills in the gaps by supplying the missing elements. For instance, suppose you have a function that downloads an arbitrary file from the Internet. The download may fail, so the function also expects a callback function that it can call when an error occurs:
+    - Partial function application requires a reduction in the **number of arguments** you have to provide when you call a function. If the number of arguments isn't reduced, it isn't partial function application. 
+
+
+
+
+
+**Closure envelope model**
+
+- When you define a function, JavaScript finds all of the variable names it needs from the lexical scope that contains the function definition. It then takes those names and places them inside a special "envelope" object that it attaches to the function object. Each name in the envelope is a pointer to the original variable, not the value it contains.
+
+- It's important to remember that closure definitions are purely lexical. Closures are based on your program's structure, not by what happens when you execute it. Even if you never call a particular function, that function forms a closure with its surrounding scope.
+
+- We usually think of variables as pointers to objects, not as something that we can point to. We can point to the object that a variable references, but we can't point to the variable. That's the way JavaScript is defined. However, internally, it can do anything it needs to do, including pointing to variables. In this case, it needs a pointer to the variable so that it can see any changes made to what the variable references or contains:
+
+- ```javascript
+  let numbers = [1, 2, 3];
+  
+  function printNumbers() {
+    console.log(numbers);
+  }
+  
+  printNumbers(); // => [ 1, 2, 3 ]
+  
+  numbers = [4, 5];
+  printNumbers(); // => [ 4, 5 ]
+  
+  //or
+  
+  let number = 42;
+  
+  function printNumber() {
+    console.log(number);
+  }
+  
+  printNumber(); // => 42
+  
+  number = 3.1415;
+  printNumber(); // => 3.1415
+  ```
+
+  - If the closure pointed to the value instead of the variable, it wouldn't be able to tell that we reassigned `numbers` on line 9. That is also true for primitive values: we need a pointer to the variable so the closure can see any changes.
+  - When a function encounters a variable name during execution, it first looks inside its local scope for that name. If it can't find the name, it peeks inside the envelope to see whether the variable is mentioned there. If it is, JavaScript can follow the pointer and get the current value of the variable. In fact, this is how scope works in JavaScript: it first checks for local variables by a given name, then it looks to the closure if it can't find it.
+
+  - **first-class value** or **first-class object** - Clearly, in JavaScript, primitive values, arrays, and objects all meet this criteria. What you might not realize is that functions also do.
+
+    - They can be assigned to a variable or an element of a data structure (such as an array or object).
+    - They can be passed as an argument to a function.
+    - They can be returned as the return value of a function.
+
+  -  Since functions can be treated as values, we can create functions that can take other functions as arguments and return other functions. That, in turn, allows for a more declarative and expressive style of programming.
+
+  - ```javascript
+    function foo() {
+      let name = "Pete";
+      return function() {
+        console.log(name);
+      };
+    }
+    
+    let printPete = foo();
+    printPete(); // Pete
+    ```
+
+    - In this example, we first call `foo` and capture its return value, a function that logs the value of the `name`variable defined in the lexical scope of `foo`. At a minimum, the closure formed by the returned function's definition contains a pointer to `name` in its envelope. That pointer means that `name`'s value won't get discarded (garbage collected -- we'll meet this concept later) when `foo` is done. Though `name` is out of scope when `foo` finishes, the returned function has an envelope that contains a pointer to `name`. Thus, the function can still follow the pointer to the original variable, and find its current value, and that lets `printPete()` print `Pete'.
+
+
+
+https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
+
+**Closures are good for:**
+
+- Currying (a special form of partial function application)
+- Emulating private methods
+- Creating functions that can only be executed once
+- Memoization (avoiding repetitive resource-intensive operations)
+- Iterators and generators
+- The module pattern (putting code and data into modules)
+- Asynchronous operations
+
+
+
+
+
+**How does Javascript look up a variable?**
+
+- When a variable is referenced, JavaScript will first look for a variable with the same name in the current scope, then keep moving up through subsequent outer scopes until the variable is found. If JavaScript reaches the outermost (global) scope without finding the variable, a `ReferenceError` will be raised in most situations, but this is not always the case, as you will see in the next exercise.
+- What if ther is no variable declaration?
+  - Notice that on line 2 there is no variable declaration for `myVar` (i.e., there is no `var` keyword before `myVar`). As a result of this, JavaScript looks in the outer scope for the declaration. Since it doesn't exist, JavaScript binds `myVar` to be a "property" of the *global* object. This is "almost" the same as if `myVar` was globally declared. We will discuss more about why this is "almost"—but not "exactly"—the same in a later course when we cover the global / `window` object.
