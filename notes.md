@@ -516,10 +516,10 @@ undefined           // undefined literal
   
   - JavaScript fails silently. The programmer must determine whether an error represents a problem.
   
-- When one of the operands is an object (including arrays and functions),  both operands are converted to strings and concatenated together:
+- When one of the operands is an object (including arrays and functions),  both operands are converted to strings and concatenated together: (non- mutating)
 
   - ```javascript
-    [1] + 2                     // "12"
+     [1] + 2                     // "12"
     [1] + '2'                   // "12"
     [1, 2] + 3                  // "1,23"
     [] + 5                      // "5"
@@ -546,8 +546,18 @@ undefined           // undefined literal
     NaN
     > 1+undefined
     NaN
+    >[1] * 2;              // 2 -- becomes '1' * 2, then 1 * 2
+    >[1, 2] * 2;           // NaN -- becomes '1,2' * 2, then NaN * 2
+    >[5] - 2;              // 3
+    >[5] - [2];            // 3
+    >5 - [2];              // 3
+    >5 - [2, 3];           // NaN -- becomes 5 - '2,3', then 5 - NaN
+    >[] + [];              // '' -- becomes '' + ''
+    >[] - [];              // 0 -- becomes '' - '', then 0 - 0
+    >+[];                  // 0
+    >-[];                  // -0
     ```
-
+    
     
 
 **`parseInt/ parseFloat`**
@@ -1870,6 +1880,14 @@ null == false          // false
 undefined == ''        // false
 undefined === null     // false -- strict comparison
 
+[] == '0';               // false -- becomes '' == '0'
+[] == 0;                 // true -- becomes '' == 0, then 0 == 0
+[] == false;             // true -- becomes '' == false, then 0 == 0
+[] == ![];               // true -- same as above
+[null] == '';            // true -- becomes '' == ''
+[undefined] == false;    // true -- becomes '' == false, then false == false
+[false] == false;        // false -- becomes 'false' == 0, then NaN == 0
+
 When one of the operands is NaN, the comparison always returns false:
 
 NaN == 0              // false
@@ -2323,9 +2341,14 @@ Notice how `while` and the condition are now at the end of the loop. Since the t
 - Same purpose at `while` loop with a condensed syntax that works well when iterating over arrays and other sequences 
 - A `for` loop combines variable initialization, a loop condition, and the variable increment/decrement expression all on the same line:
 - All 3 components of the `for` loop are optional
+- for ([initialExpression]; [condition]; [incrementExpression]) {  statement }
+  - A good way to write this:
+    - In our solution code, we initialize `i` to 10, and decrement `i` by 1 on each iteration, using the short-hand expression `i -= 1`. Once `i` is equal to 0, the condition provided to our `for` loop is false and the loop terminates. Finally, we log `'Launch!'`.
+
 
 ```javascript
 // put initialization outside of the loop
+
 
 let index = 0;
 for (; index < 10; index += 1) {
@@ -2546,7 +2569,23 @@ for (var index = 0; index < 5; ++index) {
 
 **Arrays**
 
-- An array is an ordered list of **elements**; each element has a value of any type. You can define an array by placing a list of values between brackets (`[]`):
+array methods - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+
+
+| Mutating method                                              | Non-mutating alternative                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [`copyWithin()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin) | No one-method alternative                                    |
+| [`fill()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) | No one-method alternative                                    |
+| [`pop()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop) | [`slice(0, -1)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) |
+| [`push(v1, v2)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push) | [`concat([v1, v2\])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) |
+| [`reverse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse) | [`toReversed()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toReversed) |
+| [`shift()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift) | [`slice(1)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) |
+| [`sort()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) | [`toSorted()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted) |
+| [`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice) | [`toSpliced()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSpliced) |
+| [`unshift(v1, v2)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift) | [`toSpliced(0, 0, v1, v2)`]                                  |
+
+- An array is an ordered list of **elements**; each element has a value of any type. You can define an array by placing a list of values between brackets (`[]`): 	 - bracket is an operator not a method 
 
 - Arrays can be **heterogeneous** with different data types and each element has a unique index (indexed lists)
 
@@ -2658,6 +2697,18 @@ for (var index = 0; index < 5; ++index) {
 
     - mutates and takes two arguments (index and number of elements to delete)
 
+    - Splice also lets you add elements and still returns the spliced out elements only 
+
+      - ```javascript
+        months.splice(4, 1, 'May');
+        // Replaces 1 element at index 4, you can put 0 here if you dont want to replace any and you can even add a bunch of elements
+        console.log(months);
+        // Expected output: Array ["Jan", "Feb", "March", "April", "May"]
+        
+        ```
+
+      - 
+
     - returns a new array with deleted elements
 
     - ```javascript
@@ -2675,6 +2726,31 @@ for (var index = 0; index < 5; ++index) {
     ​	- `forEach` works well when you want to use the values of an array's elements...returns `undefined`
 
   - To use `forEach`, you need a **callback** function that you pass to `forEach` as an argument. A callback function is a function that you pass to  another function as an argument. The called function invokes the  callback function when it runs. The `forEach` method invokes its callback once for each element, passing it the element's value as an argument. `forEach` always returns undefined.
+
+
+  *for...of*
+
+  ```javascript
+  let a = [1,2,3]
+  for (let i of a) {
+    console.log(i)
+  } //1,2,3
+  
+  
+  for (let i in a) {
+    console.log(i)
+  } //0,1,2
+  ```
+
+  
+
+  
+
+  - ```
+    (element, index, array) you can access the array and the element
+    ```
+
+    
 
     - A callback is a function that you pass to another function as an  argument. The called function subsequently invokes the callback function at certain times while it runs.
 
@@ -2815,7 +2891,7 @@ for (var index = 0; index < 5; ++index) {
 
 
 
-These "elements" aren't true elements; they are properties on the array object, which we'll discuss later. Only index values (0, 1, 2, 3, and so on) count toward the length of the array.
+These "elements" aren't true elements; they are properties on the array object, which we'll discuss later. Only index values (0, 1, 2, 3, and so on) count toward the length of the array. There is a slight nuance here: the added element becomes part of the "array object," but it isn't properly one of the array elements. The digits.length property, for instance, remains unchanged.
 
 > arr[-3] = 4
 = 4
@@ -2913,6 +2989,69 @@ These "elements" aren't true elements; they are properties on the array object, 
 
   - JavaScript treats two arrays as equal only when they are the same array: they must occupy the same spot in memory. This rule holds for  JavaScript objects in general; objects must be the same object. For this reason, the second example returns `true` while the first one returns `false`. Assigning `a` to `b` makes `b` refer to the same array as `a`; it doesn't create a new array.
 
+*some*
+
+- tests whether at least one element in the array passes the test implemented by the provided function\. Returns true if in the array it finds an element for which the provided function returns are true
+
+- ```javascript
+  const ARRAY = [1,2,3,4,5];
+  
+  const EVEN = (element) => element % 2 === 0;
+  
+  console.log(array.some(EVEN)); //true
+  ```
+
+*sort*
+
+- Mutating (default ascending)
+
+- ```javascript
+  const months = ['March', 'Jan', 'Feb', 'Dec'];
+  months.sort();
+  console.log(months);
+  // Expected output: Array ["Dec", "Feb", "Jan", "March"]
+  
+  const array1 = [1, 30, 4, 21, 100000];
+  array1.sort();
+  console.log(array1);
+  // Expected output: Array [1, 100000, 21, 30, 4]
+  ```
+
+- How to sort numbers correctly
+
+  ```javascript
+  > a.sort((a,b)=>a-b)
+  ```
+
+
+*rest parameter syntax*
+
+```javascript
+function concat(...args) {
+  
+  ...args becomes an array you can iterate through
+  for (let arg of args) {
+    
+  }
+  
+  function product(...numbers) {
+  return numbers.reduce((total, number) => total * number);
+}
+
+let result = product(2, 3, 4, 5);
+  
+  //turns into 
+  
+function product() {
+  let args = Array.from(arguments);
+  return args.reduce((total, number) => total * number);
+}
+
+let result = product(2, 3, 4, 5);
+```
+
+
+
 *includes*
 
 - The `includes` method determines whether an array includes a given element:
@@ -2931,9 +3070,12 @@ These "elements" aren't true elements; they are properties on the array object, 
 - The `indexOf` method searches an array for an element with a  given value and returns the index of the found element. If the element  is not found, `indexOf` returns `-1`.
 
 ```javascript
-> let a = ['a', 'b', 'c', 'd', 'e']
+> let a = ['a', 'b', 'c', 'd', 'e','a']
 > a.indexOf('c')
 = 2
+
+>a.indexOf('a',2)
+=5
 
 > a.indexOf('x')
 = -1
@@ -2950,6 +3092,9 @@ These "elements" aren't true elements; they are properties on the array object, 
   
   > a.indexOf('b', 2)
   = 3
+  
+  >a.lastIndexOf('b')
+  =3
   ```
 
 
@@ -3003,6 +3148,10 @@ These "elements" aren't true elements; they are properties on the array object, 
     ```
 
 **Objects**
+
+With objects, most interactions involve "keyed" access; that is, we use a key value to add, retrieve, modify, or delete a specific data item. Since each key is associated with a specific datum, we sometimes use the term "associative array" to refer to objects.
+
+Use an `Object` if you need to access values based on the names of those values.
 
 - **objects** that have **behavior** (they perform actions) and **state** (they have characteristics that distinguish between different objects). 
 
@@ -3088,11 +3237,12 @@ These "elements" aren't true elements; they are properties on the array object, 
   - *delete* keyword 
 
     -  removes the key-value pair from the object and returns `true` unless it cannot delete the property (for instance, if the property is non-configurable).
-
+    -  If you use delete in an array it leaves a hole, use splice
+  
   - Key-value pairs are also called object **properties** in  JavaScript. We can also use "property" to refer to the key name; the  meaning is typically clear from context. For instance, we can talk about the `name` property for the `person` object without mentioning the value.
-
-  - If a variable declared with `const` is initialized with an  object, you can't change what object that variable refers to. You can,  however, modify that object's properties and property values:
-
+  
+  - If a variable declared with `const` is initialiAlso, you have now learned enough to be able to complete the following sets of exercises: the last four exercises from [JavaScript Basics](https://launchschool.com/exercise_sets/c39a2eed) and all of [Medium 1](https://launchschool.com/exercise_sets/41f68c21) and [Medium 2](https://launchschool.com/exercise_sets/646ece8b) from JavaScript Language Fundamentals, and [Easy 3](https://launchschool.com/exercise_sets/829c41b0), [Easy 4](https://launchschool.com/exercise_sets/b1647500), and [Easy 5](https://launchschool.com/exercise_sets/605aaeb8) from JS210 - Small Problems.zed with an  object, you can't change what object that variable refers to. You can,  however, modify that object's properties and property values:
+  
   - ```javascript
     > const MyObj = { foo: "bar", qux: "xyz" }
     > MyObj.qux = "hey there"
@@ -3102,28 +3252,28 @@ These "elements" aren't true elements; they are properties on the array object, 
     
     > MyObj = {} // Uncaught TypeError: Assignment to constant variable.
     ```
-
+  
   - You can use `Object.freeze` with objects to freeze the property values of an object, just like you can with arrays:
-
+  
   - ```javascript
     > const MyObj = Object.freeze({ foo: "bar", qux: "xyz" })
     > MyObj.qux = "hey there"
     > MyObj
     = { foo: 'bar', qux: 'xyz' }
     ```
-
+  
   - Objects include, but aren't limited to, the following types:
-
+  
     -   Simple Objects
-
+  
     -   Arrays
-
+  
     -   Dates
-
+  
     -   Functions
-
+  
       - This means that functions can be assigned to variables, passed to other functions as arguments, and returned by other functions. 
-
+  
       - ```javascript
         function hello() {
           console.log("Hello there!");
@@ -3133,13 +3283,13 @@ These "elements" aren't true elements; they are properties on the array object, 
         
         let greet = hello;  // `greet` now points to the `hello` function
         greet();            // Prints "Hello there!"
-
+  
   - Objects are complex values composed of primitive values or other objects. For example, an array object (remember: arrays **are** objects) has a `length` property that contains a number: a primitive value. Objects are usually (but not always) mutable: you can add, remove, and change their various component values.
-
+  
   - We can pass functions around as arguments...
-
+  
     - Look at the `forEach` method..
-
+  
     - ```javascript
       Array.prototype.forEach = function(callback) {
         for (let index = 0; index < this.length; index += 1) {
@@ -3150,11 +3300,11 @@ These "elements" aren't true elements; they are properties on the array object, 
       let array = [1, 2, 3];
       array.forEach(function callback(value) { console.log(value) })
       ```
-
+  
     - Takes a callback function as an argument and then calls that function once for each element 
-
+  
   - We can also define functions to return other functions
-
+  
     - ```javascript
       function greeter(greeting) {
         return function(name) {
@@ -3170,7 +3320,7 @@ These "elements" aren't true elements; they are properties on the array object, 
       console.log(hi('Spencer'));    // prints "Hi Spencer"
       console.log(hi('Grace'));      // prints "Hi Grace"
       ```
-
+  
     - 
 
 **Primitive Values**
@@ -3350,15 +3500,17 @@ So this is what's happening. in Ruby Hash.new accepts a value that will be retur
         = undefined
         
         > Object.assign(objA, objB)
-        = { a: 'foo', b: 'bar' }
+        = { a: 'foo', b: 'bar' 
+           
+           //to not mutate you can use {...objA, ...objB}
         ```
-
+        
       - merge two or more objects into a single object. 
 
       - First object argument is mutated. so objA is now `{ a: 'foo', b: 'bar' }`
 
       - If this is an issue than assign an empty hash as the first argument as it can take multiple arguments
-
+      
       - ```javascript
         > objA = { a: 'foo' }
         = undefined
@@ -4044,18 +4196,21 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
   1. Arithmatic Operators:
 
      1. Take two numeric values as input and return a single numeric value 
-     2. `+,-,/,*,%`
-
+  
+     2. ```
+        +`, `-`, `*`, `/`, `%`, `+=`, `-=`, `==`, `!=`, `===`, `!==`, `>`, `>=`, `<`, `<=
+        ```
+  
   2. Comparison Operators 
-
+  
      1. Compares its operands and returns a boolean value (true or false)
-
+  
      2. When the operands are of different types, JavaScript tries to implicitly convert them to suitable types (implicit conversion) 
-
+  
         1. only with `==` and `!=`
-
+  
         2. Best to use the stricter `===` `!==` so no conversions are performed 
-
+  
         3. | Operator               | Description                                                  |
            | ---------------------- | ------------------------------------------------------------ |
            | Equal (==)             | Returns true if the operands are equal                       |
@@ -4064,15 +4219,15 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
            | Strict Not Equal (!==) | Returns true if the operands are not equal and/or not of the same type |
            | Greater than (>)       | Returns true if the left operand is greater than the right   |
            | Less than (<)          | Returns true if the left operand is less than the right      |
-
+  
   3. Assignment Operators
-
+  
      1. `=`
-
+  
      2. assigns the value of the right operand to the left operand
-
+  
      3. *Compound Assignment Operators*
-
+  
         1. | Name                      | Shorthand Operator | Meaning   |
            | ------------------------- | ------------------ | --------- |
            | Addition Assignment       | a += b             | a = a + b |
@@ -4080,11 +4235,11 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
            | Multiplication Assignment | a *= b             | a = a * b |
            | Division Assignment       | a /= b             | a = a / b |
            | Remainder Assignment      | a %= b             | a = a % b |
-
+  
   4. String Operators 
-
+  
      1. You can compare strings just as numbers using lexicographical ordering 
-
+  
      2. ```javascript
         'a' < 'b';         // true
         'Ant' > 'Falcon';  // false
@@ -4096,13 +4251,13 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
         
         a;       // "Hello, world!"
         ```
-
+  
   5. Logical Operators 
-
+  
      1. You can combine boolean/non boolean values with logical operators
-
+  
         1. `&&, ||, !`
-
+  
            1. ```javascript
               true || true;    // true
               true || false;   // true
@@ -4118,7 +4273,7 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
               !1;      // false
               ![];     // false
               ```
-
+  
               
 
 **Alert method**
@@ -4720,4 +4875,1473 @@ https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
 
 - When a variable is referenced, JavaScript will first look for a variable with the same name in the current scope, then keep moving up through subsequent outer scopes until the variable is found. If JavaScript reaches the outermost (global) scope without finding the variable, a `ReferenceError` will be raised in most situations, but this is not always the case, as you will see in the next exercise.
 - What if ther is no variable declaration?
-  - Notice that on line 2 there is no variable declaration for `myVar` (i.e., there is no `var` keyword before `myVar`). As a result of this, JavaScript looks in the outer scope for the declaration. Since it doesn't exist, JavaScript binds `myVar` to be a "property" of the *global* object. This is "almost" the same as if `myVar` was globally declared. We will discuss more about why this is "almost"—but not "exactly"—the same in a later course when we cover the global / `window` object.
+  - Notice that on line 2 there is no variable declaration for `myVar` (i.e., there is no `var` keyword before `myVar`). As a result of this, JavaScript looks in the outer scope for the declaration. Since it doesn't exist, JavaScript binds `myVar` to be a "property" of the *global* object. This is "almost" the same as if `myVar` was globally declared. We will discuss more about why this is "almost"—but not "exactly"—the same in a later course when we cover the global / `window` object.zxf
+
+**Objects vs Primitive**
+
+- Primitive values are *immutable*: you cannot modify them. Operations on these values return a new value of the same type.
+- Objects are *mutable*: you can modify them without changing their identity. Objects contain data inside themselves; it's this inner data that you can change.
+
+- Some of the built in objects share their names with some of the primitive data types (String and Number)- they are not the same
+
+- They are primitive values so we cant theoretically call methods on them, so js temporarily coerces them into their object counterpart (object data type)
+
+- undefined has no built in object counterpart and null
+
+  - Null and undefined are not objects 
+
+- With this, we have the benefit of not having to explicitly create the  object form of strings, numbers, and booleans to use methods on them.
+
+- ```javascript
+  let a = 'hi';                        // Create a primitive string with value "hi"
+  typeof a;                            // "string"; This is a primitive string value
+  
+  let stringObject = new String('hi'); // Create a string object
+  typeof stringObject;                 // "object"; This is a String object
+  
+  a.toUpperCase();                     // "HI"
+  stringObject.toUpperCase();          // "HI"
+  
+  typeof a;                            // "string"; The coercion is only temporary
+  typeof stringObject;                 // "object"
+  ```
+
+
+
+**Object Properties**
+
+- Objects are containers for two things: data and behavior 
+
+  - named items with values represent attributes of the object (associations between a name (or key) and a value)
+
+    - These are properties 
+
+    - Get values of an object property with `.propertyName`
+
+      - ```javascript
+        let animal = 'turtle';
+        animal.length;          // 6
+        
+        let colors = {
+          red: '#f00',
+          orange: '#ff0',
+        };
+        
+        colors.red;             // "#f00"
+        
+        'blue'.length;          // 4 - works with primitives too
+        ```
+
+      - You can set a new value for a property with assignment:
+
+      - Methods are the behaviors
+
+      - To call a method on an object you access it like a property bc it is! and then append () and even pass arguments 
+
+        - methods are functions with some special behavior
+
+        How to define methods in an object- dont use arrow functions 
+
+        ```javascript
+        let myObj = {
+          foo(who) {
+            console.log(`hello ${who}`);
+          },
+        
+          bar(x, y) {
+            return x + y;
+          },
+        };
+        ```
+
+  - Property Names and Values 
+
+    - A property name for an object can be any valid string, and a property value can be any valid expression:
+
+    - ```javascript
+      let object = {
+        a: 1,                           // a is a string with quotes omitted
+        'foo': 2 + 1,                   // property name with quotes
+        'two words': 'this works too',  // a two word string
+        true: true,                     // property name is implicitly converted to string "true"
+        b: {                            // object as property value
+          name: 'Jane',
+          gender: 'female',
+        },
+        c: function () {                // function expression as property value
+          return 2;
+        },
+        d() {                           // compact method syntax
+          return 4;
+        }
+      };
+      ```
+
+    - Access property values by dot notation or bracket notation
+    
+    - ```javascript
+      let object = {
+        a: 'hello',
+        b: 'world',
+      };
+      
+      object.a;                 // "hello", dot notation
+      object['b'];              // "world", bracket notation
+      object.c;                 // undefined when property is not defined
+      
+      let foo = {
+        a: 1,
+        good: true,
+        'a name': 'hello',
+        person: {
+          name: 'Jane',
+          gender: 'female',
+        },
+        c: function () {        // function expression as property value
+          return 2;
+        },
+        d() {                   // compact method syntax
+          return 4;
+        }
+      };
+      
+      foo['a name'];            // "hello", use bracket notation when property name is an invalid identifier
+      foo['goo' + 'd'];         // true, bracket notation can take expressions
+      let a = 'a';
+      foo[a];                   // 1, bracket notation works with variables since they are expressions
+      foo.person.name;          // "Jane", dot notation can be chained to "dig into" nested objects
+      foo.c();                  // 2, Call the method 'c'
+      foo.d();                  // 4, Call the method 'd'
+      ```
+    
+    - Adding and updating properties 
+    
+    - ```javascript
+      let object = {};              // empty object
+      
+      object.a = 'foo';
+      object.a;                     // "foo"
+      
+      object['a name'] = 'hello';
+      object['a name'];             // "hello"
+      
+      object;                       // { a: "foo", "a name": "hello" }
+      ```
+    
+    - deleting properties (use `delete` keyword)
+    
+      - ```javascript
+        let foo = {
+          a: 'hello',
+          b: 'world',
+        };
+        
+        delete foo.a;
+        foo;                      // { b: "world" }
+        
+        We can also use delete for arrays (use bracket notation)
+        a = [1,2,3,4,5]
+        delete a[1]
+        ```
+
+**Arrays Length Property**
+
+- JS's built in Array methods (join, forEach, push, splice, etc) take the value of the length property into consideration while performing their operations 
+
+- Referring to the [ECMAScript documentation](http://www.ecma-international.org/ecma-262/5.1/#sec-15.4), here are some key points about `Array.length`:
+
+  - Its value is always a non-negative integer less than 232 (roughly 4.2 billion).
+  - The value of the `length` property is numerically one greater than the largest **array index** in the Array. If you take all of the property names from the Array that represent non-negative integer values, then the property name with the largest numeric value is the largest array index.
+  - You can set the value of the `length` property explicitly.
+
+-  ```javascript
+   let myArray = [];
+   myArray["foo"] = "bar";
+   myArray[0] = "baz";
+   myArray[1] = "qux";
+   
+   console.log(myArray); // logs ['baz', 'qux', foo: 'bar']
+   myArray.length; // returns 2 since foo: 'bar' is not an element
+   myArray.indexOf("bar"); // returns -1 since 'bar' isn't in an element
+   
+   myArray[-1] = "hello";
+   myArray[-2] = "world";
+   myArray.length; // returns 2
+   myArray.indexOf("hello"); // returns -1 since 'hello' is not in an element
+   // the fact that myArray[-1] is 'hello' is
+   // coincidental
+   myArray.indexOf("world"); // returns -1 since 'world' is not in an element
+   
+   console.log(myArray); // logs ['baz', 'qux', foo: 'bar', '-1': 'hello', '-2': 'world']
+   Object.keys(myArray).length; // returns 5 (there are 5 keys at this point)
+   myArray.length; // returns 2 (but only 2 keys are indexes)
+   ```
+
+- A property name is an array index when it is a non-negative integer. Values that have been assigned to index properties are called **elements** of the array. All other property names and their associated values are *not* considered to be elements of the array.
+
+- `Array.prototype.indexOf` returns `-1` if the value it is passed is not an element of the array, even if the value is associated with a non-index property.
+
+- The value of `length` is entirely dependent on the largest array index. In the code, the largest valid index is `1` (see line 4). Therefore, `length` returns `2` (`1 + 1`).
+
+- Logging an array logs all the indexed values and every `key: value` pair that the object contains. It logs only the value (e.g., `'baz'`, `'qux'`) if it's an element. Otherwise, it logs the `key: value` pair (e.g., `foo: 'bar'`) if it isn't an element (see line 18).
+
+- To count all of the properties in an Array object, use `Object.keys(array).length` (see line 19). Don't use `array.length`.
+
+- Empty lines of Arrays:
+
+  - You wont iterate over them in iterative methods but you will in for..of
+  - empty slots do not count as elements bc they have never been assigned to a value, they're only there to indicate a gap in the actual elements
+    - Object.keys(a) and Object.values(a) do not return empty slots
+
+- - `in` operator 
+
+    - ```javascript
+      0 in [];      // false
+      0 in [1];     // true
+      
+      //or be more clear This will work for non index keys 
+       a[-3]='hi'
+      'hi'
+      > a
+      [ 1, 2, <1 empty item>, 5, '-3': 'hi' ]
+      > -3 in a
+      true
+      > 
+      
+      
+      let numbers = [4, 8, 1, 3];
+      2 < numbers.length;          // true
+      ```
+
+      
+
+- Using arithmatic and Comparison operators with objects
+
+- ```javascript
+  Review 
+  String([]) // ''
+  String({}) // '[object Object]'
+  
+  
+  [] + {};                  // "[object Object]" -- becomes "" + "[object Object]"
+  [] - {};                  // NaN -- becomes "" - "[object Object]", then 0 - NaN
+  '[object Object]' == {};  // true
+  '' == {};                 // false
+  false == {};              // false
+  0 == {};                  // false
+  ```
+
+- When you use `{}` at the beginning of the code it can think its a function and do weird things 
+
+  ```javascript
+  {} + [];                  // 0 -- becomes +[]
+  {}[0];                    // [0] -- the object is ignored, so the array [0] is returned
+  { foo: 'bar' }['foo'];    // ["foo"]
+  {} == '[object Object]';  // SyntaxError: Unexpected token ==
+  ```
+
+  - equal with the `==` and `===` only if they are the same object
+
+  - ```javascript
+    let a = {};
+    let b = a;
+    a == a;                   // true
+    a == b;                   // true
+    a === b;                  // true
+    a == {};                  // false
+    a === {};                 // false
+    ```
+
+  - So let's review
+
+    - ```javascript
+      > a.length=5
+      5
+      > a
+      [ <5 empty items> ]
+      > Object.keys(a)
+      []
+      > a=[]
+      []
+      > a[-5]=4
+      4
+      > a['hi']='there'
+      'there'
+      > a
+      [ '-5': 4, hi: 'there' ]
+      > a.length
+      0
+      > Object.keys(a)
+      [ '-5', 'hi' ]
+      > 
+      
+      ```
+
+  - **Shallow copy of an array**
+
+  - The critical thing to be aware of is what level you're working at, especially when working with nested collections and using variables as pointers. Are you working at the level of an outer array or object or at the level of an object within that?
+
+    - ```javascript
+      let a = [1,2,3,4,5]
+      let b = a.slice() 
+      
+      //or
+      
+      let c = [...a]
+      ```
+
+    - But it shares copies of nested arrays (they are not copied if they are objects within the object)
+
+    - ```javascript
+      let arr = [['a'], ['b'], ['c']];
+      let copyOfArr = arr.slice();
+      
+      copyOfArr[1].push('d');
+      
+      arr; // => [ [ 'a' ], [ 'b', 'd' ], [ 'c' ] ]
+      copyOfArr; // => [ [ 'a' ], [ 'b', 'd' ], [ 'c' ] ]
+      
+      let arr = [{ a: 'foo' }, { b: 'bar' }, { c: 'baz' }];
+      let copyOfArr = [...arr];
+      
+      copyOfArr[1].d = 'qux';
+      
+      arr; // => [ { a: 'foo' }, { b: 'bar', d: 'qux' }, { c: 'baz' } ]
+      copyOfArr; // => [ { a: 'foo' }, { b: 'bar', d: 'qux' }, { c: 'baz' } ]
+      ```
+
+    - **Assign**(also shallow)
+
+      - As you can see, `Object.assign` copies over the properties from `obj2` into `obj1` and returns `obj1`. You might be able to see that we can use `Object.assign` to create a copy of an object by providing an empty object as the first argument:
+
+    - ```javascript
+      let obj1 = { a: 'foo' };
+      let obj2 = { b: 'bar' };
+      
+      Object.assign(obj1, obj2); // => { a: 'foo', b: 'bar' }
+      obj1; // => { a: 'foo', b: 'bar' }
+      
+      let obj = { a: 'foo', b: 'bar' };
+      let copyOfObj = Object.assign({}, obj);
+      
+      copyOfObj; // => { a: 'foo', b: 'bar' }
+      ```
+
+- **Deep copy of an array**
+
+​	-JavaScript doesn't have an explicit method or function for deep copying objects, but there is an indirect way to do it. However, it only works with nested arrays and plain objects. Objects that have methods and complex objects like dates or custom objects cannot be deep-cloned with this technique. Most use cases of deep copying objects involve only plain objects and arrays, so this technique is useful to learn:
+
+```javascript
+let arr = [{ b: 'foo' }, ['bar']];
+let serializedArr = JSON.stringify(arr);
+let deepCopiedArr = JSON.parse(serializedArr);
+```
+
+- The `JSON.stringify` method **serializes** any object, including arrays, that only have primitives, arrays, and plain objects as elements. Serializing involves converting an object to a string form that can be subsequently converted back into an identical object. The `JSON.parse` method performs that conversion from a string back to an object.
+
+**Side Effects**
+
+A function call that performs any of the following actions is said to have side effects:
+
+1. It reassigns any non-local variable.
+2. It mutates the value of any object referenced by a non-local variable.
+3. It reads from or writes to any data entity (files, network connections, etc.) that is non-local to your program.
+4. It raises an exception.
+5. It calls another function that has side effects.
+   - If the function can have side effects when used as intended, then we say the function itself has side effects. In practice, functions that have side effects have them regardless of what arguments are passed in.
+     - If a required argument is omitted, the function isn't being used as intended.
+     - If you pass an array to a function that expects a number, the function isn't being used as intended.
+     - If you call a function before you've done any required preparations (such as opening a connection to a remote server), the function isn't being used as intended.
+
+
+
+1. *Side effects from Reassignement*
+
+   1. If the function reassigns any variable that is not declared inside the function, the function has a side effect. 
+
+   2. ```javascript
+      let number = 42;
+      function incrementNumber() {
+        number += 1; // side effect: number is defined in outer scope
+      }
+      ```
+
+2. *Side effects through Mutation*
+
+   1. Mutation side effects are similar to reassignment side effects in that they require a variable that is declared outside the function. It's almost as easy to spot as reassignment, but not always. Suppose such a variable exists and references an object or an array. If the function mutates that object or array, then the function has a side effect.
+
+   2. ```javascript
+      let letters = ['a', 'b', 'c'];
+      function removeLast() {
+        letters.pop(); // side effect: alters the array referenced by letters
+      }
+      ```
+
+   3. Or passed in as an argument
+
+      1. ```javascript
+         let letters = ['a', 'b', 'c'];
+         function removeLast(array) {
+           array.pop(); // side effect: alters the array referenced by letters
+         }
+         
+         removeLast(letters);
+         ```
+
+   4. *Side effects through Input/Output*
+
+      1. Reading from a file on the system's disk
+      2. Writing to a file on the system's disk
+      3. Reading input from the keyboard
+      4. Writing to the console
+      5. Accessing a database
+      6. Updating the display on a web page
+      7. Reading data from a form on a web page
+      8. Sending data to a remote web site
+      9. Receiving data from a remote web site
+      10. Accessing system hardware such as:
+          - The mouse, trackpad, or other pointing devices
+          - The clock
+          - The random number generator
+          - The audio speakers
+          - The camera
+
+      ```javascript
+      // This code may not work in a browser; use Node instead.
+      let readLine = require("readline-sync");
+      
+      function getName() {
+        let name = readLine.question("Enter your name: "); // side effect: output and input
+        console.log(`Hello, ${name}!`); // side effect: output to console
+      }
+      
+      
+      let date = new Date(); // side effect: accesses the system clock
+      let rand = Math.random(); // side effect: accessed random number generator
+      ```
+
+   5. *Side Effects Through Other Functions* (each of these functions propagates their side effects to the function that called it.)
+
+      - One thing to note is that this type of side effect is only important when the invoked function has side effects that aren't local to the calling function
+
+      -  If the side effects can only be seen inside the calling function, then that side effect has no effect on whether the calling function has side effects. Consider this code:
+
+      - ```javascript
+        function insertNumberInOrder(arrayOfNumbers) {
+          arrayOfNumbers = arrayOfNumbers.slice(); // creates a copy of an array
+          arrayOfNumbers.push(arrayOfNumbers); // not a side effect since copy of array
+          arrayOfNumbers.sort((a, b) => a - b); // sort has side effects within function
+          return arrayOfNumbers; // function has no side effect
+        }
+        ```
+
+        
+
+      1. Suppose a function invokes another function, and that invoked function has a side effect that is visible outside of the calling function. In that case, the calling function also has a side effect.
+      2. `console.log` has a side effect.
+      3. `readline.question` has multiple side effects.
+      4. `new Date()` has a side effect (it accesses the system clock).
+      5. `Math.random()` has a side effect (it accesses the random number generator).
+
+   - **MIXING SIDE EFFECTS AND RETURN VALUES**
+     - most functions should return a useful value or they should have a side effect, but not both
+     - By *useful value*, we mean that the function returns a value that has meaning to the calling code. For instance, a `sum` function should probably return a number that contains the result of adding some numbers together. A function that returns an arbitrary value or that always returns the same value is not returning a useful value.
+
+- **Pure Functions**
+  - Have no side effects.- easy to test/isolate
+  - As with side effects, it's common to speak of functions as being pure or impure. However, it's more correct to talk about whether a specific function **call** is pure or impure
+  - Given the same set of arguments, the function always returns the same value during the function's lifetime. This rule implies that the return value of a pure function depends solely on its arguments.
+  - If we execute `square(42)` one billion times, it will return the same value each time: `1764`. It returns a consistent result no matter what value we pass to it:
+  - The consistent return value is possibly the most important feature of pure functions. The fact that the return value is dependent solely on the arguments implies that **nothing else in the program can influence the function during the function's lifetime**. A function's **lifetime** begins when the function is created. It ends when the function is destroyed.
+    - Nested functions, for instance, have a lifetime that spans a single execution of the outer function. Furthermore, nested functions are created every time the outer function is invoked. Each instantiation of the nested function is separate. Even if the function looks identical, it can produce different results for each instantiation -- that does not change its status as a pure function.
+
+```javascript
+const square = value => value * value;
+```
+
+
+
+
+
+**Math Object**
+
+- deals with radians, not degrees/ Math.PI to convert from radians to degrees (1 radian = 180/PI)
+
+  - ```javascript
+    let radiansToDegrees = radians => radians / (Math.PI / 180);
+    let radiansToDegrees = radians => (radians * 180) / Math.PI;
+    ```
+
+- `Math.abs(num)` converts any number to positive
+
+- `Math.sqrt(4)` for square root 
+
+- `Math.pow(4,2)` for power 4^2
+
+- `Math.rount(3.49)` => 3 , `Math.floor(3.9)`=> 3, `Math.ceil(3.1)`=> 4
+
+- Find random number between two numbers 
+
+  - ```javascript
+    const randomInt = function(min, max) {
+      if (min === max) {
+        return min;
+      } else if (min > max) {
+        let swap = min;
+        min = max;
+        max = swap;
+      }
+    
+      let difference = max - min + 1;
+      return Math.floor(Math.random() * difference) + min;
+    };
+    
+    console.log(randomInt(1, 5));
+    ```
+
+**Date**
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+
+- `let today = new Date()`- gives today's date
+
+- `today.getDay()` returns the day of the week numerically (sun is 0)
+
+- ```javascript
+  let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  let today = new Date() 
+  let day = today.getDay() //sun is 0
+  let dayOfMonth = today.getDate()
+  let dayString = daysOfWeek[day]
+  let month = today.getMonth() //jan is 0 
+  let year = today.getFullYear()
+  let time = today.getTime()
+  
+  console.log(`Today is ${dayString}`)
+  ```
+
+- ```javascript
+  function formattedDate(date) {
+    let day = formattedDay(date);
+    let month = formattedMonth(date);
+  
+    console.log("Today's date is " + day + ', ' + month + ' ' + dateSuffix(date.getDate()));
+  }
+  
+  function formattedMonth(date) {
+    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+    return months[date.getMonth()];
+  }
+  
+  function formattedDay(date) {
+    let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+    return daysOfWeek[date.getDay()];
+  }
+  
+  formattedDate(today);
+  
+  let tomorrow = new Date(today.getTime());
+  
+  tomorrow.setDate(today.getDate() + 1);
+  formattedDate(tomorrow);
+  
+  let current = new Date();
+  
+  function timeOfDay(deltaMinutes) {
+    current.setHours(0,deltaMinutes,0,0); 
+    let minutes = String(current.getMinutes()).padStart(2,0);
+    let hours = String(current.getHours()).padStart(2,0);
+    
+    console.log(`${hours}: ${minutes}`);
+  }
+  ```
+
+- JavaScript has four (4) ways to [create a date](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax) object:
+
+  1. `new Date();`
+  2. `new Date(value);`
+  3. `new Date(dateString);`
+  4. `new Date(year, month[, date[, hours[, minutes[, seconds[, milliseconds]]]]]);`
+
+  Passing in the date object directly also works (e.g., `new Date(today)`). However, this employs implicit coercion which we don't recommend. Using the `Date.prototype.getTime` method makes it clear what is going on.
+
+- - They are not the same object 
+
+  - ```javascript
+    > today = new Date()
+    2023-10-13T18:04:22.105Z
+    > tomorrow = new Date(today)
+    2023-10-13T18:04:22.105Z
+    > console.log(today === nextWeek);
+    false
+    undefined
+    > 
+    
+    //use .setDate to set the date   
+    console.log(today.toDateString() === nextWeek.toDateString());
+    
+    nextWeek.setDate(today.getDate() + 7);
+    
+    console.log(today.toDateString() === nextWeek.toDateString());
+    ```
+
+  - ```javascript
+    let today = new Date(2013, 2, 1, 1, 10)
+    
+    function formatTime(today) {
+      let minutes = padding(String(today.getMinutes()))
+      let hours = padding(String(today.getHours()))
+    
+      console.log(`${hours} : ${minutes}`)
+    }
+    
+    function padding(chars) {
+      chars = chars.length == 1 ? chars = chars.padStart(2,0) : chars
+      return chars
+    }
+    
+    formatTime(today)
+    ```
+
+
+
+**Arguments**
+
+- The `arguments` object is an *Array-like* (more on this in a bit) local variable that is available inside all Functions. It contains all the arguments passed to the Function, no matter how many arguments you provided, and no matter how many arguments the Function's definition includes:
+
+- ```javascript
+  function logArgs(a) {
+    console.log(arguments[0]);
+    console.log(arguments[1]);
+    console.log(arguments.length); //arguments also have a length property
+  }
+  
+  logArgs(1, 'a');
+  
+  // logs:
+  1
+  a
+  2
+  
+  > function trial() {
+  ... console.log(arguments)
+  ... }
+  
+  > trial()
+  [Arguments] {}
+  undefined
+  ```
+
+- ```javascript
+  function logArgs() {
+    console.log(typeof arguments);
+    console.log(Array.isArray(arguments));
+    arguments.pop();
+  }
+  
+  logArgs(1, 2);
+  
+  // logs:
+  object       // arguments is an "object"
+  false        // but it is not an Array
+  TypeError: Object #<Object> has no method 'pop' // and it doesn't have the usual Array methods
+  ```
+
+- Want to create an array of arguments?
+
+  - ```javascript
+    function logArgs() {
+      let args = Array.prototype.slice.call(arguments); //creates array
+      console.log(typeof args);
+      console.log(Array.isArray(args));
+      args.pop();
+    }
+    
+    logArgs(1, 2);
+    
+    // logs:
+    object
+    true         // args is a proper Array now
+    // think of this as "borrowing" the slice method from the Array global object. When we apply slice to the arguments object, it creates an Array that contains the same values as those present in arguments
+    ```
+
+  - *Rest Parameters: What and Why?*
+
+    - -Essentially, `...args` tells JavaScript to expect an arbitrary number of arguments (0 or more), and to stick them in the actual array specified by `args`
+
+    - Traditional Way 
+
+      - while no "parameters" may not be explicitly defined for function, there are still "arguments" that are available locally within the function. This is because all functions have an [arguments object](https://launchschool.com/lessons/79b41804/assignments/55096c15) that is available locally. The `arguments` object contains an entry for every argument passed to the function.
+
+      - ```javascript
+        function sum() {
+          let result = 0;
+          for (let index = 0; index < arguments.length; index += 1) {
+            result += arguments[index];
+          }
+        
+          return result;
+        }
+        ```
+
+    - Modern Approach `[...args]`
+
+      - ```javascript
+        function logArgs(...args) { // 3 periods followed by an array name
+          console.log(args[0]);
+          console.log(args[1]);
+          console.log(args.length);
+        }
+        
+        logArgs(1, 'a');
+        
+        // logs:
+        1
+        a
+        2
+        
+        function logArgs(foo, bar, ...args) {
+          console.log(foo);
+          console.log(bar);
+          console.log(args[0]);
+          console.log(args[1]);
+          console.log(args.length);
+        }
+        
+        logArgs('oof', 'rab', 1, 'a');
+        
+        // logs:
+        oof
+        rab
+        1
+        a
+        2
+        ```
+
+        
+
+  - 
+
+
+
+**Dot vs bracket notation**
+
+- Bracket notation evaluates the expression within the bracket 
+- Dot Notation only allows static keys while Bracket Notation accepts dynamic keys. Static key here means that the key is typed directly, while Dynamic key here means that the key is evaluated from an expression.
+
+- If the property is a string value 
+
+  - you cant do this myObj[a], you have to use myObj['a'] or myObj.a
+
+  - if its a number you can do myObj['123'] or myObj[123] but not myObj.123
+
+    
+
+    To access the value of a property using bracket notation (e.g., `object[someKey]`), the operand inside the brackets that references the property name (key) must be a string value. If the operand is a number, JavaScript converts it to a string using the `Number.prototype.toString()` method. If the operand is a variable, JavaScript looks up the value (converting it to a string if necessary), then uses it as a key to get the corresponding property value. The expression `myObject[a]` raises a `ReferenceError` because JavaScript cannot find the value of the variable `a`, since it has not been declared.
+
+
+
+
+
+**Object literal methods**
+
+Just like functions, object literal methods must be *called* by appending parentheses (e.g., `person.firstName()`) in order to be executed. Functions are first-class objects, so referencing the function name without the parentheses would return the function itself, not the string representation:
+
+
+
+**Identifier**
+
+An **identifier** is a sequence of characters in the code that identifies a [variable](https://developer.mozilla.org/en-US/docs/Glossary/Variable), [function](https://developer.mozilla.org/en-US/docs/Glossary/Function), or [property](https://developer.mozilla.org/en-US/docs/Glossary/Property).
+
+In [JavaScript](https://developer.mozilla.org/en-US/docs/Glossary/JavaScript), identifiers are case-sensitive and can contain [Unicode](https://developer.mozilla.org/en-US/docs/Glossary/Unicode)letters, `$`, `_`, and digits (0-9), but may not start with a digit.
+
+An identifier differs from a string in that a [string](https://developer.mozilla.org/en-US/docs/Glossary/String) is data, while an identifier is part of the code. In JavaScript, there is no way to convert identifiers to strings, but sometimes it is possible to parse strings into identifiers.
+
+
+
+
+
+**Code Linting**
+
+- A process called "code linting" has emerged to help avoid the trickier, more dangerous, or less readable code.
+
+- They do this by identifying stylistic, syntactic, and procedural errors that deserve attention.
+
+- Code linting tools identify potential issues within your code.
+
+- As useful as code linting tools are, ultimately, they only identify potential issues in existing code. To avoid writing problem code from the start, though, you need developer education. 
+
+- https://github.com/airbnb/javascript
+
+- **ESLint**
+
+  - [ESLint](https://eslint.org/) is a static code analyzer for JavaScript; it analyzes your code and offers advice about style, format, coding practices, possible errors, and other problems
+  - ESLint is what developers call a **linter**. Linters inspect your code for potential errors and "code smells," and for adherence to the best practice determined by developers over the years
+  - Some of the most crucial rules in the best practice category apply to function length and complexity. A function that has many lines of code or that has complicated logic can be difficult to understand, maintain, and update
+
+  ```
+  $ npm install eslint@7.12.1 eslint-cli babel-eslint --save-dev
+  $ npx eslint -v
+  v7.3.1
+  $ npx eslint test.js //takes js file as an argument
+  ```
+
+  Put a `.eslintrc.yml` file in parent directory first 
+
+  ​	- `npx eslint --fix example.js` to potentially fix a problem
+
+  ex/ 
+
+  ```yml
+  //.eslintrc.yml
+  
+  
+  root: true
+  parser: babel-eslint
+  parserOptions:
+    ecmaFeatures:
+      impliedStrict: true
+  env:
+    browser: true
+    es6: true
+    jest: true
+    jquery: true
+    node: true
+  extends:
+    - eslint:recommended
+  globals:
+    alert: true
+    define: true
+    document: true
+    global: true
+    location: true
+    require: true
+    window: true
+    Handlebars: true
+  rules:
+    accessor-pairs: error
+    array-callback-return: error
+    arrow-spacing: error
+    block-scoped-var: error
+    brace-style:
+      - error
+      - 1tbs
+      - allowSingleLine: true
+    camelcase: error
+    complexity: error
+    consistent-return: error
+    constructor-super: error
+    eqeqeq: error
+    id-length:
+      - error
+      - exceptions:
+        - _
+        - a
+        - b
+        - x
+        - y
+        - z
+        min: 2
+        properties: never
+    indent:
+      - error
+      - 2
+      - SwitchCase: 1
+    keyword-spacing: error
+    linebreak-style: error
+    max-depth: error
+    max-len:
+      - error
+      - code: 80
+        tabWidth: 2
+        ignoreRegExpLiterals: false
+        ignoreStrings: true
+        ignoreTemplateLiterals: true
+        ignoreTrailingComments: true
+        ignoreUrls: true
+    max-lines-per-function:
+      - error
+      - max: 20
+        skipBlankLines: true
+        skipComments: true
+    max-nested-callbacks:
+      - error
+      - max: 4
+    max-statements:
+      - error
+      - max: 15
+      - ignoreTopLevelFunctions: true
+    max-statements-per-line: error
+    new-parens: error
+    no-array-constructor: error
+    no-async-promise-executor: error
+    no-bitwise: error
+    no-buffer-constructor: error
+    no-caller: error
+    no-class-assign: error
+    no-confusing-arrow:
+      - error
+      - allowParens: true
+    no-console: 'off'
+    no-const-assign: error
+    no-constant-condition:
+      - error
+      - checkLoops: false
+    no-debugger: 'off'
+    no-dupe-class-members: error
+    no-duplicate-imports: error
+    no-eq-null: error
+    no-eval: error
+    no-extend-native: error
+    no-implicit-globals: error
+    no-implied-eval: error
+    no-inner-declarations:
+      - error
+      - both
+    no-iterator: error
+    no-label-var: error
+    no-lonely-if: error
+    no-loop-func: error
+    no-misleading-character-class: error
+    no-mixed-operators: error
+    no-multi-assign: error
+    no-multi-str: error
+    no-multiple-empty-lines: error
+    no-nested-ternary: error
+    no-new: error
+    no-new-func: error
+    no-new-object: error
+    no-new-require: error
+    no-new-symbol: error
+    no-new-wrappers: error
+    no-octal-escape: error
+    no-process-env: error
+    no-process-exit: error
+    no-prototype-builtins: 'off'
+    no-restricted-syntax:
+      - error
+      - message: Do not use `with` statement.
+        selector: WithStatement
+    no-return-assign: error
+    no-return-await: error
+    no-script-url: error
+    no-self-assign:
+      - error
+      - props: true
+    no-self-compare: error
+    no-sequences: error
+    no-shadow-restricted-names: error
+    no-tabs: error
+    no-template-curly-in-string: error
+    no-this-before-super: error
+    no-throw-literal: error
+    no-trailing-spaces: error
+    no-unmodified-loop-condition: error
+    no-unneeded-ternary: error
+    no-unused-expressions: error
+    no-unused-vars:
+      - error
+      - args: all
+        argsIgnorePattern: "^_"
+        caughtErrors: all
+        caughtErrorsIgnorePattern: "^_"
+        vars: local
+    no-use-before-define:
+      - error
+      - functions: false
+    no-useless-call: error
+    no-useless-catch: error
+    no-useless-computed-key: error
+    no-useless-rename: error
+    no-useless-return: error
+    no-with: error
+    nonblock-statement-body-position: error
+    one-var-declaration-per-line: error
+    operator-assignment: error
+    prefer-promise-reject-errors: error
+    quote-props:
+      - error
+      - consistent-as-needed
+    radix: error
+    require-await: error
+    require-yield: error
+    semi:
+      - error
+      - always
+      - omitLastInOneLineBlock: true
+    semi-spacing: error
+    semi-style: error
+    space-before-blocks: error
+    space-infix-ops: error
+    space-unary-ops:
+      - error
+      - words: true
+        nonwords: false
+    vars-on-top: error
+  ```
+
+  
+
+  **Strict Mode**
+
+  - JavaScript ES5 introduced **strict mode**, which is an optional mode that modifies the semantics of JavaScript and prevents certain kinds of errors and syntax.
+
+    
+
+  - What is strict mode? How does it differ from sloppy mode?
+
+    - Strict mode eliminates some **silent errors** that occur in sloppy mode by changing them to throw errors instead. Silent errors occur when a program does something that is unintended, but continues to run as though nothing is wrong. This can lead to incorrect results or errors much later in execution that are subsequently difficult to track down.
+    - Strict mode prevents some code that can inhibit JavaScript's ability to optimize a program so that it runs faster.
+    - Strict mode prohibits using names and syntax that may conflict with future versions of JavaScript.
+    - Several benefits to programmers:	
+      - They prevent or mitigate bugs.
+      - They help make debugging easier.
+      - They help your code run faster.
+      - They help you avoid conflicts with future changes to the language.
+
+  
+
+  
+
+  - How do you enable strict mode at the global or function level?
+
+    - Strict mode is easy to turn on either at the global level of a program or at the individual function level. 
+
+    - Note also that nested functions inherit strict mode from the surrounding scope.
+
+    - The `"use strict"` statement is an example of a **pragma**, a language construct that tells a compiler, interpreter, or other translator to process the code in a different way. Pragmas aren't part of the language, and often use odd syntax like `"use strict"` does.
+
+    - Once you enable strict mode, **you can't disable it later** in the same program or function.
+
+    - You must specify the `"use strict"` pragma at the very beginning of the file or function. You can't enable it partway through a program or function:
+
+    - ```javascript
+      //global strict mode
+      
+      "use strict";
+      
+      // The rest of the program. Everything from here to the end of
+      // the file runs in strict mode.
+      
+      function foo() {
+        // strict mode is enabled here too.
+      }
+      
+      // Strict mode is still enabled
+      foo();
+      ```
+
+    - ```javascript
+      //function strict mode
+      
+      function foo() {
+        'use strict';
+      
+        // The rest of the function. Everything from here to the end of
+        // the function runs in strict mode.
+      }
+      
+      // Strict mode is disabled unless you defined it globally.
+      foo();
+      ```
+
+      - Strict mode is lexically scoped; that is, it only applies to the code that enables it. For instance:
+
+      - ```javascript
+        function foo() {
+          "use strict";
+          // All code here runs in strict mode
+        }
+        
+        function bar() {
+          // All code here runs in sloppy mode
+          foo(); // This invocation is sloppy mode, but `foo` runs in strict mode
+          // All code here runs in sloppy mode
+        }
+        
+        function foo() {
+          // All code here runs in sloppy mode
+        }
+        
+        function bar() {
+          "use strict";
+          // All code here runs in strict mode
+          foo(); // This invocation is strict mode, but `foo` runs in sloppy mode
+          // All code here runs in strict mode
+        }
+        ```
+
+        
+
+  
+
+  
+
+  - Describe how code behaves under both strict and sloppy mode.
+
+    - It won't let you create variables without explicitly declaring them first 
+
+    - ```javascript
+      "use strict";
+      
+      function foo() {
+        bar = 3.1415; // ReferenceError: bar is not defined
+      }
+      
+      foo();
+      console.log(bar);
+      
+      //you have to actually define it as a global variable 
+      
+      "use strict";
+      
+      let bar;
+      
+      function foo() {
+        bar = 3.1415;
+      }
+      
+      foo();
+      console.log(bar); // 3.1415
+      ```
+
+    - Help identify misspelled names -  If you declare a variable with one name, then later try to reassign it with a misspelled name, sloppy mode will create a new global variable. Consider this code:
+
+    - ```javascript
+      let aVariableWithALongName = 2.71828;
+      
+      // a bunch of omitted code here
+      
+      aVariab1eWithALongName = 3.14159;
+      console.log(aVariableWithALongName); // 2.71828; should be 3.14159
+      
+      // line 5 creates a global variable instead of reassigning the variable as intended. 
+      
+      "use strict";
+      
+      let aVariableWithALongName = 2.71828;
+      
+      // a bunch of omitted code here
+      
+      aVariab1eWithALongName = 3.14159; // ReferenceError: aVariab1eWithALongName is not defined
+      console.log(aVariableWithALongName);
+      ```
+
+      
+
+  
+
+  - When is strict mode enabled automatically?
+
+    - JavaScript enables strict mode automatically within the body of a `class`; there is no way to prevent that behavior. The same thing happens with JavaScript modules, which we'll discuss in a later assignment.
+
+    
+
+  - When should you use (or not use) strict mode?
+
+  - Use strict mode in any new code that you write. If you're adding new functions to an old codebase, it's safe to use function-level strict mode in the new functions, and you probably should do so. However, if you're not creating a new function in that old codebase, you probably shouldn't try to use strict mode. The changes in semantics, particularly those having to do with variable declarations, `this`, and silent failures, can easily break code that otherwise works well.
+
+
+
+
+
+**Syntactical Sugar**
+
+-  In each case, we merely use the name of the property we want to initialize, and JavaScript looks for a variable with the same name to use as the initial value.
+
+```javascript
+function xyzzy(foo, bar, qux) {
+  return {
+    foo,
+    bar,
+    qux,
+  };
+}
+
+console.log(xyzzy('hi','ki','ji'))
+
+//{ foo: 'hi', bar: 'ki', qux: 'ji'}
+
+function xyzzy(foo, bar, qux) {
+  return {
+    foo,
+    bar,
+    answer: qux,
+  };
+}
+
+//{ foo: 'hi', bar: 'ki', answer: 'ji' }
+```
+
+- When defining methods in an object you can get rid of : and function
+
+  ```javascript
+  let obj = {
+    foo: function() {
+      // do something
+    },
+  
+    bar: function(arg1, arg2) {
+      // do something else with arg1 and arg2
+    },
+  }
+  
+  let obj = {
+    foo() {
+      // do something
+    },
+  
+    bar(arg1, arg2) {
+      // do something else with arg1 and arg2
+    },
+  }
+  ```
+
+  
+
+- Object destructuring 
+
+- ```javascript
+  let obj = {
+    foo: "foo",
+    bar: "bar",
+    qux: 42,
+  };
+  
+  let foo = obj.foo;
+  let bar = obj.bar;
+  let qux = obj.qux;
+  
+  let { foo, bar, qux } = obj; //can replace last three lines
+  let { qux, foo, bar } = obj; //order doesn't matter
+  let { foo } = obj; //omit lines you don't need
+  let { bar, qux } = obj; 
+  let { qux: myQux, foo, bar } = obj; //use different names
+  
+  
+  //In this code, we pass an object to the function. The function's definition uses destructuring to pull out the needed properties and store them in local variables.
+  
+  function xyzzy({ foo, bar, qux }) {
+    console.log(qux); // 3
+    console.log(bar); // 2
+    console.log(foo); // 1
+  }
+  
+  let obj = {
+    foo: 1,
+    bar: 2,
+    qux: 3,
+  };
+  
+  xyzzy(obj);
+  
+  
+  let obj = {
+    foo: 1,
+    bar: 2,
+    qux: 3,
+  };
+  
+  
+  ({ foo, bar, qux } = obj);
+  
+  console.log(foo)
+  ```
+  
+- Array destructuring
+
+  - ```javascript
+    let foo = [1, 2, 3];
+    let [ first, second, third ] = foo;
+    
+    let foo = [1, 2, 3];
+    let first = foo[0];
+    let second = foo[1];
+    let third = foo[2];
+    
+    let bar = [1, 2, 3, 4, 5, 6, 7];
+    let [ first, , , fourth, fifth, , seventh ] = bar;
+    
+    let one = 1;
+    let two = 2;
+    let three = 3;
+    
+    let [ num1, num2, num3 ] =  [one, two, three];
+    
+    console.log(num1);   // 1
+    console.log(num2);   // 2
+    console.log(num3);   // 3
+    
+    let foo = [1, 2, 3, 4];
+    let [ bar, ...qux ] = foo;
+    console.log(bar);   // 1
+    console.log(qux);   // [2, 3, 4]
+    ```
+
+- Spread Sytax
+
+  - ```javascript
+    function add3(item1, item2, item3) {
+      return item1 + item2 + item3;
+    }
+    
+    let foo = [3, 7, 11];
+    add3(foo[0], foo[1], foo[2]); // => 21
+    
+    add3(...foo); // => 21
+    ```
+
+  - ```javascript
+    // Create a clone of an array
+    let foo = [1, 2, 3];
+    let bar = [...foo];
+    console.log(bar);         // [1, 2, 3]
+    console.log(foo === bar); // false -- bar is a new array
+    
+    // Concatenate arrays
+    let foo = [1, 2, 3];
+    let bar = [4, 5, 6];
+    let qux = [...foo, ...bar];
+    qux;  // => [1, 2, 3, 4, 5, 6]
+    
+    // Insert an array into another array
+    let foo = [1, 2, 3]
+    let bar = [...foo, 4, 5, 6, ...foo];
+    bar; // => [1, 2, 3, 4, 5, 6, 1, 2, 3]
+    
+    // Create a clone of an object
+    let foo = { qux: 1, baz: 2 };
+    let bar = { ...foo };
+    console.log(bar);         // { qux: 1, baz: 2 }
+    console.log(foo === bar); // false -- bar is a new object
+    
+    // Merge objects
+    let foo = { qux: 1, baz: 2 };
+    let xyz = { baz: 3, sup: 4 };
+    let obj = { ...foo, ...xyz };
+    obj;  // => { qux: 1, baz: 3, sup: 4 }
+    ```
+
+  - Rest Syntax= opposite of Spread
+
+    ```javascript
+    let foo = [1, 2, 3, 4];
+    let [ bar, ...otherStuff ] = foo;
+    console.log(bar);        // 1
+    console.log(otherStuff); // [2, 3, 4]
+    
+    let foo = {bar: 1, qux: 2, baz: 3, xyz: 4};
+    let { bar, baz, ...otherStuff } = foo;
+    console.log(bar);        // 1
+    console.log(baz);        // 3
+    console.log(otherStuff); // {qux: 2, xyz: 4}
+    ```
+
+  **Errors**
+
+  1) Reference Error 
+
+     1)  attempt to use a variable or function that doesn't exist.
+
+     2) ```javascript
+        a;    // Referencing a variable that doesn't exist results in a ReferenceError.
+        a();  // The same is true of attempting to call a function that doesn't exist.
+        ```
+
+  2) Type Error
+
+     1) try to access a property on a value that does not have any properties, such as `null`. Trying to call something that isn't a Function can also raise a `TypeError`:
+
+        1) ```javascript
+           var a;      // a is declared but is empty, as it has not been set to a value.
+           typeof(a);  // "undefined"
+           
+           a.name;     // TypeError: Cannot read property 'name' of undefined
+           
+           a = 1;
+           a();        // TypeError: Property 'a' is not a function
+           ```
+
+  3) Syntax Error
+
+     1) A `SyntaxError` is special in that one usually occurs immediately after loading a JavaScript program, and before it begins to run. Unlike `ReferenceError` and `TypeError`, which are dependent upon specific variables and values encountered at runtime, JavaScript detects `SyntaxError`s solely from the text of your program.
+
+     2) ```javascript
+        function ( {}   // SyntaxError: Unexpected token (
+          
+        JSON.parse('not really JSON');  // SyntaxError: Unexpected token i in JSON at position 0
+        ```
+
+- **Avoid Errors**
+
+  - Don't make assumptions
+  - Use Guard Clauses
+    -  A guard clause is code that guarantees data meets certain preconditions before it gets used.
+    - Guard clauses are best used when a Function can't trust that its  arguments are valid. Invalid arguments can have incorrect types,  structures, values, or properties
+  - Detect Edge Cases
+    - Think about whether your program can violate your assumptions. What happens when they are? We call these situations *edge cases* because they often involve values at the extreme end of the range of possible values. In `lowerInitial`, the shortest possible String (`''`) is an edge case.
+    - To identify the edge cases that can break your program, start by  considering the code's inputs. For a Function, these are usually the  arguments. Each data type has its own set of values that can cause  undesired behavior.
+  - Planning your code
+
+- **Unavoidable Errors**
+
+  - 
+
+  - ```javascript
+    try {
+      // Do something that might fail here and throw an Error.
+    } catch (error) {
+      // This code only runs if something in the try clause throws an Error.
+      // "error" contains the Error object.
+    } finally {
+      // This code always runs, no matter if the above code throws an Error or not.
+    }
+    //The finally clause is optional; you can omit it if you don't need it, just as you can omit the else clause in an if statement.
+    
+    
+    
+    
+    function parseJSON(data) {
+      let result;
+    
+      try {
+        result = JSON.parse(data);  // Throws an Error if "data" is invalid
+      } catch (e) {
+        // We run this code if JSON.parse throws an Error
+        // "e" contains an Error object that we can inspect and use.
+        console.log('There was a', e.name, 'parsing JSON data:', e.message);
+        result = null;
+      } finally {
+        // This code runs whether `JSON.parse` succeeds or fails.
+        console.log('Finished parsing data.');
+      }
+    
+      return result;
+    }
+    
+    let data = 'not valid JSON';
+    
+    parseJSON(data);    // Logs "There was a SyntaxError parsing JSON data:
+                        //       Unexpected token i in JSON at position 0"
+                        // Logs "Finished parsing data."
+                        // Returns null
+    ```
+
+  - 
+
+
+
+
+
+
+
+
+
+# 
+
+Please go through the [JavaScript Language Fundamentals exercises](https://launchschool.com/exercises#javascript_language_fundamentals) and complete any exercises that you haven't already done. In particular, don't forget to complete the [debugging exercises](https://launchschool.com/exercise_sets/cefefb80). For even more practice, you can complete the exercises in Easy 1 to Easy 5 of [JS210 - Small Problems](https://launchschool.com/exercises#JS210_small_problems).
+
+Also, you have now learned enough to be able to complete the following sets of exercises: the last four exercises from [JavaScript Basics](https://launchschool.com/exercise_sets/c39a2eed) and all of [Medium 1](https://launchschool.com/exercise_sets/41f68c21) and [Medium 2](https://launchschool.com/exercise_sets/646ece8b) from JavaScript Language Fundamentals, and [Easy 3](https://launchschool.com/exercise_sets/829c41b0), [Easy 4](https://launchschool.com/exercise_sets/b1647500), and [Easy 5](https://launchschool.com/exercise_sets/605aaeb8) from JS210 - Small Problems.
