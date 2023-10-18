@@ -380,41 +380,12 @@ undefined           // undefined literal
 **Arithmatic Operators**
 
 - +/-/*/ / % (remainder)
+
 - Dividing two numbers that don't give a whole number results in decimal 
   - Not like Ruby where it rounds down 
 
-- **NaN**
-
-  - Not a number (but it is a typeof number)
-
-    - ```javascript
-      0/0 or 3 + undefined
-      ```
-
-    - also trying to convert a non-number value to a number like 'hello'
-
-    - To determine whether a value is `NaN`, you can't use the usual comparison operators in a simple way. As it happens, `NaN` is the only value in JavaScript that is not equal to itself:
-
-      - ```javascript
-        > let value = NaN;
-        > value === NaN         
-        = false
-        
-        > NaN === NaN
-        = false
-        
-        INSTEAD USE:
-        
-        > let value = NaN;
-        > Number.isNaN(value)
-        = true
-        
-        > Object.is(value, NaN)
-        = true
-        ```
-
-        
-
+  
+  
 - **Infinity/ -Infinity**
 
   
@@ -605,54 +576,16 @@ String(true);
 true.toString(); 
 
 
-There is no direct coercion of strings to booleans.
-> true === 'true'
-false
-> true == 'true'
-false
-let a = 'true';
-let b = 'false';
-a === 'true';            // true
-b === 'true';            // false
 ```
 
 **Boolean**
 
-- You can also use the `Boolean` function to convert any value into a boolean value based on the truthy and falsy rules in JavaScript:
 
-- ```javascript
-  Boolean(null);           // false
-  Boolean(NaN);            // false
-  Boolean(0);              // false
-  Boolean('');             // false
-  Boolean(false);          // false
-  Boolean(undefined);      // false
-  Boolean('abc');          // other values will be true
-  Boolean(123);            // true
-  Boolean('true');         // including the string 'true'
-  Boolean('false');        // but also including the string 'false'! = true
-  ```
-
-- The double `!` operator provides a simpler way to coerce a truthy or falsy value to its boolean equivalent. The `!` operator returns the opposite of the value's boolean equivalent, so a double `!`returns the value's boolean equivalent:
-
-- ```javascript
-  !!(null);                // false
-  !!(NaN);                 // false
-  !!(0);                   // false
-  !!('');                  // false
-  !!(false);               // false
-  !!(undefined);           // false
-  
-  !!('abc');               // true
-  !!(123);                 // true
-  !!('true');              // true
-  !!('false');             // this is also true! All non-empty strings are truthy in JavaScript
-  ```
 
 - ```javascript
   1 + true       // true is coerced to the number 1, so the result is 2
   '4' + 3        // 3 is coerced to the string '3', so the result is '43'
-  false == 0     // false is coerced to the number 0, so the result is true
+  
   
   1 + true        // 2
   1 + false       // 1
@@ -661,7 +594,7 @@ b === 'true';            // false
   null + null     // 0
   1 + undefined   // NaN undefined gets coerced to NaN (which is still considered a number)
   ```
-  
+
   
 
 **Data Structures**
@@ -741,7 +674,7 @@ b === 'true';            // false
   -   variable, function, and class declarations
   -   (while/ for) loops and `if` statements/switch statement 
   -   `return` and `break` statements
-  -   a`ssignments: `a = 3;`
+  -   `assignments: `a = 3;`
   -   standalone expressions: `console.log("Hello");`
 
 - any syntactic unit of code that expresses an action for the computer to perform.
@@ -1735,375 +1668,11 @@ The call stack has a limited size that varies based on the JavaScript implementa
 
 
 
-**Flow Control/ Conditionals**
 
-- Conditional statements are sets of commands that are triggered when a  condition is true. In JavaScript, there are two conditional statements  supported: `if…else` and `switch`.
 
-- When writing programs, you want your data to take the correct path by use of **conditionals**
 
-  - Combination of `if` statements with comparison and logical operators (`<`, `>`, `<=`, `>=`, `==`, `===`, `!=`, `!==`, `&&`, `||`) to direct traffic. They use the keywords `if` and `else`.
 
-  - ```javascript
-    if (x === 3) {                          // Example 1
-      console.log("x is 3");
-    }
-    
-    if (x === 3) {                          // Example 2
-      console.log("x is 3");
-    } else {
-      console.log("x is NOT 3");
-    }
-    
-    if (x === 3) console.log("x is 3");     // Example 3
-    
-    if (x === 3)                            // Example 4
-      console.log("x is 3");
-    
-    if (x === 3)                            // Example 5
-      console.log("x is 3");
-    else
-      console.log("x is NOT 3");
-    
-    if (x === 3) {                          // Example 6
-      console.log('x is 3');
-    } else {
-      if (x === 4) {
-        console.log('x is 4');
-      } else {
-        console.log('x is NOT 3 or 4');
-      }
-    }
-    
-    if (x === 3) {                          // Example 7
-      console.log("x is 3");
-    } else if (x === 4) {
-      console.log("x is 4");
-    } else {
-      console.log('x is NOT 3 or 4');
-    }
-    ```
 
-  - `if (x ===3)`is a conditional statement 
-
-  - `(x==3)` is the single `condition`/expression that evaluates to a boolean
-
-  - the text that executes when the conditional statement is true is the `clause `
-
-    - `{console.log("x is 3")};` is a block.
-
-    - A block groups statements and is delimited by curly braces. Blocks may have zero or more statements in them
-
-  - It's important to understand that the `else` clause is not a separate statement: it's part of the `if` statement.
-
-    - An `if` statement may have an optional `else` clause. The `else` clause runs when the `if` statement's condition evaluates as `false`.
-
-  - Examples 3, 4, and 5 show that you don't need a block when the `if` or `else` clause contains a single statement or expression.
-  
-  - Examples 6 and 7 both behave the same way. Example 6 uses a nested `if` statement in the `else` clause, while example 7 flattens out the body of the `else` block into an `else if` clause. It's easier to read and maintain example 7 since you don't have the syntactic clutter of extra braces and indentation.
-  
-  
-  
-  **Comparison Operators**
-  
-  - Return a boolean value (true or false)
-    - The expressions or values that an operator uses are its **operands**. In comparisons, the expressions to the left and right of the operator are the operands. For instance, the equality comparison `x === y` uses the `===` operator with two operands: `x` and `y`.
-  - **===**
-    - Strict equality operator, or identity operator 
-    - the two operands are only equal if they are both the same type and have the same value:
-    - Equivalent to Ruby's `.equal?`
-    - Different than Ruby because strings are equal, not just numbers... you can also see this because strings are immutable (primitive values include strings, numbers, and booleans)
-  
-  ```javascript
-  > 5 === 5
-  = true
-  
-  > 5 === 4
-  = false
-  
-  > 'abc' === 'abc'
-  = true
-  
-  > 'abc' === 'abcd'
-  = false
-  
-  > 'abc' === 'aBc'
-  = false
-  
-  > '5' === '5'
-  = true
-  
-  > '5' === '6'
-  = false
-  
-  > 5 === '5'
-  = false
-  
-  > '' === 0
-  = false
-  ```
-  
-  
-  
-  - **!==**
-    - Strict InEquality Operator returns false when the operands have the same type and value, true otherwise 
-  - **==**
-    - Non-strict equality operator, or loose equality operator 
-    - However, when the operands have different types, `==`  attempts to coerce one of the operands to the other operand's type  before it compares them, and it may coerce both operands in some cases.
-
-```javascript
-When one operand is a string and the other is a number, the string is converted to a number:
-
-'42' == 42            // true
-42 == '42'            // true
-42 == 'a'             // false -- becomes 42 == NaN
-0 == ''               // true -- becomes 0 == 0
-0 == '\n'             // true -- becomes 0 == 0
-
-When one operand is a boolean, it is converted to a number:
-
-42 == true            // false -- becomes 42 == 1
-0 == false            // true -- becomes 0 == 0
-'0' == false          // true -- becomes '0' == 0, then 0 == 0 (two conversions)
-'' == false           // true -- becomes '' == 0, then 0 == 0
-true == '1'           // true
-true == 'true'        // false -- becomes 1 == 'true', then 1 == NaN
-
-
-When one operand is null and the other is undefined, the non-strict operator always returns true. If both operands are null or both are undefined, the return value is true. Comparing null or undefined to all other values returns false:
-
-null == undefined      // true
-undefined == null      // true
-null == null           // true
-undefined == undefined // true
-undefined == false     // false
-null == false          // false
-undefined == ''        // false
-undefined === null     // false -- strict comparison
-
-[] == '0';               // false -- becomes '' == '0'
-[] == 0;                 // true -- becomes '' == 0, then 0 == 0
-[] == false;             // true -- becomes '' == false, then 0 == 0
-[] == ![];               // true -- same as above
-[null] == '';            // true -- becomes '' == ''
-[undefined] == false;    // true -- becomes '' == false, then false == false
-[false] == false;        // false -- becomes 'false' == 0, then NaN == 0
-
-When one of the operands is NaN, the comparison always returns false:
-
-NaN == 0              // false
-NaN == NaN            // false
-NaN === NaN           // false -- even with the strict operator
-NaN != NaN            // true -- NaN is the only JavaScript value not equal to itself
-```
-
-  - **!=**
-
-    - Non-strict inequality Operator, or loose inequality operator 
-
-    - `!=` attempts to coerce one of the operands to the other  operand's type before it compares them, and it may coerce both operands  in some cases. The result is `false` when the final values are the same, `true` otherwise.
-
-    - ```javascript
-      // Compare with the `==` and `!==` examples.
-      
-      > 5 != 5
-      = false
-      
-      > 5 != 4
-      = true
-      
-      > 5 != '5'
-      = false
-      
-      > '' != 0
-      = false
-      ```
-
-      
-
-- **<**
-
-  - Less than operator returns true when the value of the left operand has a value that is less than the value of the right operand 
-
-  - It'll coerce numbers into strings - character-by-character. JavaScript moves from left-to-right in the  strings looking for the first character that is different from its  counterpart in the other string. Once it finds a character that differs, it compares that character with its counterpart, and makes a decision  based on that. 
-
-  - ```javascript
-    > 4 < 5
-    = true
-    
-    > 5 < 4
-    = false
-    
-    > 5 < 5
-    = false
-    
-    > "4" < "5"
-    = true
-    
-    > "42" < "402"
-    = false
-    
-    > "42" < "420"
-    = true
-    
-    > "42" < 420
-    = true
-    
-    The relational operators, <, >, <=, and >= are defined for numbers (numeric comparison) and strings (lexicographic order). There are no strict versions of these operators. When both operands are strings, JavaScript compares them lexicographically. Otherwise, JavaScript converts both operands to numbers before comparing them.
-    
-    11 > '9'              // true -- '9' is coerced to 9
-    '11' > 9              // true -- '11' is coerced to 11
-    123 > 'a'             // false -- 'a' is coerced to NaN; any comparison with NaN is false
-    123 <= 'a'            // also false
-    true > null           // true -- becomes 1 > 0
-    true > false          // true -- also becomes 1 > 0
-    null <= false         // true -- becomes 0 <= 0
-    undefined >= 1        // false -- becomes NaN >= 1
-    ```
-
-- **Always use explicit type coercions** (covered in the previous topic).
-- **Always use strict equality operators** (`===` and `!==`).
-
-**Logical Operators**
-
-```
-!`, `&&`, and `||
-```
-
-- **!**
-  - The **not operator** returns `true` when its operand is `false` and returns `false` when the operand is `true`. That is, it negates its operand.
-  - In these examples, JavaScript first evaluates the expression on the right, then applies `!` to the result, thus negating it.
-- **&&**
-  - The **and operator** returns `true` when both operands are `true` and `false` when either operand is `false`.
-- **||**
-  - The **or operator** returns `true` when either operand is `true` and `false` when both operands are `false`.
-- `&&` and `||` don't always return `true` or `false`, but they do when they operate on boolean values. A little later in this chapter we'll see what happens when we use `&&` and `||` with non-boolean values.
-- The `&&` and `||` operators both use a mechanism called **short circuit evaluation** to evaluate their operands.
-  -   As with `a && b`, JavaScript short circuits the evaluation if `a` is `false`, and returns `false` without evaluating `b`.
-
-**Truthiness**
-
-- javascript can coerce any value into a boolean value...
-
-  - ```javascript
-    let a = 5
-    if (a) {
-      console.log("how can this be true?");
-    } else {
-      console.log("it is not true");
-    }
-    
-    //logs "how can this be true?"
-    //coerces 5 to true
-    
-    let b = 0
-    if (b) {
-      console.log("how can this be true?");
-    } else {
-      console.log("it is not true");
-    }
-    
-    //logs "it is not true"
-    //coerces 0 to false
-    ```
-
-  - We often say that the expression **evaluates as** or **evaluates to** true or false.
-
-```javascript
-let x;
-
-if (x = 5) {
-  console.log("how can this be true?");
-} else {
-  console.log("it is not true");
-}
-```
-
-- The above code doesn't test whether `x` is equal to `5`. Instead, it assigns the variable `x` to `5`, then evaluates the assignment's return value (`5`) as a boolean. Here, `5` evaluates as true when it appears in a boolean expression.
-
-**What evaluates to false?**
-
--   `false`
-
--   The number `0` - different than ruby 
-
-  . This includes all 3 variations of zero in JavaScript:
-
-  -   `0`: The ordinary zero value.
-  -   `-0`: A negative zero. That's mathematical nonsense, but a real thing in JavaScript.
-  -   `0n`: The `BigInt` version of zero.
-
-- An empty string (`''`) - different than ruby 
-
-  - Whats weird is that in an `if` statement `' '` will evaluate to true and `''` will evaluate to false....BUT 
-
-    - ```javascript
-      > ' ' == false
-      true
-      > ''==false
-      true
-      ```
-
-- `undefined`
-
-- `null`
-
-- `NaN`
-
-
-
-- We often use the term **falsy** to refer to values that evaluate as false, while the values that evaluate as true are **truthy**. We use these terms when we need to distinguish between boolean `true` and `false` values. We can also discuss **truthiness**: whether something is a truthy or falsy value.
-
-```javascript
-> 3 && 'foo'  // last evaluated operand is 'foo'
-= 'foo'
-
-> 'foo' && 3  // last evaluated operand is 3
-= 3
-
-> 0 && 'foo'  // last evaluated operand is 0
-= 0
-
-> 'foo' && 0  // last evaluated operand is 0
-= 0
-
-> 3 || 'foo'  // last evaluated operand is 3
-= 3
-
-> 'foo' || 3  // last evaluated operand is 'foo'
-= 'foo'
-
-> 0 || 'foo'  // last evaluated operand is 'foo'
-= 'foo'
-
-> 'foo' || 0  // last evaluated operand is 'foo'
-= 'foo'
-
-> '' || 0     // last evaluated operand is 0
-= 0
-```
-
-```javascript
-// ternary expression
-let isOk = (foo || bar) ? true : false;
-```
-
-```javascript
-let isOk = !!(foo || bar);
-```
-
-**!!**
-
-	- two consecutive `!` operators 
-	- equivalent to `!(!a)`
-	- The inner `!` converts the value of `a` to `false` if it is truthy, or `true` if `a` is falsy. The outer `!` then flips `true` to `false` or `false` to `true`. In the end, we end up with a boolean value instead of a truthiness value:
-
-```javascript
-> !!3    // 3 is truthy, !3 is false, !false is true
-= true
-
-> !!''   // '' is falsy, !'' is true, !true is false
-= false
-```
 
 
 
@@ -2168,171 +1737,13 @@ JavaScript evaluates parentheses in the usual algebraic order. That is,  it eval
 
 
 
-**Ternary Operator**
-
-- The **ternary operator** is a quick and easy way to write a short, concise, and simple if/else conditional. It uses a combination of the `?` and `:` symbols and takes 3 operands (hence, the name "ternary"):
-
-  ```javascript
-  > 1 == 1 ? 'this is true' : 'this is not true'
-  = 'this is true'
-  
-  > 1 == 0 ? "this is true" : "this is not true"
-  = 'this is not true'
-   
-  ```
-
-  - How does this work? JavaScript first evaluates the first operand (the  comparisons). If it has a truthy result, JavaScript evaluates the second operand (`this is true`) and returns its value. Otherwise, it evaluates the third operand (`this is not true`) and returns its value.
-  - The chief advantage that the ternary operator has over an `if/else` statement is that the entire structure is an expression. What that  means is that we can treat the ternary expression as a value: we can  assign it to a variable, pass it as an argument, and so on. Since `if/else` is a statement, we can't capture its result to a variable.
-
-```javascript
-> let message = true ? 'this is true' : 'this is not true'
-= undefined
-
-> message
-= 'this is true'
-
-> console.log(false ? 'this is true' : 'this is not true')
-this is not true
-= undefined
-```
-
-Ternary expressions should usually be used to select between 2 values,  not to choose between two actions. (An action would be something like  logging a value to the console or setting a variable to a new value.)  
-
-*The ternary expression's result should almost always be*
-
-1. Assigned to a  variable
-2. Passed to a function as an argument
-3. Returned by a  function. 
-   - If you're not doing one of those things, an `if/else` statement is a better choice.
-
-DON'T USE THEM TO CHOOSE BETWEEN ACTIONS:
-
-```javascript
-hitchhiker ? foo = 42 : bar = 3.1415;               // Setting variables
-hitchhiker ? console.log(42) : console.log(3.1415); // Printing
-```
 
 
 
-**Switch Statement**
-
-- Similar to an `if` statement with a different interface
-- Compares a single value against multiple values for strict equality (===), wheras the `if` can test mutiple expessions with any condition
-
-- Uses reserved words
-
-  1. switch (like ruby case)
-  2. case (like ruby when)
-  3. default (like ruby else)
-  4. break
-     1. The `break` statement in each `case` is crucial. Without a break, execution "falls through" to the next `case` clause.
-
-  * Similar to Ruby Case statement case/when/else/end
-
-- ```javascript
-  let a = 5;
-  
-  switch (a) {
-    case 5:
-      console.log('a is 5');
-      break;
-    case 6:
-      console.log('a is 6');
-      break;
-    default:
-      console.log('a is neither 5, nor 6');
-      break;
-  } // => a is 5
-  ```
-
-- Functionally identical to if/else but they differ:
-
-  The `switch` statement evaluates the expression, `a`, compares its value to the value in each `case` clause and then executes the statements and expressions associated with the first matching clause. In this example, the value of the expression is `5`; thus, the program executes the statements and expressions associated with the `case 5:` clause. The statements and expressions in the `default:` clause run when the expression doesn't match any of the `case` clauses; it acts like the final `else` in an `if` statement.
-
-- If you forget the `break` statement, execution falls through to the next `case` clause and will execute all 
-
-- ```javascript
-  let a = 5;
-  
-  switch (a) {
-    case 5:
-    case 6:
-    case 7:
-      // executed if a is 5, 6, or 7
-      console.log("a is either 5, 6, or 7");
-      break;
-    case 8:
-    case 9:
-      // executed if a is 8 or 9
-      console.log('a is 8 or 9');
-      break;
-    default:
-      // executed if a is anything else
-      console.log('a is not 5, 6, 7, 8, or 9');
-      break;
-  }
-  ```
-
-- fall through can work when you want code to execute for more than one case
 
 
 
-**Loops and Iterating**
 
-1) Looping Keyword
-2) Condition
-3) Block (loop's body)
-
-- Loops execute the loop's body for as long as the condition remains truthy 
-  - One iteration is executing the loop body once
-    - By **iterate**, we mean that we process each element one at a time, in sequence from the first to the last element.
-- **While Loop**
-  - `while` keyword with conditional expression in parenthese and a block
-  - The block must tell Javascript when the loop should stop 
-    - conditional expression becomes falsy otherwise it's an infinite loop 
-
-```javascript
-let counter = 1;
-while (counter <= 1000) {
-  console.log(counter);
-  counter = counter + 1; //or counter += 1; or add one by counter++;
-}
-```
-
-When JavaScript encounters this `while` loop, it evaluates the conditional expression inside the parentheses, `counter <= 1000`. Since `counter`'s initial value is `1`, the expression is `true` at the beginning of the `while` statement and the engine runs the loop's block. Inside the block, we output `counter`'s value, then increment it by `1`.
-
-After the first block iteration, JavaScript re-evaluates the conditional expression. This time, `counter` is `2`, which is still less than or equal to `1000`; thus, the block runs again. After 1000 iterations, `counter`'s value becomes 1001. Since the loop condition is no longer truthy, the  program stops looping and continues with the first expression or  statement after the loop.
-
-Line 4 in this example is crucial. The loop block *must* modify `counter` in some way that ultimately makes the loop condition `false`. If it doesn't, the loop becomes an infinite loop, which, in most cases, you don't want. If your program never stops running, you probably have  an infinite loop somewhere in the program. Try running the example code  after commenting out line 4. You'll see that the number `1` keeps printing to the console. If you're using `node`, you can use the `Control+c` keystroke to terminate the program. If you're using the browser  console, you may have a tougher time; in Chrome, you can use the task  manager from the Window menu to force-close the tab.
-
-```javascript
-let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];
-let upperNames = [];
-let index = 0;
-
-while (index < names.length) {
-  let upperCaseName = names[index].toUpperCase();
-  upperNames.push(upperCaseName);
-  index += 1;
-}
-
-console.log(upperNames); // => ['CHRIS', 'KEVIN', 'NAVEED', 'PETE', 'VICTOR']
-```
-
-Note that we initialized `names`, `upperNames`, and `index` before the loop. If we initialized them inside the loop, they would  have block scope. Every loop iteration would create, initialize, and  discard each variable. 
-
-
-
-**Do/While Loop**
-
-```javascript
-let answer;
-do {
-  answer = prompt("Do you want to do that again?");
-} while (answer === 'y');  //run in browser
-```
-
-Notice how `while` and the condition are now at the end of the loop. Since the test occurs at the end of the loop, the loop always executes at least once.
 
 
 
@@ -2418,53 +1829,9 @@ console.log(upperNames); // => ['CHRIS', 'KEVIN', 'NAVEED', 'PETE', 'VICTOR']
 
 
 
-**Controlling Loops**
-
-- keywords `continue` and `break`to provide more control over loops 
-
-1. `continue`
-   1. lets you start a new iteration of the loop
-   2. When a loop encounters the `continue` keyword, it skips running the rest of the block and jumps ahead to the next iteration
-   3. You can rewrite a loop that uses `continue` with a negated `if` conditional.
-
-```javascript
-let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];
-let upperNames = [];
-
-for (let index = 0; index < names.length; index += 1) {
-  if (names[index] === 'Naveed') {
-    continue;
-  }
-
-  let upperCaseName = names[index].toUpperCase();
-  upperNames.push(upperCaseName);
-}
-
-console.log(upperNames); // => ['CHRIS', 'KEVIN', 'PETE', 'VICTOR']
-
-//or 
-
-let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];
-let upperNames = [];
-
-for (let index = 0; index < names.length; index += 1) {
-  if (names[index] !== 'Naveed') {
-    let upperCaseName = names[index].toUpperCase();
-    upperNames.push(upperCaseName);
-  }
-}
-
-console.log(upperNames); // ['CHRIS', 'KEVIN', 'PETE', 'VICTOR']
-
-//you can even leave out the block in an if statement if you are using a continue, break, or return statement 
-if (!someCondition) continue;
-```
 
 
 
-1. `break`
-   1. lets you terminate the loop early 
-   2. You sometimes want to skip all remaining iterations of a loop. For  instance, when you search an array for a specific value, you probably  want to stop searching once you find it. There's no reason to keep  searching if you don't need any subsequent matches.
 
 
 
@@ -4201,24 +3568,7 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
         +`, `-`, `*`, `/`, `%`, `+=`, `-=`, `==`, `!=`, `===`, `!==`, `>`, `>=`, `<`, `<=
         ```
   
-  2. Comparison Operators 
-  
-     1. Compares its operands and returns a boolean value (true or false)
-  
-     2. When the operands are of different types, JavaScript tries to implicitly convert them to suitable types (implicit conversion) 
-  
-        1. only with `==` and `!=`
-  
-        2. Best to use the stricter `===` `!==` so no conversions are performed 
-  
-        3. | Operator               | Description                                                  |
-           | ---------------------- | ------------------------------------------------------------ |
-           | Equal (==)             | Returns true if the operands are equal                       |
-           | Not Equal (!=)         | Returns true if the operands are not equal                   |
-           | Strict Equal (===)     | Returns true if the operands are equal and of the same type  |
-           | Strict Not Equal (!==) | Returns true if the operands are not equal and/or not of the same type |
-           | Greater than (>)       | Returns true if the left operand is greater than the right   |
-           | Less than (<)          | Returns true if the left operand is less than the right      |
+     1. 
   
   3. Assignment Operators
   
@@ -4236,7 +3586,7 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
            | Division Assignment       | a /= b             | a = a / b |
            | Remainder Assignment      | a %= b             | a = a % b |
   
-  4. String Operators 
+  3. String Operators 
   
      1. You can compare strings just as numbers using lexicographical ordering 
   
@@ -4252,29 +3602,7 @@ let quote = "\"It's hard to fail, but it is worse never to have tried to succeed
         a;       // "Hello, world!"
         ```
   
-  5. Logical Operators 
-  
-     1. You can combine boolean/non boolean values with logical operators
-  
-        1. `&&, ||, !`
-  
-           1. ```javascript
-              true || true;    // true
-              true || false;   // true
-              false || true;   // true
-              false || false;  // false
-              false || [];     // [] (second operand is non-boolean, it is returned as is)
-              
-              //! returns true if its operand is falsey. false otherwise 
-              //! is a unary operator(takes only one operand)\
-              !true;   // false
-              !false;  // true
-              !!true;  // true
-              !1;      // false
-              ![];     // false
-              ```
-  
-              
+     
 
 **Alert method**
 
@@ -4449,31 +3777,9 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
 
   
 
-  *NOW LET"S EXAMINE THIS!*
+  
 
-  - The error messages are different when you try to access a variable that is not defined and when trying to access one BEFORE being defined...
-
-  - This is where the **Temporal Dead Zone**(TDZ) comes in!
-
-    - When a `var` variable is hoisted, JavaScript gives it an initial value of `undefined`.
-
-    - When `let` and `const` variables are hoisted, they are not given an initial value at all. Instead, they are left in an "unset" state; that is, they are "not defined". Don't say "undefined", though - that's confusing.
-
-      - This demonstrates that JavaScript is aware of the `foo` variable in the first snippet and recognizes that it hasn't been set to a value yet. In the second snippet, it can tell that `baz` hasn't been declared at all, so the error message is different.
-
-      - ```javascript
-        console.log(bar); // undefined
-        var bar = 3;
-        console.log(bar); // 3
-        
-        //TEMPORAL DEAD ZONE BELOW
-        
-        console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
-        let foo;
-        
-        console.log(qux); // ReferenceError: Cannot access 'qux' before initialization
-        const qux = 42;
-        ```
+  
 
   *SUPER WEIRD*
 
@@ -4494,7 +3800,7 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
   bar();
   bar = 'hello';
   ```
-
+  
   ```javascript
   var bar = 'hello';
   bar();             // raises "TypeError: bar is not a function"
@@ -4512,20 +3818,20 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
   bar = 'hello'; //becomes reassignement 
   bar();
   ```
-
+  
   - Since function declarations are hoisted first, the variable declaration of the same name becomes redundant (notice that there is no longer a `var bar` in the code snippets). Since the variable declaration is redundant, what remains is the reassignment. Being a reassignment, this becomes a problem for snippet2, since `bar` will no longer be of type `function`, and therefore results in an error when we try to invoke `bar`. bc you cant declare a `let` or `const` variable and a function with the same name ....SO THIS ONLY WORKED AS REASSIGNEMENT BC ITS VAR NOT LET OR CONST
-
+  
   
 
   
-
+  
   - **Creation Phase**- 
     - before the execution phase begins, the creation phase does some preliminary work. One of those work items is to find all of the variable, function, and class *declarations*.
     -  That action seems to move the declarations to the top of their respective function or block: function-scoped declarations get moved to the top of the function, and block-scoped declarations get moved to the top of the block. This process is called **hoisting**.
-
+  
   - **Execution Phase**- 
     - when the program runs code line-by-line.
-
+  
 - How do `var`, `let`, and `const` interact with hoisting? How do they differ?
 
 - How do functions and classes interact with hoisting? How do they differ?
@@ -6334,11 +5640,71 @@ function xyzzy(foo, bar, qux) {
 
 
 
+**Helpful Methods**
+
+`Number.prototype.toFixed(numberOfDecimals)` returns a string that represents a number rounded to a fixed number of decimals.
 
 
 
 
 
+
+
+`String.prototype.replace(word, replacerWord)`
+
+`String.prototype.substring(startIndex, finalIndex) `(final index not included)
+
+`String.prototype.length` length is not a method, its a property
+
+`String.prototype.toUpperCase()`
+
+`String.prototype.repeat(numTimes) `
+
+`String.prototype.includes`
+
+`String.prototype.replaceAll(word, replacer1)`
+
+`String.prototype.trim()`(removes whitespaces from both ends of a string.)
+
+`String.prototype.charAt(index)`
+
+`String.prototype.slice(startIndex, FinalIndex)`(not including final),also for array
+
+`String.prototype.split(char)`splits a string on the character provided 
+
+`String.prototype.indexOf(char)` returns index of char, used in arrays too
+
+
+
+`Array.prototype.push()` //mutating, can add multiple elements, returns new length
+
+`Array.prototype.unshift`(add element to beginning) //mutating, can add multiple elements, returns new length
+
+`Array.prototype.pop()` //mutating, pops off single last element, returns popped off element
+
+`Array.prototype.splice (firstIndex, numOfElements)` //mutating for original array, returns new array of removed elements from firstIndex and number of elements
+
+`Array.prototype.slice(firstIndex, finalIndex)` //non-mutating, returns new index starting at first Index going up to but not including finalIndex, also for string
+
+`Array.from(string)` //static method, splits a string character by character 
+
+`Array.isArray(obj)` //static method, returns boolean
+
+`Array.prototype.indexOf(char)` returns index of char, used in strings too, uses strict equality so it wouldnt work for testing if objects are included, only primitives
+
+`Array.prototype.join(joiningChar)`//default joiningChar is `,`
+
+
+
+
+
+`Object.keys(obj)`//returns array of keys, you can also use for (let o in obj)
+
+`Object.entries(obj)`//returns an array with key value pair subarrays
+
+`Object.fromEntries(nestedArr)` //returns obj from nested arr
+
+`Object.assign(obj1, obj2)` //returns arr concatenated, mutates obj1
 
 # 
 
