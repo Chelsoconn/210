@@ -264,31 +264,13 @@ Note that non-idiomatic names are not invalid names. Non-idiomatic  names are co
 
     
 
-**Primitive Data Types**:
-
-​		- JavaScript represents them directly at the lowest level of the language implementation. 
-
--   String
--   Number
--   NaN (considered a number)
--   Undefined
--   Null
--   Boolean
--   Symbols (ES6)
--   Big integers (ES9)
 
 
 
-**Literals**
 
-```js
-'Hello, world!'     // string literal
-3.141592            // numeric literal
-true                // boolean literal
-{ a: 1, b: 2 }      // object literal
-[ 1, 2, 3 ]         // array literal
-undefined           // undefined literal
-```
+****
+
+
 
 
 
@@ -303,79 +285,13 @@ undefined           // undefined literal
 
 
 
-**Numbers**
-
-```jar
-1, 2, -3, 4.5, -6.77, 234891234 // Examples of numeric literals
-```
-
-- JavaScript uses a floating point system to represent all numbers
-- 
-
-**Boolean**
-
-- Boolean values have a starring role when working with comparison operators. 
-- Boolean values represent an "on" or "off" state.
 
 
 
-**Undefined**
-
-- When a variable is not defined, its value is given by `undefined`. We can describe `undefined` as representing the absence of a value. We can also explicitly use the literal `undefined`.
-
-```javascript
-> let foo
-= undefined
-
-> foo
-= undefined
-
-> let bar = 3
-= undefined
-
-> bar
-= 3
-```
 
 
 
-**Null**
 
-- `null` is similar to `undefined`: it represents the intentional absence of a value. Often, `null` represents emptiness or nothing. The chief difference between `null` and `undefined` is that you must use `null` explicitly if you want to use it; `undefined` can arise implicitly.
-
-```javascript
-> let foo = null
-```
-
-- In the above code, `null` is specified as a literal value.
-
-  
-
-**Type of Operator**
-
-- returns a string that contains the type of its operand's value
-
-- ```javascript
-  > typeof 1
-  = 'number'
-  
-  > typeof 'foo'
-  = 'string'
-  
-  > typeof true
-  = 'boolean'
-  
-  > typeof undefined
-  = 'undefined'
-  
-  > typeof null
-  = 'object'
-  
-  > typeof [1, 2, 3]
-  = 'object'
-  ```
-
-  
 
 **Arithmatic Operators**
 
@@ -1256,257 +1172,7 @@ say();        // => hello!
 
 - Here, the `bar` function is nested within the `foo` function. Such nested functions get created and destroyed every time  the outer function runs. (This usually has a negligible effect on  performance.) They are also private functions since we can't access a  nested function from outside the function where it is defined.
 
-**CODE EXAMPLES FOR VARIABLE SCOPE**
 
-In JavaScript, every function or block creates a new variable scope. Let's examine what this means.
-
-These are a number of ways to create a variable in the current scope:
-
-- Use the `let` or `const` keywords.
-
-- Use the `var` keyword, which we'll introduce later in this lesson.
-
-- Define parameters for a function - each parameter is a local variable.
-
-- A function declaration creates a variable with the same name as the function. We'll talk about that in the next assignment.
-
-- A class declaration also creates a variable with the same name as the class. We'll talk about class declarations in a later course.
-
-  ```javascript
-  function lunch() {    // A function declaration creates a new variable scope
-    let food = 'taco';  // 1. Add a new variable food within the current variable scope
-  }
-  
-  function eat(food) {  // 2. Parameters create variables during function invocation
-    console.log('I am eating ' + food);
-  } //Given lexical scoping rules, its scope is the eat function because of the way the source code is written, not because the function gets invoked. 
-  
-  function drink() {    // 3. Add a new variable drink within the global variable scope
-    console.log('I am drinking a glass of water');
-  }
-  ```
-
-- Variable scoping rules apply to both assignment and referencing equally. This code: checks the current scope and then each higher scope, looking for a variable with the name `country`. JavaScript sets the first `country` variable it finds to `"Liechtenstein"`. 
-
-- ```javascript
-  let country = 'Spain';
-  function update() {
-    country = 'Liechtenstein';
-  }
-  
-  console.log(country);  // logs: Spain
-  
-  update();
-  console.log(country);  // logs: Liechtenstein
-  ```
-
--  If JavaScript can't find a matching variable, **it creates a new global variable instead**. This is rarely what you want; it can be the source of subtle bugs.
-
-- ```javascript
-  // no other code above
-  function assign() {
-    let country1 = 'Liechtenstein';
-    country2 = 'Spain'; //bc you didnt use `let`!! crazy
-  }
-  
-  assign();
-  console.log(country2);   // logs: Spain
-  console.log(country1);   // gets ReferenceError
-  // no other code below
-  ```
-
-  - In the above code, `country2` isn't declared anywhere else in the code and it is assigned a value inside the function. Since JavaScript couldn't find a matching variable, it created a new "global" variable and as such it makes it possible to log its value on line 8.
-  - Moreover, similar to the earlier code in the adding variables to the current scope section, `country2` is in the global scope because of the way the source code is written and not because of the scope in which the `assign` function was invoked.
-
-- ```javascript
-  let name = 'Julian';
-  
-  function greet() {
-    let name = 'Logan';
-    console.log(name);
-  } //the variable declaration for name in the greet function shadows the outer name variable. Within greet, you can only access the inner name.
-  ```
-
-- If a function definition has a parameter with the same name as a variable from an outer scope, the parameter shadows the outer variable:
-
-- JavaScript throws a `ReferenceError` exception if it can't find a variable anywhere in the scope hierarchy.
-
-- Remember these important variable scoping rules:
-
-  - Every function definition creates a new local variable scope.
-  - Every block creates a new local variable scope.
-  - Lexical scope uses the structure of the source code to determine the variable's scope. This means that the code doesn't have to be executed for the scope to exist.
-  - All variables in the same or surrounding scopes are visible inside functions and blocks.
-
-
-
-
-
-*GLOBAL SCOPE*
-
-
-
-```javascript
-let greetingMessage = "Good Morning!";
-
-function greetPeople() {
-  console.log(greetingMessage);
-}
-
-greetPeople();
-```
-
-- This is different than Ruby in that it acts like block scope 
-- `greetingMessage` is a global variable so it can be accessed from anywhere, even within the function. It can even be reassigned within the function.
-
-```javascript
-let greetingMessage = "Good Morning!";
-
-function greetPeople() {
-  console.log(greetingMessage);
-}
-
-function changeGreetingMessage(newMessage) {
-  greetingMessage = newMessage;
-}
-
-changeGreetingMessage("Good Evening");
-greetPeople(); // => 'Good Evening'
-```
-
-
-
-*LOCAL SCOPE*
-
-
-
-```javascript
-function greetPeople() {
-  let greetingMessage = "Good Morning!";
-  console.log(greetingMessage);
-}
-
-greetPeople();
-```
-
-- declares `greetingMessage` internally and is accessible within the function but causes a `ReferenceError` if you try to use it elsewhere
-
-```javascript
-function greetPeople() {
-  let greetingMessage = "Good Morning!";
-  console.log(greetingMessage);
-}
-
-greetPeople();
-console.log(greetingMessage); // raises ReferenceError
-```
-
-
-
-**Limiting Variable Scope**
-
-- Global variables can be helpful in some scenarios, e.g.,  application-wide configuration. However, most developers discourage  their use since they often lead to bugs. In general, you should limit  the scope of your variables as much as possible; smaller scopes limit  the risk that an outer scope might misuse the variable.
-
-
-
-**Lexical Scope (Static Scoping)**
-
-Javascript uses lexical scope to determine where it looks for a variable.  The source code defines the scope.  When you write a function it creates a scope even if the function never gets executed and has no variables of its own. There is a hierachy of scopes from the local scope of the code up to the program's global scope. 
-
-
-
-Javascript searched this hierachy from the bottom to the top when trying to find a variable. When it finds the variable, it stops and returns it.  This means that a lower scope variable can *shadow* or hide a variable with the same name in a higher scope. 
-
-
-
-**CODE EXAMPLE USING A PARAMETER**
-
-```javascript
-function greetPeople(greetingMessage) {
-  console.log(greetingMessage);
-}
-
-greetPeople("Good Morning!");
-```
-
-- The `greetingMessage` parameter acts like a local variable. It *is*, in fact, a local variable. The chief difference is that we initialize  it from the argument passed to the function. Parameters have local scope within a function.
-
-
-
-**Reassignment and Mutation**
-
-- Reassignment 
-  - Change what value is assigned or bound to a variable 
-  - Makes that name (variable) refer to a completely different place in memory 
-  - Changing the *binding* of a variable - that is, the value that is *bound* to the variable
-- Mutation
-  - Change the value of the thing that is bound to the variable 
-  - Changes the value that is actually stored in the memory that the name  refers to
-  - After mutating the value assigned to a variable, the variable continues to refer to the same place in memory.
-
-```javascript
-let num = 3;              // A variable assigned to a primitive value
-let arr = [1, 2, 3];      // A variable assigned to an array
-let obj = { a: 1, b: 2 }; // A variable assigned to an object
-
-num = 42;    // Reassignment
-arr[1] = 42; // Reassignment of array element, but NOT the variable
-             // The array referenced by arr is mutated!
-obj.a = 42;  // Reassignment of object property, but NOT the variable
-             // The object referenced by obj is mutated.
-
-// You can still reassign the variables
-arr = 42;                 // Reassignment; array is lost
-obj = { b: 1, c: 2 }      // Reassignment: now refers to a different object
-```
-
-**Mutating the Caller**
-
-- When a method permanently mutates the object that invokes the method 
-
-- Does not preserve the previous value of the object
-
-- ex/ 
-
-- ```javascript
-  let oddNumbers = [1, 3, 5, 7, 9];
-  oddNumbers.pop();
-  console.log(oddNumbers); // => [1, 3, 5, 7]
-  ```
-
-  - Destructively removes the last element of the array- change is permanent 
-
-- Functions can also mutate the argument 
-
-- ```javascript
-  function changeFirstElement(array) {
-    array[0] = 9;
-  }
-  
-  let oneToFive = [1, 2, 3, 4, 5];
-  changeFirstElement(oneToFive);
-  console.log(oneToFive); // => [9, 2, 3, 4, 5]
-  ```
-
-  - When the function finishes running, we can see that the original array has changed.
-
-- Non-mutating function which makes a copy and mutates that copy
-
-- ```javascript
-  function addToArray(array) {
-    return array.concat(10);
-  }
-  
-  let oneToFive = [1, 2, 3, 4, 5];
-  console.log(addToArray(oneToFive)); // => [1, 2, 3, 4, 5, 10]
-  console.log(oneToFive);             // => [1, 2, 3, 4, 5]
-  ```
-
-**Can I mutate everything?**
-
-- No! This is a difference with Ruby
-- One non-obvious point here is that mutation is a concern when dealing  with arrays and objects but not with primitive values like numbers,  strings, and booleans. Primitive values are **immutable**. That means their values never change; operations on immutable values always return new values. Operations on **mutable** values (arrays and objects) may or may not return a new value and may or may not mutate data.
-- It uses pass-by-value when dealing with primitive values and pass-by-reference with objects and arrays.
 
 **CODE BREAKDOWN**
 
@@ -1548,18 +1214,6 @@ add(subtract(80, 10), times(subtract(20, 6), add(30, 5))); // => 560
 
 
 **CALLING A FUNCTION BEFORE ITS DECLARED**
-
-```javascript
-greetPeople();
-
-function greetPeople() {
-  console.log("Good Morning!");
-}
-```
-
-- This works only with function declaration
-
-  
 
 **Types of Functions**
 
@@ -1884,9 +1538,9 @@ for (var index = 0; index < 5; ++index) {
 
       - It's an anonymous function (no name)
 
-        - first class function! They are values, you can assign them to variables, pass them around as arguments to other functions, or even use them as return values in other functions 
+        - 
 
-        - When you pass a function as an argument to another function, that other  function can call the function represented by the argument. 
+        - 
 
         - For each name, `forEach` invokes the anonymous function with the name as an argument
 
@@ -2390,8 +2044,9 @@ These "elements" aren't true elements; they are properties on the array object, 
   > a.sort((a,b)=>a-b)
   ```
 
-
 *rest parameter syntax*
+
+arguments passed using the [rest parameter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters) syntax. Using this syntax you can prepend the last parameter of a function with `...`, which will cause all remaining arguments passed to the function to be represented as an array.
 
 ```javascript
 function concat(...args) {
@@ -3095,163 +2750,44 @@ let result = bar('Victor', 'Antonina');
 
 
 
-**Variables as pointers**
+****
 
-- Developers sometimes talk about **references** instead of pointers
 
--  You can say that a variable points to or references an object in memory, and you can also say that the pointers stored in variables are  references. 
 
-- Every  time a JavaScript program creates a new variable, JavaScript allocates a spot somewhere in its memory to hold its value. With (most) primitive  values, the variable's actual value gets stored in this allocated  memory.
 
-- *Primitive Values and Reassignement*
 
-  - Different than Ruby.... when primitive values are stored they are stored to different memory addresses and reassignement just changes the value in that space..it doesnt point to a new space
 
-  - ```javascript
-    > let a = 5
-    > let b = a
-    > a = 8
-    > a
-    = 8
-    
-    > b
-    = 5
-    ```
 
-  - | Code        | address `a` | `a`  | address `b` | `b`  |
-    | :---------- | :---------: | :--: | :---------: | :--: |
-    | `let a = 5` |   `0x14`    | `5`  |             |      |
-    | `let b = a` |   `0x14`    | `5`  |   `0x76`    | `5`  |
 
-  - | Code        | address `a` | `a`  | address `b` | `b`  |
-    | :---------- | :---------: | :--: | :---------: | :--: |
-    | `let a = 5` |   `0x14`    | `5`  |             |      |
-    | `let b = a` |   `0x14`    | `5`  |   `0x76`    | `5`  |
-    | `a = 8`     |   `0x14`    | `8`  |   `0x76`    | `5`  |
 
-- *Objects and Non-Mutating Operations*
 
-  - What does that look like in the computer? As we learned earlier,  creating new variables causes JavaScript to allocate a spot in its  memory for the value. However, with objects, JavaScript doesn't store  the object's value in the same place. Instead, it allocates additional  memory for the object and places a pointer to the object in the  variable. Thus, we need to follow two pointers to get the value of our  object from its variable name. The process looks like this:
 
-  - In this example, the variable `obj` is always at address `0x1234`. The value at that address is a pointer to the actual object. While the  pointer to the object can change -- we can see it change when `{ b: 2 }` is reassigned to `obj` -- `obj` itself always has the same address. 
 
-  - | Code                  | variable | address  |  value   | referenced object |
-    | :-------------------- | :------: | :------: | :------: | :---------------: |
-    | `let obj = { a: 1 };` |  `obj`   | `0x1234` | `0x1120` |    `{ a: 1 }`     |
-    | `obj = { b: 2 };`     |  `obj`   | `0x1234` | `0x2212` |    `{ b: 2 }`     |
 
-  - Does this act more like Ruby?
+**Using for/in loop for array**
 
-    - ```javascript
-      > let c = [1, 2]
-      > let d = c
-      > c = [3, 4]
-      > c
-      = [ 3, 4 ]
-      
-      > d
-      = [ 1, 2 ]
-      ```
+```javascript
+let arr = [ 10, 20, 30 ]
+for (let value in arr) {
+  console.log(value);
+}
+// Output:  0
+//          1
+//          2
+//be careful bc these keys are now strings
+```
 
-    - | Code             | addr `c` -> pointer -> object | addr `d` -> pointer -> object |
-      | :--------------- | :---------------------------: | :---------------------------: |
-      | `let c = [1, 2]` | `0x28` -> `0x34` -> `[1, 2]`  |                               |
-      | `let d = c`      | `0x28` -> `0x34` -> `[1, 2]`  | `0x68` -> `0x34` -> `[1, 2]`  |
-      | `c = [3, 4]`     | `0x28` -> `0x24` -> `[3, 4]`  | `0x68` -> `0x34` -> `[1, 2]`  |
+Iterates over indexes...
 
-  - Mutating methods like `push`
+so do the same:
 
-    - ```javascript
-      > let e = [1, 2]
-      > let f = e
-      > e.push(3, 4)
-      > e
-      = [ 1, 2, 3, 4 ]
-      
-      > f
-      = [ 1, 2, 3, 4 ]
-      ```
+```javascript for (let key in a) {
+for (let key in a) {
+   console.log(a[key])
+}  
+```
 
-    - Pointers have a curious effect when you assign a variable that  references an object to another variable. Instead of copying the object, JavaScript only copies the pointer. Thus, when we initialize `f` with `e`, we're making both `e` and `f` point to the same array: `[1, 2]`. It's not just the same value but the same array in the same memory  location. The two variables are independent, but since they point to the same array, that array is dependent on what you do to both `e` and `f`.
 
-    - Some developers call this aliasing: `e` and `f` are aliases for the same value.
-
-    - assignment of an array to another array doesn't create a new array, but instead copies a reference from the original array (`array1` above) into the target array
-
-    - However, since primitive values are stored in the memory address  allocated for the variable, they can never be aliases for each other. If you give one variable a new primitive value, it doesn't affect the  other.
-
-  - The takeaway of this section is that JavaScript stores primitive values  in variables. Still, it uses pointers for non-primitive values like  arrays and other objects.
-
-  
-
-  **Pass by Reference vs Pass  by Value**
-  
-  1. *Pass By Value*
-  
-     1. The concept of "pass-by-value" traditionally means that when you use a variable to pass an argument to a function, the function can't do anything that sets the original variable to a different value. No matter what happens in the function, the variable will still contain the same value that was passed to the function.
-  
-     2. ```javascript
-        let word = 'Hello';
-        
-        function myFunc(param) {
-          param = 'Goodbye';
-        }
-        
-        myFunc(word);
-        console.log(word); // 'Hello'
-        ```
-  
-     3. The main underlying concept is the the way in which variables, including function parameters, act as pointers. 
-  
-  2. Pass By Reference
-
-     1.  If JavaScript were purely pass-by-value, there wouldn't be any way for the function to change the original object. 
-  
-        1. When an operation within the function mutates its argument, it affects the original object.
-  
-     2. However, the matter is more complicated when using objects (arrays and plain objects for example). With objects, JavaScript exhibits a combination of behaviors from both pass-by-reference as well as pass-by-value. Some people call this *pass-by- value-of-the-reference* or *call-by-sharing*. Whatever you call it, the most important concept you should remember is:
-  
-     3. Functions and methods that mutate their callers are called destructive functions or methods.
-  
-     4. ```javascript
-        function changeMyWords(words) {
-          console.log(words);
-          words[0] = 'Hi';
-        }
-        
-        let myWords = ['Hello', 'Goodbye'];
-        changeMyWords(myWords);
-        console.log(myWords);
-        ```
-  
-        1. This will log `['Hello', 'Goodbye']` and then `['Hi', 'Goodbye']` to the console.
-  
-           In this exercise, the `myWords` variable is initialized to an array containing two elements, the strings `'Hello'`and `'Goodbye'`. Because an array is a reference type rather than a primitive, when we pass `myWords` into the `changeMyWords` function invocation, this acts like *pass-by-reference*. The `myWords` variable and the `words`function parameter both point to the *same* array. When we initially log `words` on line 2 we see the same array elements from the array literal to which we initialized `myWords`. We then mutate the array on line 3 by assigning index `0` to the string `'Hi'`. When we subsequently log `myWords` on line 8, we see the mutated array.
-  
-  **Using for/in loop for array**
-  
-  ```javascript
-  let arr = [ 10, 20, 30 ]
-  for (let value in arr) {
-    console.log(value);
-  }
-  // Output:  0
-  //          1
-  //          2
-  //be careful bc these keys are now strings
-  ```
-  
-  Iterates over indexes...
-  
-  so do the same:
-  
-  ```javascript for (let key in a) {
-  for (let key in a) {
-     console.log(a[key])
-  }  
-  ```
-  
-  
 
 **THIS IS A MESS SO USE `for/of` for Arrays**
 
@@ -4545,126 +4081,6 @@ let deepCopiedArr = JSON.parse(serializedArr);
 
 - The `JSON.stringify` method **serializes** any object, including arrays, that only have primitives, arrays, and plain objects as elements. Serializing involves converting an object to a string form that can be subsequently converted back into an identical object. The `JSON.parse` method performs that conversion from a string back to an object.
 
-**Side Effects**
-
-A function call that performs any of the following actions is said to have side effects:
-
-1. It reassigns any non-local variable.
-2. It mutates the value of any object referenced by a non-local variable.
-3. It reads from or writes to any data entity (files, network connections, etc.) that is non-local to your program.
-4. It raises an exception.
-5. It calls another function that has side effects.
-   - If the function can have side effects when used as intended, then we say the function itself has side effects. In practice, functions that have side effects have them regardless of what arguments are passed in.
-     - If a required argument is omitted, the function isn't being used as intended.
-     - If you pass an array to a function that expects a number, the function isn't being used as intended.
-     - If you call a function before you've done any required preparations (such as opening a connection to a remote server), the function isn't being used as intended.
-
-
-
-1. *Side effects from Reassignement*
-
-   1. If the function reassigns any variable that is not declared inside the function, the function has a side effect. 
-
-   2. ```javascript
-      let number = 42;
-      function incrementNumber() {
-        number += 1; // side effect: number is defined in outer scope
-      }
-      ```
-
-2. *Side effects through Mutation*
-
-   1. Mutation side effects are similar to reassignment side effects in that they require a variable that is declared outside the function. It's almost as easy to spot as reassignment, but not always. Suppose such a variable exists and references an object or an array. If the function mutates that object or array, then the function has a side effect.
-
-   2. ```javascript
-      let letters = ['a', 'b', 'c'];
-      function removeLast() {
-        letters.pop(); // side effect: alters the array referenced by letters
-      }
-      ```
-
-   3. Or passed in as an argument
-
-      1. ```javascript
-         let letters = ['a', 'b', 'c'];
-         function removeLast(array) {
-           array.pop(); // side effect: alters the array referenced by letters
-         }
-         
-         removeLast(letters);
-         ```
-
-   4. *Side effects through Input/Output*
-
-      1. Reading from a file on the system's disk
-      2. Writing to a file on the system's disk
-      3. Reading input from the keyboard
-      4. Writing to the console
-      5. Accessing a database
-      6. Updating the display on a web page
-      7. Reading data from a form on a web page
-      8. Sending data to a remote web site
-      9. Receiving data from a remote web site
-      10. Accessing system hardware such as:
-          - The mouse, trackpad, or other pointing devices
-          - The clock
-          - The random number generator
-          - The audio speakers
-          - The camera
-
-      ```javascript
-      // This code may not work in a browser; use Node instead.
-      let readLine = require("readline-sync");
-      
-      function getName() {
-        let name = readLine.question("Enter your name: "); // side effect: output and input
-        console.log(`Hello, ${name}!`); // side effect: output to console
-      }
-      
-      
-      let date = new Date(); // side effect: accesses the system clock
-      let rand = Math.random(); // side effect: accessed random number generator
-      ```
-
-   5. *Side Effects Through Other Functions* (each of these functions propagates their side effects to the function that called it.)
-
-      - One thing to note is that this type of side effect is only important when the invoked function has side effects that aren't local to the calling function
-
-      -  If the side effects can only be seen inside the calling function, then that side effect has no effect on whether the calling function has side effects. Consider this code:
-
-      - ```javascript
-        function insertNumberInOrder(arrayOfNumbers) {
-          arrayOfNumbers = arrayOfNumbers.slice(); // creates a copy of an array
-          arrayOfNumbers.push(arrayOfNumbers); // not a side effect since copy of array
-          arrayOfNumbers.sort((a, b) => a - b); // sort has side effects within function
-          return arrayOfNumbers; // function has no side effect
-        }
-        ```
-
-        
-
-      1. Suppose a function invokes another function, and that invoked function has a side effect that is visible outside of the calling function. In that case, the calling function also has a side effect.
-      2. `console.log` has a side effect.
-      3. `readline.question` has multiple side effects.
-      4. `new Date()` has a side effect (it accesses the system clock).
-      5. `Math.random()` has a side effect (it accesses the random number generator).
-
-   - **MIXING SIDE EFFECTS AND RETURN VALUES**
-     - most functions should return a useful value or they should have a side effect, but not both
-     - By *useful value*, we mean that the function returns a value that has meaning to the calling code. For instance, a `sum` function should probably return a number that contains the result of adding some numbers together. A function that returns an arbitrary value or that always returns the same value is not returning a useful value.
-
-- **Pure Functions**
-  - Have no side effects.- easy to test/isolate
-  - As with side effects, it's common to speak of functions as being pure or impure. However, it's more correct to talk about whether a specific function **call** is pure or impure
-  - Given the same set of arguments, the function always returns the same value during the function's lifetime. This rule implies that the return value of a pure function depends solely on its arguments.
-  - If we execute `square(42)` one billion times, it will return the same value each time: `1764`. It returns a consistent result no matter what value we pass to it:
-  - The consistent return value is possibly the most important feature of pure functions. The fact that the return value is dependent solely on the arguments implies that **nothing else in the program can influence the function during the function's lifetime**. A function's **lifetime** begins when the function is created. It ends when the function is destroyed.
-    - Nested functions, for instance, have a lifetime that spans a single execution of the outer function. Furthermore, nested functions are created every time the outer function is invoked. Each instantiation of the nested function is separate. Even if the function looks identical, it can produce different results for each instantiation -- that does not change its status as a pure function.
-
-```javascript
-const square = value => value * value;
-```
-
 
 
 
@@ -4944,9 +4360,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
 
   - if its a number you can do myObj['123'] or myObj[123] but not myObj.123
 
+    - In case of [dot notation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_Accessors#Dot_notation) to access a value, the property key must be a valid identifier
+    - In this code, property must be a valid JavaScript identifier, i.e. a sequence of alphanumerical characters, also including the underscore ("_") and dollar sign ("$"), that cannot start with a number. For example, object.$1 is valid, while object.1 is not.
     
-
+    
+    
     To access the value of a property using bracket notation (e.g., `object[someKey]`), the operand inside the brackets that references the property name (key) must be a string value. If the operand is a number, JavaScript converts it to a string using the `Number.prototype.toString()` method. If the operand is a variable, JavaScript looks up the value (converting it to a string if necessary), then uses it as a key to get the corresponding property value. The expression `myObject[a]` raises a `ReferenceError` because JavaScript cannot find the value of the variable `a`, since it has not been declared.
+    
 
 
 
@@ -5190,166 +4610,6 @@ An identifier differs from a string in that a [string](https://developer.mozilla
   ```
 
   
-
-  **Strict Mode**
-
-  - JavaScript ES5 introduced **strict mode**, which is an optional mode that modifies the semantics of JavaScript and prevents certain kinds of errors and syntax.
-
-    
-
-  - What is strict mode? How does it differ from sloppy mode?
-
-    - Strict mode eliminates some **silent errors** that occur in sloppy mode by changing them to throw errors instead. Silent errors occur when a program does something that is unintended, but continues to run as though nothing is wrong. This can lead to incorrect results or errors much later in execution that are subsequently difficult to track down.
-    - Strict mode prevents some code that can inhibit JavaScript's ability to optimize a program so that it runs faster.
-    - Strict mode prohibits using names and syntax that may conflict with future versions of JavaScript.
-    - Several benefits to programmers:	
-      - They prevent or mitigate bugs.
-      - They help make debugging easier.
-      - They help your code run faster.
-      - They help you avoid conflicts with future changes to the language.
-
-  
-
-  
-
-  - How do you enable strict mode at the global or function level?
-
-    - Strict mode is easy to turn on either at the global level of a program or at the individual function level. 
-
-    - Note also that nested functions inherit strict mode from the surrounding scope.
-
-    - The `"use strict"` statement is an example of a **pragma**, a language construct that tells a compiler, interpreter, or other translator to process the code in a different way. Pragmas aren't part of the language, and often use odd syntax like `"use strict"` does.
-
-    - Once you enable strict mode, **you can't disable it later** in the same program or function.
-
-    - You must specify the `"use strict"` pragma at the very beginning of the file or function. You can't enable it partway through a program or function:
-
-    - ```javascript
-      //global strict mode
-      
-      "use strict";
-      
-      // The rest of the program. Everything from here to the end of
-      // the file runs in strict mode.
-      
-      function foo() {
-        // strict mode is enabled here too.
-      }
-      
-      // Strict mode is still enabled
-      foo();
-      ```
-
-    - ```javascript
-      //function strict mode
-      
-      function foo() {
-        'use strict';
-      
-        // The rest of the function. Everything from here to the end of
-        // the function runs in strict mode.
-      }
-      
-      // Strict mode is disabled unless you defined it globally.
-      foo();
-      ```
-
-      - Strict mode is lexically scoped; that is, it only applies to the code that enables it. For instance:
-
-      - ```javascript
-        function foo() {
-          "use strict";
-          // All code here runs in strict mode
-        }
-        
-        function bar() {
-          // All code here runs in sloppy mode
-          foo(); // This invocation is sloppy mode, but `foo` runs in strict mode
-          // All code here runs in sloppy mode
-        }
-        
-        function foo() {
-          // All code here runs in sloppy mode
-        }
-        
-        function bar() {
-          "use strict";
-          // All code here runs in strict mode
-          foo(); // This invocation is strict mode, but `foo` runs in sloppy mode
-          // All code here runs in strict mode
-        }
-        ```
-
-        
-
-  
-
-  
-
-  - Describe how code behaves under both strict and sloppy mode.
-
-    - It won't let you create variables without explicitly declaring them first 
-
-    - ```javascript
-      "use strict";
-      
-      function foo() {
-        bar = 3.1415; // ReferenceError: bar is not defined
-      }
-      
-      foo();
-      console.log(bar);
-      
-      //you have to actually define it as a global variable 
-      
-      "use strict";
-      
-      let bar;
-      
-      function foo() {
-        bar = 3.1415;
-      }
-      
-      foo();
-      console.log(bar); // 3.1415
-      ```
-
-    - Help identify misspelled names -  If you declare a variable with one name, then later try to reassign it with a misspelled name, sloppy mode will create a new global variable. Consider this code:
-
-    - ```javascript
-      let aVariableWithALongName = 2.71828;
-      
-      // a bunch of omitted code here
-      
-      aVariab1eWithALongName = 3.14159;
-      console.log(aVariableWithALongName); // 2.71828; should be 3.14159
-      
-      // line 5 creates a global variable instead of reassigning the variable as intended. 
-      
-      "use strict";
-      
-      let aVariableWithALongName = 2.71828;
-      
-      // a bunch of omitted code here
-      
-      aVariab1eWithALongName = 3.14159; // ReferenceError: aVariab1eWithALongName is not defined
-      console.log(aVariableWithALongName);
-      ```
-
-      
-
-  
-
-  - When is strict mode enabled automatically?
-
-    - JavaScript enables strict mode automatically within the body of a `class`; there is no way to prevent that behavior. The same thing happens with JavaScript modules, which we'll discuss in a later assignment.
-
-    
-
-  - When should you use (or not use) strict mode?
-
-  - Use strict mode in any new code that you write. If you're adding new functions to an old codebase, it's safe to use function-level strict mode in the new functions, and you probably should do so. However, if you're not creating a new function in that old codebase, you probably shouldn't try to use strict mode. The changes in semantics, particularly those having to do with variable declarations, `this`, and silent failures, can easily break code that otherwise works well.
-
 
 
 
@@ -5674,7 +4934,25 @@ function xyzzy(foo, bar, qux) {
 
 `String.prototype.indexOf(char)` returns index of char, used in arrays too
 
+`String.prototype.concat(addedChars)` can add many, turns arg into string
 
+index starting at first Index going up to but not including finalIndex, also for string
+
+`Array.from(string)` //static method, splits a string character by character 
+
+`String.prototype.indexOf(char)` returns index of char, used in strings too, uses strict equality so it wouldnt work for testing if objects are included, only primitives
+
+`String.prototype.startsWith(char)` //returns boolean
+
+
+
+
+
+
+
+
+
+`Array.prototype.join(joiningChar)`//default joiningChar is `,`
 
 `Array.prototype.push()` //mutating, can add multiple elements, returns new length
 
@@ -5694,6 +4972,16 @@ function xyzzy(foo, bar, qux) {
 
 `Array.prototype.join(joiningChar)`//default joiningChar is `,`
 
+`Array.prototype.concat` //non-mutating, can add one or many or array
+
+`Array.prototype.includes(char)` //returns boolean
+
+
+
+
+
+
+
 
 
 
@@ -5710,4 +4998,17 @@ function xyzzy(foo, bar, qux) {
 
 Please go through the [JavaScript Language Fundamentals exercises](https://launchschool.com/exercises#javascript_language_fundamentals) and complete any exercises that you haven't already done. In particular, don't forget to complete the [debugging exercises](https://launchschool.com/exercise_sets/cefefb80). For even more practice, you can complete the exercises in Easy 1 to Easy 5 of [JS210 - Small Problems](https://launchschool.com/exercises#JS210_small_problems).
 
-Also, you have now learned enough to be able to complete the following sets of exercises: the last four exercises from [JavaScript Basics](https://launchschool.com/exercise_sets/c39a2eed) and all of [Medium 1](https://launchschool.com/exercise_sets/41f68c21) and [Medium 2](https://launchschool.com/exercise_sets/646ece8b) from JavaScript Language Fundamentals, and [Easy 3](https://launchschool.com/exercise_sets/829c41b0), [Easy 4](https://launchschool.com/exercise_sets/b1647500), and [Easy 5](https://launchschool.com/exercise_sets/605aaeb8) from JS210 - Small Problems.
+
+
+
+
+
+
+REGEX for alphanumeric 
+
+```js
+var a = 'Test123*** TEST';
+var b = a.replace(/[^a-z0-9]/gi, '');
+console.log(b);
+```
+
