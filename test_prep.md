@@ -4,13 +4,6 @@ Typically, we are interested in the return value of an expression,  whether ther
 
 
 
--   On one level, the question will test your ability to parse code  and to describe it with precision, or test your knowledge of some  specific syntactical aspect or language-specific feature of the  JavaScript programming language.
--   On another level, the question will check your understanding of  some deeper underlying principle; this might be some more fundamental  aspect of the JavaScript language or a non-language-specific programming concept.
-
-When answering the questions, you should:
-
--   Explain your reasoning with reference to specific lines in the  program. You can use line numbers to refer to particular lines of code  where necessary.
--   Answer with extreme precision. For example, say "function  definition" or "function invocation" as opposed to just "function" (see  the section on *Precision of Language* below for more on this).
 -   Highlight any specific syntactical conventions or technical observations where relevant.
 -   Identify the fundamental concept or concepts demonstrated by the question.
 
@@ -22,24 +15,9 @@ In programming, we're always concerned with the output and the return  value, as
 
 
 
-- **Assignments and Comparison**
-
-  - See comparison rules
-
-  - *Objects*
-
-    - ```js
-      const person = { name: 'Victor' };
-      const otherPerson = person;
-      
-      console.log(person === otherPerson);    // true
-      ```
-
-    - In JavaScript, every object literal creates a new object. When this object is assigned to a variable, a **reference** to the object is stored in that variable. In the example above, the only way to ensure that the two variables compare equally is to have them reference the same object.
-
-      -  Referential equality is useful when you'd like to compare object references, rather than their content.
-
 - **Variables** 
+
+  - Talk about visible scope (global/local) and declared scope (block `let const class`/ function `function var`) each variable has both
 
   - Unless mentioned specifically, we use the term **variable** in the broadest sense possible. On this exam, that means that all of the following should be treated as variables:
 
@@ -48,375 +26,15 @@ In programming, we're always concerned with the output and the return  value, as
     -   Function names
 
     Note in particular that object property names **are not** variables.
-    
+
     - `const` declared variables: 
       - Variables declared by `const` are block scoped, similar to variables declared by `let`, but their value cannot be changed through re-assignment. So when we try to re-assign `a` to a new value on line 4, we get an error.
-      - What if a const variable hold a muttable value (array/object)?
-        - The fact that `const` variables cannot be re-assigned does not mean that the value they hold is immutable. As we see in the example above, objects that are assigned to `const` variables can be mutated.
+      - What if a const variable hold a mutable value (array/object)?
+        - The fact that `const` variables cannot be re-assigned does not mean that the value they hold is immutable. Objects that are assigned to `const` variables can be mutated.
 
-- **Variable Scope, especially how variables interact with function definitions and blocks**
+  
 
-  - The accessibility of variables is managed by *scope*. You are free to access the variable defined within its scope-  the scope *isolates* variables.
-
-    -  *Scopes can be nested*
-    -  *The variables of the outer scope are accessible inside the inner scope*
-
-  - When a variable is referenced, JavaScript will first look for a variable with the same name in the current scope, then keep moving up through subsequent outer scopes until the variable is found. If JavaScript reaches the outermost (global) scope without finding the variable, a `ReferenceError` will be raised in most situations, but this is not always the case, as you will see in the next exercise.
-
-  - In JavaScript, every function or block creates a new variable scope. Let's examine what this means.
-
-  - Should you bring up **closures**?
-
-    - *The closure* is a function that accesses its lexical scope even executed outside of its lexical scope.  Simpler, the closure is a function that remembers the variables from the place where it is defined, regardless of where it is executed later.
-
-    - A rule of thumb to identify a closure: if inside a function you see an  alien variable (not defined inside that function), most likely that  function is a closure because the alien variable is captured.
-
-    - A closure captures variables from the lexical scope
-
-    - ```js
-      let startingBalance = 1;
-      const chicken = 5;
-      const chickenQuantity = 7;
-      
-      function totalPayable(item, quantity) {
-        return startingBalance + (item * quantity);
-      }
-      
-      startingBalance = 5;
-      console.log(totalPayable(chicken, chickenQuantity));
-      
-      startingBalance = 10;
-      console.log(totalPayable(chicken, chickenQuantity));
-      ```
-
-    - Closures are functions that *"retain access"* to variables defined in an *"enclosing scope"*. In the code above, the *enclosing scope* is the global (window) scope containing the variables `startingBalance`, `chicken`, and `chickenQuantity`. *Retaining access* means that a variable's value is not fixed at the time when the function is defined or first executed. Instead, the variable's value is dynamically looked up each time the function is called. Therefore, the value of `startingBalance` on line 6 is not `1`; instead, the value is a reference to the value stored in the `startingBalance` variable in the global scope.
-
-      As a result of how closures work, the first time the `totalPayable` function is called, the value of `startingBalance` is `5`; the second time the function is called, the value of `startingBalance` is `10`.
-
-    - ```js
-      function makeDoubler(caller) {
-        return number => {
-          console.log(`This function was called by ${caller}.`);
-          return number + number;
-        };
-      }
-      
-      const doubler = makeDoubler('Victor');
-      doubler(5);                             // returns 10
-      // logs:
-      // This function was called by Victor.
-      ```
-
-    - This solution leverages that functions in JavaScript are first-class objects. It satisfies the requirement that `makeDoubler` must take a `caller` name and it returns a variation of the `doubler` function.  Notice that the returned anonymous function expression assigned to the `doubler` variable still retains access to the `caller` variable in its closure, even after the `makeDoubler` function returns.
-
-  - Scope determines the accessibility of variables, objects, and functions from different parts of the code.
-
-    These are a number of ways to create a variable in the current scope:
-
-    - Use the `let` or `const` keywords.
-
-    - Use the `var` keyword
-
-    - Define parameters for a function - each parameter is a local variable.
-
-      - ```js
-        function greetPeople(greetingMessage) {
-          console.log(greetingMessage);
-        }
-        
-        greetPeople("Good Morning!");
-        ```
-
-      - The `greetingMessage` parameter acts like a local variable. It *is*, in fact, a local variable. The chief difference is that we initialize  it from the argument passed to the function. Parameters have local scope within a function.
-
-    - Every function definition creates a new local variable scope.  A function declaration creates a variable with the same name as the function. 
-
-    - Every block creates a new local variable scope.
-
-    - All variables in the same or surrounding scopes are visible inside functions and blocks.
-
-    - Lexical scope uses the structure of the source code to determine the variable's scope. This means that the code doesn't have to be executed for the scope to exist.
-
-  - JavaScript throws a `ReferenceError` exception if it can't find a variable anywhere in the scope hierarchy.
-
-  - **Lexical Scope** (static scoping)
-
-    - In simple terms, the lexical scope is **the scope of a variable or function based on where it is defined in the source code**. The scope is determined by the placement of variables and functions in the code, and it remains the same throughout the execution of the program.
-
-    - Simpler, the lexical scoping means that inside the inner scope you can access variables of outer scopes.
-
-      It's called *lexical* (or *static*) because the engine determines (at [lexing time](https://en.wikipedia.org/wiki/Lexical_analysis)) the nesting of scopes just by looking at the JavaScript source code, without executing it.
-
-    - In a programming language, an item's lexical scope is the place in which it was created. The scope of the variable is determined by the [program's](https://www.techtarget.com/searchsoftwarequality/definition/program) textual (lexical) structure. Variables can be declared within a specific scope and are only accessible within that region.
-
-    - In other words, lexical scope refers to the ability of a function scope  to access variables from the parent scope. When there is lexical scope,  the innermost, inner and outermost functions may access all variables  from their parent scopes all the way up to the global scope. However, no scope may access the variables from the functions defined inside it.  Thus, the child function is lexically bound to the parent function.
-
-    - ```js
-      function debugIt() {
-        const status = 'debugging';
-        function logger() {
-          console.log(status);
-        }
-      
-        logger();
-      }
-      
-      debugIt();
-      ```
-
-    - This program declares a function `debugIt()`. When the program is run, the function is stored in memory in its entirety. The program then executes the function. When this happens a new execution context is created. During this creation phase, the function `logger()` is stored in memory and the variable `status` is declared. During execution of the code in the function, `status` is set to `debugging` and then the `logger()` function is called. This function has access to its outer scope, which would include the variable `status`, and so therefore logs `debugging` to the console.
-
-      This illustrates the lexical scoping rules of JavaScript, where functions have access to variables and other functions that are created at the same level in the scope chain, as well as all resources further up the scope chain.
-
-      One could outline the program execution as follows:
-
-      - creation phase, global context
-
-        - store `debugIt()` function in memory
-
-      - execution phase, global context
-
-        - execute the code top to bottom, which will call the `debugIt()` function
-
-      - creation phase,
-
-        ```
-        debugIt()
-        ```
-
-        function context
-
-        - store function `logger()` in memory
-        - declare variable `status`
-
-      - execution phase,
-
-        ```
-        debugIt()
-        ```
-
-        function context
-
-        - assign variable `status` to `debugging`
-        - call function `logger()`
-
-      - creation phase
-
-        ```
-        logger()
-        ```
-
-        function
-
-        - there is nothing to hoist or declare
-
-      - execution phase,
-
-        ```
-        logger()
-        ```
-
-        function
-
-        ```js
-        log debugging to the console
-        ```
-
-        
-
-    - Javascript uses lexical scope to determine where it looks for a variable.  The source code defines the scope.  When you write a function it creates a scope even if the function never gets executed and has no variables of its own. There is a hierachy of scopes from the local scope of the code up to the program's global scope. 
-
-    - Javascript searched this hierachy from the bottom to the top when trying to find a variable. When it finds the variable, it stops and returns it.  This means that a lower scope variable can *shadow* or hide a variable with the same name in a higher scope.
-
-    - ```js
-      var myVar = 'This is global';
-      
-      function someFunction() {
-        var myVar = 'This is local';
-      }
-      
-      someFunction();
-      console.log(myVar);
-      ```
-
-    - JavaScript uses lexical scope. This means that it determines the scope of a variable by the structure of the program. This program declares a variable named `myVar` in two places. The first is outside of any function, giving the first `myVar` a *global* scope. The second place is inside of `someFunction`. Functions in JavaScript create a new scope — a scope that is *"local"* to the function. This local scope is also referred to as an "inner" scope in relation to the global "outer" scope.
-
-      On line 8, `console.log(myVar)` logs `"This is global"` because the two `myVar` variables, on lines 1 and 4, belong to different scopes. `someFunction` has its own local "inner" scope, so the `myVar` declaration within the function has no effect on the global "outer" scope.
-
-    - Variable scoping rules apply to both assignment and referencing equally. This code: checks the current scope and then each higher scope, looking for a variable with the name `country`. JavaScript sets the first `country` variable it finds to `"Liechtenstein"`. 
-
-      - ```js
-        let country = 'Spain';
-        function update() {
-          country = 'Liechtenstein';
-        }
-        
-        console.log(country);  // logs: Spain
-        
-        update();
-        console.log(country);  // logs: Liechtenstein
-        ```
-
-      - If JavaScript can't find a matching variable, **it creates a new global variable instead**. This is rarely what you want; it can be the source of subtle bugs.
-
-        -  When there is no variable declaration: As a result of this, JavaScript looks in the outer scope for the declaration. Since it doesn't exist, JavaScript binds `myVar` to be a "property" of the *global* object. This is "almost" the same as if `myVar` was globally declared. We will discuss more about why this is "almost"—but not "exactly"—the same in a later course when we cover the global / `window` object.
-
-      - ```js
-        // no other code above
-        function assign() {
-          let country1 = 'Liechtenstein';
-          country2 = 'Spain'; //bc you didnt use `let`!! crazy
-        }
-        
-        assign();
-        console.log(country2);   // logs: Spain
-        console.log(country1);   // gets ReferenceError
-        // no other code below
-        ```
-
-        -  In the above code, `country2` isn't declared anywhere else in the code and it is assigned a value inside the function. Since JavaScript couldn't find a matching variable, it created a new "global" variable and as such it makes it possible to log its value on line 8.
-        -  Moreover, similar to the earlier code in the adding variables to the current scope section, `country2` is in the global scope because of the way the source code is written and not because of the scope in which the `assign` function was invoked.
-
-    - ```js
-      function lunch() {    // A function declaration creates a new variable scope
-        let food = 'taco';  // 1. Add a new variable food within the current variable scope
-      }
-      
-      function eat(food) {  // 2. Parameters create variables during function invocation
-        console.log('I am eating ' + food);
-      } //Given lexical scoping rules, its scope is the eat function because of the way the source code is written, not because the function gets invoked. 
-      
-      function drink() {    // 3. Add a new variable drink within the global variable scope
-        console.log('I am drinking a glass of water');
-      }
-      ```
-
-  - Creating a variable in JS is called declaring a variable. After declaration it is empty/ has no value 
-
-    -  **A declared variable but not yet assigned with a value (uninitialized) is undefined** . myVariable is declared and not yet assigned with a value. Accessing the variable evaluates to undefined 
-
-  - Variables declared with the `let` and `const` keyword are block scoped (say "the variable `a` declared in the `let` statement". This means that when we declare the variable `myValue` within a block on line 2, that variable is not accessible outside of the block on line 5, and a `ReferenceError` is raised.
-
-  - Variables declared with `var` keyword are function scoped 
-
-  - Undeclared variables are always global. 
-
-    -  If you assign a value to a variable that has not been declared, it will automatically become a **GLOBAL** variable.
-
-  - Declared variables are created before any code is executed. Undeclared variables **do not exist until the code assigning to them is executed**. 
-
-    -  Limit Variable Scope - Global variables can be helpful in some scenarios, e.g.,  application-wide configuration. However, most developers discourage  their use since they often lead to bugs. In general, you should limit  the scope of your variables as much as possible; smaller scopes limit  the risk that an outer scope might misuse the variable.
-
-  - Variables declared in an outer scope can be accessed in any inner scope.
-
-  - global scope can be called "very top level of our code and is accessible from everywhere in our code"
-
-    1. **Variable Shadowing**
-
-       ```javascript
-       let a = 7;
-       
-       function myValue(a) {
-         a += 10;
-       }
-       
-       myValue(a);
-       console.log(a);
-       ```
-
-       If a function definition has a parameter with the same name as a variable from an outer scope, the parameter shadows the outer variable.  In JavaScript, when an argument is passed to a function, a local variable with the same name as the corresponding parameter is created within the inner scope of the function.  The parameter `a` of `myValue` shadows the variable `a` declared on line 1. Therefore, there are two variables named `a` that exist in this program: one in the global scope and the other in the function's local scope. Therefore, the reassignment of the local variable `a` within the function has no effect on the global variable `a`.
-
-- **Function/ Block/ Global Scope**
-
-  - Scope determines the accessibility (visibility) of variables.
-
-    JavaScript has 3 types of scope:
-
-    - <u>Block scope</u>
-
-      - Variables declared with`let`, `const` keywords
-      - Variables declared inside a { } block cannot be accessed from outside the block:
-
-    - <u>Function scope</u>'
-
-      -  Each function creates a new scope.
-
-      - Variables declared within a JavaScript function, become **LOCAL** to the function. 
-
-        - Variables declared with `var`, `let` and `const` are quite similar when declared inside a function.
-
-          They all have **Function Scope**:
-
-      - Local variables have **Function Scope**:
-
-        They can only be accessed from within the function.
-
-      - Since local variables are only recognized inside their functions, variables with the same name can be used in different functions.
-
-        Local variables are created when a function starts, and deleted when the function is completed
-
-    - <u>Global scope</u>
-
-      - A variable declared outside a function, becomes **GLOBAL**.
-      - A global variable has **Global Scope**:
-      - **Global** variables can be accessed from anywhere in a JavaScript program.
-        - Variables declared with `var`, `let` and `const` are quite similar when declared outside a block. They all have global scope
-        - Global variables can be accessed from anywhere, even within the function. It can even be reassigned within the function.
-
-- **Hoisting**
-
-  - Knowing this, we can now define hoisting. The JavaScript interpreter doesn't "immediately" execute all of a program's code line by line. (Recall from the previous exercise that **hoisting** is the process of finding and associating variable declarations with their respective scope—prior to the execution of all other code) Instead, it first goes over the code to find and associate variable declarations with their appropriate scope. Visually, this is as if JavaScript moves (or "hoists") each variable declaration to the top of its scope. The assignment operation, however, is not hoisted.
-
-  - In addition to variable declarations, the JavaScript interpreter also hoists function declarations. However, in contrast to how only the name of a variable is hoisted, with function declarations everything is hoisted, including both the function name and body. This means that the program can execute a function even before declaring it.
-
-  - `var`
-
-    - ```javascript
-      console.log(greeting);
-      
-      var greeting = 'Hello world!';
-      
-      //becomes
-      
-      var greeting;
-      
-      console.log(greeting);
-      
-      greeting = 'Hello world!'
-      ```
-
-      All variables in JavaScript declared with `var` are hoisted, meaning they are virtually moved to the beginning of the scope. This means that our code snippet above behaves like the following one: When a `var` variable is declared but not assigned a value, like on line 1, it is initialized to the value `undefined`. For that reason, the code logs `undefined` to the console.
-
-      On line 3, the program initializes the variable `greeting` to a value of `hello world`. Dissecting this, there are actually two things happening here: (1) the variable `greeting` is declared and, (2) `greeting` is assigned a value of `hello world`.
-
-      - You can also have `var` used twice and it wont throw an error
-
-      - ```js
-        var a = 8
-        var a = 5
-        
-        console.log(a) //5
-        ```
-
-  - `let` and `const`
-
-    - ```javascript
-      console.log(greeting);
-      
-      let greeting = 'Hello world!';
-      
-      //ReferenceError: Cannot access 'greeting' before initialization
-      ```
-
-    - The error messages are different when you try to access a variable that is not defined and when trying to access one BEFORE being defined...
-
-    - This is where the **Temporal Dead Zone**(TDZ) comes in!
-
-      - When a `var` variable is hoisted, JavaScript gives it an initial value of `undefined`.
-
-      - When `let` and `const` variables are hoisted, they are not given an initial value at all. Instead, they are left in an "unset" state; that is, they are "not defined". Don't say "undefined", though - that's confusing.
-
-    - `SyntaxError: Identifier 'a' has already been declared` if you try to declare using another keyword 
+  
 
 
 
@@ -487,6 +105,27 @@ In programming, we're always concerned with the output and the return  value, as
   - When using abstract equality, however, JavaScript will try to convert our values into a like type before performing the comparison.
 
   - We recommend using the strict equality operator (`===`) whenever possible to avoid confusing behavior and hard-to-find bugs.
+
+  - Primitives are compared by value while objects are compared by reference.
+
+  - Objects are only equal if we are comparing the exact same object.
+
+  - <u>Search comparison rules</u>
+
+  - *Objects*
+
+    - ```js
+      const person = { name: 'Victor' };
+      const otherPerson = person;
+      
+      console.log(person === otherPerson);    // true
+      ```
+
+    - In JavaScript, every object literal creates a new object. When this object is assigned to a variable, a **reference** to the object is stored in that variable. In the example above, the only way to ensure that the two variables compare equally is to have them reference the same object.
+
+      -  Referential equality is useful when you'd like to compare object references, rather than their content.
+
+  - 
 
     
 
@@ -711,21 +350,19 @@ In programming, we're always concerned with the output and the return  value, as
 
 - **Function definition and function invocation**
 
-  -  
-
   | If you are...           | Then you should use... |
-  | :---------------------- | :--------------------- |
+| :---------------------- | :--------------------- |
   | **Defining** a function | *parameters*           |
   | **Invoking** a function | *arguments*            |
-
+  
   
 
   - ```javascriptfunction greet(greeting = 'Hello') {
-    function greet(greeting = 'Hello') {
+  function greet(greeting = 'Hello') {
       console.log(greeting + ', world!');
     }
     ```
-
+  
     Default parameters are a great way to assign a default value to a parameter. This default value is used in case the parameter is `undefined`, which is the case if `greet` is called without an argument.
 
 - **function declarations, function expressions, and arrow functions**
@@ -1331,7 +968,7 @@ Loops: Looping keyword, condition, block (loop body)
       Use the `if` statement to specify a block of JavaScript code to be executed if a condition is true.
 
        	 `if (x ===3)`is a conditional statement 
-
+    	
        	 `(x==3)` is the single `condition`/expression that evaluates to a boolean
 
       ​          The text that executes when the conditional statement is true is the `clause`

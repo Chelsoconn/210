@@ -3207,14 +3207,11 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
 
 - EXAMPLES: https://javascriptweblog.wordpress.com/2010/07/06/function-declarations-vs-function-expressions/
 
-- Just a mental model
+  
 
-  - The behavior that we try to explain with hoisting is merely a consequence of JavaScript's two phases: the creation phase and execution phase.
-    - **hoisting** is the process of finding and associating variable declarations with their respective scope—prior to the execution of all other code. In addition to variable declarations, the JavaScript interpreter also hoists function declarations. However, in contrast to how only the name of a variable is hoisted, with function declarations everything is hoisted, including both the function name and body. This means that the program can execute a function even before declaring it.
+  
 
-  - The creation phase prepares your code for execution. Each time it encounters a variable, function, or class declaration, it adds that identifier to the current scope. Depending on the declaration and where the declaration occurs, the identifier gets added to either the global scope or the local scope (which may be either a function or a block). Thus, at the end of the creation phase, JavaScript knows all of the identifiers in your program and what scopes each one belongs to.
-  - When the execution phase occurs, JavaScript no longer cares about declarations. It does care about initialization and function/class definitions, but not the declarations themselves. The identifiers are already known, and their scope is already known. JavaScript merely needs to look up the identifiers as needed.
-  - The JavaScript interpreter doesn't "immediately" execute all of a program's code line by line. Instead, it first goes over the code to find and associate variable declarations with their appropriate scope. Visually, this is as if JavaScript moves (or "hoists") each variable declaration to the top of its scope. The assignment operation, however, is not hoisted.
+  
 
   ex/ 
 
@@ -3228,16 +3225,9 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
 
   - During the creation phase, JavaScript only encounters one declaration: the `boo` function on line 3. It puts the name `boo` in the global scope. During the execution phase, the first thing that happens is that JavaScript encounters `boo()` on line 1. Since line 1 is in the global scope, JavaScript looks to the global scope for an identifier named `boo`. That name exists since it was found during the creation phase. Therefore, JavaScript only needs to call the `boo` function.
 
-- What is hoisting?
-
-  - JavaScript engines operate in two main phases: a **creation phase** and an **execution phase**.
-  - The effect of this process is that all the declarations get hoisted -- raised, lifted, moved -- to the top of their defined scope
-
   
 
-  - JavaScript hoists function declarations to the top of the scope; it hoists the entire function declaration, including the body:
-
-  - Function declarations have function scope. That's another way of saying that hoisting also occurs with nested functions:
+  
 
   - ```javascript
     console.log(getName());
@@ -3287,9 +3277,7 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
       };
       ```
 
-  - It's important to realize that **hoisting doesn't change the program**. It merely executes the program in a manner that acts as though it was changed.
-
-  - When both a variable and a function declaration exist, you can assume that the function declaration is hoisted first; that is, the function declarations are hoisted above the variable declarations. Given the following code block:
+    
 
   - ```javascript
     bar();              // logs undefined
@@ -3336,7 +3324,7 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
   bar();
   bar = 'hello';
   ```
-  
+
   ```javascript
   var bar = 'hello';
   bar();             // raises "TypeError: bar is not a function"
@@ -3354,27 +3342,16 @@ const alphaCount = phrase.replace(nonAlpha, '').length;
   bar = 'hello'; //becomes reassignement 
   bar();
   ```
-  
+
   - Since function declarations are hoisted first, the variable declaration of the same name becomes redundant (notice that there is no longer a `var bar` in the code snippets). Since the variable declaration is redundant, what remains is the reassignment. Being a reassignment, this becomes a problem for snippet2, since `bar` will no longer be of type `function`, and therefore results in an error when we try to invoke `bar`. bc you cant declare a `let` or `const` variable and a function with the same name ....SO THIS ONLY WORKED AS REASSIGNEMENT BC ITS VAR NOT LET OR CONST
-  
+
   
 
   
-  
-  - **Creation Phase**- 
-    - before the execution phase begins, the creation phase does some preliminary work. One of those work items is to find all of the variable, function, and class *declarations*.
-    -  That action seems to move the declarations to the top of their respective function or block: function-scoped declarations get moved to the top of the function, and block-scoped declarations get moved to the top of the block. This process is called **hoisting**.
-  
-  - **Execution Phase**- 
-    - when the program runs code line-by-line.
-  
-- How do `var`, `let`, and `const` interact with hoisting? How do they differ?
 
-- How do functions and classes interact with hoisting? How do they differ?
+  
 
-- What part does hoisting play in the way a specific program works?
-
-- How does hoisting really work?
+  
 
 
 
@@ -3503,108 +3480,7 @@ console.log(global.foo); // undefined
 
 
 
-- **Global Scope**
 
-  - At the top level of a program -- outside of any function -- function scope refers to the entire file. Some people use the term **global scope** to refer to function scope at the top level.
-
-  - However, it's important to realize that there are no declarations that explicitly create a variable in the global scope. All declarations create variables that either have function scope (`var`, `function`) or block scope (`let`, `const`, `class`). This can lead to some confusion. For instance, consider this top-level code:
-
-  - ```javascript
-    let foo = 1;
-    console.log(foo);
-    ```
-
-  - `foo` is in the global scope in this code. However, it's declared with block scope by the `let` keyword. In fact, we can say that `foo` has block scope, but, in this case, that block scope just happens to coincide with global scope. We can also say that `foo` has global scope, but it was declared with block scope.
-
-  - It helps to think of scope as having two separate but related definitions. One refers to how a variable is declared -- we'll call it the **declared scope** -- while the other concerns the visibility of a variable -- let's call it the **visibility scope**. Note that we're using these terms for convenience. You probably won't find either term used outside of Launch School.
-
-    - **Declared** - Declared scope concerns how a variable is declared: `let`, `const`, `class`, `var`, or `function`.
-
-      - The first three declare variables with block scope while the other two declare variables with function scope. 
-      - We will typically talk about the declared scope when we discuss the scope that results from a declaration.
-
-    - **Visibility** - 
-
-      - Visibility scope concerns where a variable is visible. This can be either global scope or local scope (inside a function or a block). 
-
-      - We will sometimes also talk about function and block scope when discussing the local visibility scope, though this is more about where the variable is visible rather than how it was declared. Thus, something declared with `let` can have function scope when talking about its visibility.
-
-      - ```javascript
-        let foo = 1;        // visibility scope is global
-        var bar = 2;        // visibility scope is global
-        
-        if (true) {
-          let foo = 3;      // visibility scope is local (block)
-          var qux = 4;      // visibility scope is global
-        }
-        
-        function bar() {    // visibility scope is global
-          let foo = 5;      // visibility scope is local (function)
-          var bar = 6;      // visibility scope is local (function)
-        
-          if (true) {
-            let foo = 7;    // visibility scope is local (block)
-            var qux = 8;    // visibility scope is local (function)
-          }
-        }
-        ```
-
-        
-
-
-
-
-
-
-
-**What happens if you dont declare a variable with `let` `const` `var` or `function`?**
-
-​	It becomes global 
-
-```javascript
-function hello() {
-  a = 'hi';
-}
-
-hello();
-console.log(a); //logs hi
-```
-
-
-
-
-
-**Closures**
-
-- Closures let a function access a variable that was in scope at the function's definition point even when that variable is no longer in scope. 
-
--  Technically, they are a mix of lexical and runtime features, but it's easier to understand them as a purely lexical feature for now. They're an artifact of the code's structure, not how the code runs.
-
-  
-
-- What is a closure?
-
-  -  Closures use the scope in effect at a function's definition point to determine what variables that function can access. What variables are in scope during a function's execution depend on the closure formed by the function's definition.
-  - "the combination of a function and the lexical environment within which that function was [defined]."
-  - You can think of closure as a function combined with any variables from its lexical scope that the function needs. In other words, if a function uses a variable that is not declared or initialized in that function, then that variable will be part of the closure (provided it exists).
-
-- What is in a closure?
-
-  - The closure essentially *closes over* its environment -- what's in scope. In effect, the function definition and its scope become a single entity called a closure. 
-  - That is, the function can use variables from the lexical scope where the function was defined. **Even if those variables aren't in the lexical scope where you invoke the function, it can still access them.**
-  - Note that closures only close over the variables that the function needs. If the function uses the variable `foo`, but the outer scope contains both `foo` and `bar`, only `foo` will be included in the closure.
-
-- When is a closure created?
-
-  - Closures are created when you define a function or method.
-
-- What is the relationship between closures and scope?
-
-  - When we say that a variable is no longer in scope, we mean that it isn't in scope at the point in your program where you invoke the function. However, closure and scope are lexical concepts. Where you invoke a function is unimportant; where you define the function is. A closure includes the variables it needs from the scope where you defined the function. Those variables may not be in scope when you invoke the function, but they're still available to the function.
-
-- What do we mean when we say that closures are defined lexically?
-
-  -  "the combination of a function and the lexical environment within which that function was [defined]." You can think of closure as a function combined with any variables from its lexical scope that the function needs. 
 
 - What is partial function application?
 
@@ -3638,9 +3514,7 @@ console.log(a); //logs hi
 
 **Closure envelope model**
 
-- When you define a function, JavaScript finds all of the variable names it needs from the lexical scope that contains the function definition. It then takes those names and places them inside a special "envelope" object that it attaches to the function object. Each name in the envelope is a pointer to the original variable, not the value it contains.
 
-- It's important to remember that closure definitions are purely lexical. Closures are based on your program's structure, not by what happens when you execute it. Even if you never call a particular function, that function forms a closure with its surrounding scope.
 
 - We usually think of variables as pointers to objects, not as something that we can point to. We can point to the object that a variable references, but we can't point to the variable. That's the way JavaScript is defined. However, internally, it can do anything it needs to do, including pointing to variables. In this case, it needs a pointer to the variable so that it can see any changes made to what the variable references or contains:
 
