@@ -4,7 +4,7 @@
 
 When we discuss scope, we are referring to the visibility of variables in the current context of execution.
 
-
+(Also see `Variable Scope` in notes.md Talk about visible scope (global/local) and declared scope (block `let const class`/ function `function var`) each variable has both)
 
 **<u>Execution Contexts</u>** 
 
@@ -18,7 +18,7 @@ A FEC is created whenever a function is called, so there can be many FEC's throu
 
 Digging deeper.. the execution context is comprised of two elements, or phases: memory allocation, or creation, and code execution. 
 
-In the creation phase, Javascript creates the execution context by storing all function declarations (in their entirety) and declared variables within that context in a memory heap.  Variables declared with the `var` keyword, including function expressions assigned to variables, are initialized to `undefined`.  Variables declared with `let` or `const` do not have default initialization.  
+In the creation phase, Javascript creates the execution context by storing all function declarations (in their entirety) and declared variables within that context in a memory heap.  Variables declared with the `var` keyword, including function expressions assigned to variables, are initialized to `undefined`.  Variables declared with `let` and `const` do not have default initialization.  
 
 During this process, these declarations get hoisted to the top of their scope.  The body is included in the function, which is why functions can be called and variables declared with `var` can be referenced before they are declared.  Note that variables declared with `let` and `const` do not have a default initialization and therefor are in a temporal dead zone if referenced prior to their declaration. 
 
@@ -28,6 +28,8 @@ The execution phase is where variables are initialized and the code is executed.
 
 **<u>Lexical Scoping</u>**
 
+"Lexical scope is a fundamental concept in programming that determines the accessibility of variables and functions within a program. In simple terms, the lexical scope is the scope of a variable or function based on where it is defined in the source code."
+
 - So before the code is even executed, JavaScript already knows which variables are in scope within that context.  
 
 - Javascript has global and local scope, which can be either block or function scope.
@@ -36,7 +38,8 @@ The execution phase is where variables are initialized and the code is executed.
     - If a variable is declared within a block using the `let` or `const` keywords, those variable do not get declared during the creation phase.  When execution reaches the block, a new lexical environment is created and those variables are declared.  These variables are said to have block scope and, when declared within the block, are inaccessible in the outer scope.
     - Variables declared with `var` are said to be function scoped.  If a variable is declared with `var` within a block, it can be accessed outside of the block, but this is not the case when defined within a function.  Variables declared with `var`, `let`, and `const` within a function become local variables to that function and are created upon invocation and destroyed after completion. They cannot be accessed from the outer scope. 
     - Variables declared with `let` or `const` outside a function or block, and `var` outside a function are said to have global scope. They are accessible from anywhere within the program.
-
+    - TALK ABOUT SCOPE IN BOTH WAYS 
+    
   - When Javascript is resolving a variable, it first looks in the current scope. If it is not found, it will traverse the scope chain (moving up the hierachy) until it finds the variable. Child scopes have access to parent scopes (not vise-versa) and will move up the chain all the way to the global scope until the variable is resolved.  
   - If the variable is not found, JavaScript will throw a `Reference Error`, or create a new global variable (more precisely creates a property of the global object) if assigned to a value.  Once it is found, Javascript will stop searching. This is why lower- scoped variables can shadow higher- scoped variables with the same name. 
     - This way of determining scope is called lexical, or static, scoping. We are able to determine the scope of variables and functions without ever executing the code.  Lexical Scope is determined by the structure of the code, or the way it is written.
@@ -203,11 +206,43 @@ ex/
     
 
 
-  
 
-  
+**Code Snippets Scope** (not my words)
 
-  1. **Variable Shadowing**
+```js
+let foo = 'bar';
+{
+  let foo = 'qux';
+}
+
+console.log(foo);
+```
+
+The program logs `bar`. Line 1 initializes a variable named `foo` with the value`'bar'`. Line 2 starts a block, which creates a new scope for `let` variables. The variable on line 1 is still visible at this point, but line 3 declares a new variable named `foo` that shadows (hides) the variable from line 1. This second variable gets initialized to `'qux'`, but it goes out of scope on line 4 when the block ends. That brings `foo` from line 1 back into scope, so line 6 logs its value: `bar`.
+
+```js
+let myVar = 1;
+
+function myFunc(myVar) {
+  myVar = 2;
+}
+
+myFunc();
+console.log(myVar); // 1
+```
+
+At first glance, this example may look identical to Example 1. There's a key difference, however, which is the function parameter `myVar` on line 3. It's this small detail that leads to the difference in outcome when the code is run.
+
+The concept at work here is variable scope. When the `myFunc` function is invoked on line 7, JavaScript declares a variable with the name of the parameter `myVar` within the scope of the function. This is a *different* variable to the one initialized on line 1, and initially has a value of `undefined`. The existence of the this variable within the scope of the function 'shadows', or blocks access to, the `myVar` variable in the global scope on line 1. Therefore, line 4 is an initialization of the function-scoped `myVar` rather than a re-assignment of the `myVar` declared and initialized on line 1. When that variable is then logged on line 8, it still has its initial value of `1`.
+
+
+
+
+
+
+
+
+  1. **Variable Shadowing** (my words)
 
      ```javascript
      let a = 7;
@@ -222,15 +257,15 @@ ex/
 
      When this script is run, a global execution context is created.  The variable `a` is declared and function`myValue()` is stored in memory.  The function declaration creates a variable in the current scope with the same name as the function. When execution begins, `a` in the global scope is initialized to `7`.  
 
-     We invoke the `myValue` function and pass in the argument `a` on line 7. The global variable `a` is in scope and `a` evaluates to `7`. A new function execution context is then created.  
+     We invoke the `myValue` function and pass in the value `7` as an argument that is assigned to the global variable `a` on line 7. A new function execution context is then created.  
 
-     During the creation phase in the FEC, a new local variable with the same name as the parameter is created and is only accesible from within the function, aka function scoped. 
+     During the creation phase in the FEC, a new local variable with the same name as the parameter, in this case `a`, is created and is only accesible from within the function, aka function scoped. 
 
      During execution within the function execution context, the local variable `a` is initialized to the value passed in by the argument.  
 
-     This local variable `a` is then reassigned to the return value of the expression `7+10`.  The function returns `undefined`.  Control is then back to the execution context where the function was invoked, in this case the GEC.
+     This local variable `a` is then reassigned to the return value of the expression `7+10`.  The function returns `undefined`.  The local variable is then destroyed after the function terminates.  Control is then back to the execution context where the function was invoked, in this case the GEC.
 
-     Why did `a` resolve within the function? This is because JavaScript looks first in the current scope to find a variable.  Only if it can't find it, does it traverse the scope chain.  Because there was a local variable `a` created in the function, the variable was resolved and the outer variable `a` was shadowed.  This variable shadowing resulted in the global variable `a` being unaffected by the reassignement on line 4.
+     Why did `a` resolve locally within the function? This is because of JavaScript variable scoping rules and variable shadowing.   Javascript looks first in the current scope to find a variable.  Only if it can't find it, does it traverse the scope chain.  Because there was a local variable `a` created in the function, the variable was resolved and the outer variable `a` was shadowed.  This variable shadowing resulted in the global variable `a` being unaffected by the reassignement on line 4.
 
      The method `console.log` on line 8 is invoked and `a` is passed as an argument. The variable resolves within it's current scope (global) to `7` .  This is logged to the console and `undefined` is returned. 
 

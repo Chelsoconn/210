@@ -17,7 +17,17 @@ In programming, we're always concerned with the output and the return  value, as
 
 - **Variables** 
 
+  - Also see `identifier` in notes.md , `declaring constants` in notes.md
+
   - Talk about visible scope (global/local) and declared scope (block `let const class`/ function `function var`) each variable has both
+
+  - Containers that hold data
+
+  - After variables are declared, you can reassign using `=` operator 
+
+  - An assignment is a standalone expression that gives a variable a new value; an initializer is the `=` combined with the expression to its right in a variable declaration.
+
+  - A variable that is declared but not initialized or assigned a value has a value of `undefined`
 
   - Unless mentioned specifically, we use the term **variable** in the broadest sense possible. On this exam, that means that all of the following should be treated as variables:
 
@@ -32,23 +42,59 @@ In programming, we're always concerned with the output and the return  value, as
       - What if a const variable hold a mutable value (array/object)?
         - The fact that `const` variables cannot be re-assigned does not mean that the value they hold is immutable. Objects that are assigned to `const` variables can be mutated.
 
-  
+  - ```js
+    let answer = 41;
+    answer = 42;
+    console.log(answer)
+    ```
+
+
+    When JavaScript sees the declaration on line 1 of this code, it sets aside a bit of memory and stores the value `41` in that area. It also creates a variable named `answer` that we can use to access that value.
+
+    On line 2, we *reassign* the value `42` to the variable named `answer`. That is, JavaScript makes `answer` refer to a new value. In particular, it's important to realize that we're not changing the value of `41` -- we're assigning a completely new value to the `answer` variable.
+
+    Finally, on line 3, we log the value of the `answer`  variable to the JavaScript log. To determine what value it needs to log, JavaScript retrieves the value stored in the location used by the  variable.
+
+    BUT `answer` isn't permanantly tied to the string '41' and it can be reassigned to any value 
+
+  - ```js
+    > let firstName; //(an initializer would be = 'Mitchell')
+    = undefined
+    ```
+
+    Here, we're telling the interpreter that we want to use a variable named `firstName` to store some information. If you reference this variable in `node`, it evaluates as `undefined`: firstName was initialized to `undefined`
 
   
 
+  - 
+
+    	- So are we really returning `undefined` in a declaration? NO
+
+     - the let keyword is a declaration or a statement which doesnt return anything
+       - Note that regardless of whether we provide a value in a declaration, the variable is initialized. If we don't provide an explicit value, that  initial value is `undefined`.
+     - But an *assignment* or *reassignment* are expressions and do return the value 
+
+  
 
 
 
 
-- **Primitive Values, Types and Type Conversions/Coercions**
 
-  JavaScript represents them directly at the lowest level of the language implementation. 
+- **Primitive Values** (SOLID)
 
-  Use `typeof` to figure out what it is.. this will return a string 
+  A primitive value, or data type, is represented at the lowest level of the language implementation.  These values are immutable, and because primitives are not objects, they have no methods or properties.  How then are primitive values able to call methods? For example:
 
-  This solution takes advantage of the fact that JavaScript automatically coerces primitives to objects when needed.
+  ```js 
+  'hello'.slice(0,2) //he
+  ```
 
-  ​		- ex/ Notice how `string1` and `string2` can both use the `.length` property, even though they both reference string primitive values and not String objects. It's as if both values were created using the `new String()` function (i.e., `new String('abc')`).
+  JavaScript actually converts the primitive, in this case `hello`, to it's corresponding object.  So the primitive string values gets a temporary object wrapper, which allows it to access these object functionalities when a method is called. After the method runs, the object wrapper is destroyed and we're left again with our primitive value.  Primitives remain lightweight and fast, but we are able to do things with the values with the help of the object's methods. Note that this does not happen with the primitives `undefined` and `null`.  
+
+  
+
+  Use `typeof` to figure out what it is.. this will return a string:
+
+  
 
   - <u>String</u>
 
@@ -84,7 +130,18 @@ In programming, we're always concerned with the output and the return  value, as
     undefined           // undefined litera
     ```
 
-    
+
+
+
+- **Types and Type Conversions/Coercions** (SOLID)
+
+See comparison rules 
+
+There can be explicit and implicit coercion.  It's better to use explicit type coercion so you can decide what you want to do, not the engine.  Primitive values are immutable so when we discuss coercion, we are actually meaning that JavaScript returns a new value with a different type. 
+
+These implicit coercions allow JavaScript to fail silently, which can cause issues for the programmer.  
+
+
 
 - **Object Properties and Mutation**
 
@@ -124,8 +181,6 @@ In programming, we're always concerned with the output and the return  value, as
     - In JavaScript, every object literal creates a new object. When this object is assigned to a variable, a **reference** to the object is stored in that variable. In the example above, the only way to ensure that the two variables compare equally is to have them reference the same object.
 
       -  Referential equality is useful when you'd like to compare object references, rather than their content.
-
-  - 
 
     
 
@@ -196,27 +251,117 @@ In programming, we're always concerned with the output and the return  value, as
 
 - **Working with Strings, Arrays, and Objects. In particular, you  should be thoroughly familiar with the basic Array iteration methods (`forEach`, `map`, `filter`, and `find`) and how to use Object methods to access the keys and values in an Object as an Array.**
 
-  -  Be aware if you have a nested array, or a two dimensional array
-  -  An array property with a key of anything other than a non-negative integer is not counted as part of the array's `length`. 
-  -  JavaScript arrays have several methods that iterate over the elements:
+  
 
+  - An array property with a key of anything other than a non-negative integer is not counted as part of the array's `length`. 
 
+  - JavaScript arrays have several methods that iterate over the elements:
 
- - `forEach` :
+  - (element, index, array) you can access the array and the element
+
+  - **Callback function** (solid)
+
+    -  A callback function is a function that you can pass to another function as an argument.  During iterative methods, the callback function is invoked with each element's value being passed as an argument one at a time. 
+
+    
+
+"ARRAY LOOPING ABSTRACTIONS" DO NOT ITERATE OVER NON ELEMENTS
+
+ - `forEach` method:
 
    - ```js
+     let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];
+     
+     names.forEach(function(name) {
+       console.log(name);
+     });
+     ```
+     
+   - To use `forEach`, you need a **callback** function that you pass to `forEach` as an argument. The called function invokes the callback function when it runs. The `forEach` method invokes its callback once for each element, passing it the element's value as an argument. `forEach` always returns undefined.
+   
+
+ - `map` method:
+
+   - ```js
+     > let numbers = [1, 2, 3, 4]
+     > let squares = numbers.map(num => num * num);
+     > squares
+     = [ 1, 4, 9, 16 ]
+     
+     > squares = numbers.map(num => num * num);
+     = [ 1, 4, 9, 16 ]
      ```
 
-   - 
+   - Map is an iterative function that returns a new transformed array. The length of the array remains intact, but the new elements' value at that index is dependant on the return from the callback function with the original element at that index's value passed in as an argument. Map works similarly to `forEach` in that it iterates through an array, invoking a callback method once for each element of the array.  The difference is that map returns a tranformed array, while `forEach` returns `undefined`.
 
-​	
+- `filter`
 
--  **Understand that arrays are objects, and be able to determine whether you have an Array**
-  -  Recall that [Arrays are implemented with Objects](https://launchschool.com/lessons/79b41804/assignments/5dc08268) internally in JavaScript. One thing that differentiates the two is that arrays have a `length` property, while objects do not. Arrays can be thought of as special objects that have only non-negative integer values (from 0 up to 2 32 - 1) as keys, and have an extra `length` property that keeps track of how many such key-value pairs exist in the object.
-  -  Adding non index keys creates properties of the array object, not new elements
-  -  The `length` property can be explicitly set (recall that arrays are zero-indexed). Setting the `length` to a value that is less than the current `length` truncates the array; re-setting the `length` to a higher value does not bring back the truncated elements. Setting the `length` to a value greater than the current `length` creates 'empty slots' (sparce arrays) in the array, but the number of actual elements does not increase.
-  -  Accessing these elements by index value returns `undefined`, but certain operations like `Array.prototype.forEach` ignore those missing elements. That leads to the question of whether  the missing elements are really part of the array. We can think about  this array as either a 3-element array whose values are missing, or as  an empty array whose length is 3. Which you choose depends on the  context.
-  -  For most purposes, the elements of a JavaScript array are accessed by an index value, a non-negative integer (0, 1, 2, ...). However, arrays are also objects, which means they can have properties whose name is not a  non-negative integer. For instance, it is possible to define a property  whose key is `"-1"` or `"foo"` on an array, and you can access its value using an index-like syntax: `array[-1]` or `array["foo"]`. As with missing elements, that raises the question of whether these  properties are, in fact, array elements. Again, the answer is  context-dependent. There may be times, for instance, when you want to  treat the `-1` and `"foo"` (but maybe not both) properties as elements, but often you won't.
+  - ```js
+    > let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2]
+    > numbers.filter(num => num > 4)
+    = [ 5, 6, 7, 8, 9, 10 ]
+    
+    > numbers
+    = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2 ]
+    ```
+
+  - The `filter` method is another array iteration method. It  returns a new array that includes all elements from the calling array  for which the callback returns a truthy value.
+
+  - During each iteration, it invokes the callback function, using the value of the current element as an argument. If the callback returns a truthy value, `filter` appends the element's value to a new array. Otherwise, it ignores the element's value and does nothing
+
+  - it returns the array of *selected* elements: the elements for which the callback returned a truthy value- doesn't mutate the caller 
+
+- `find`
+
+  - The `find()` method is an [iterative method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#iterative_methods). It calls a provided `callbackFn`function once for each element in an array in ascending-index order, until `callbackFn` returns a [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) value. `find()` then returns that element and stops iterating through the array. If `callbackFn` never returns a truthy value, `find()`returns [`undefined`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
+
+  - returns the first element in the provided array that satisfies the providing testing function
+
+  - if no value satifies the testing function `undefined` is returned 
+
+  - A function to execute for each element in the array. It should return a [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)value to indicate a matching element has been found, and a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value otherwise. The function is called with the following arguments:
+
+  - ```js
+    const array1 = [5, 12, 8, 130, 44];
+    
+    const found = array1.find((element) => element > 10);
+    
+    console.log(found);
+    // Expected output: 12
+    ```
+
+    
+
+
+
+
+
+
+
+-  **Understand that arrays are objects, and be able to determine whether you have an Array** (See `array elements change` in notes.md)
+  
+  - ```js
+    > let arr = [1, 2, 3]
+    > typeof arr
+    = 'object'
+    
+    > let arr = [1, 2, 3]
+    > Array.isArray(arr)
+    = true
+    ```
+  
+  - Arrays and Objects are data structures in JavaScript.
+  
+  - Recall that [Arrays are implemented with Objects](https://launchschool.com/lessons/79b41804/assignments/5dc08268) internally in JavaScript. One thing that differentiates the two is that arrays have a `length` property, while objects do not. Arrays can be thought of as special objects that have only non-negative integer values (from 0 up to 2 32 - 1) as keys, and have an extra `length` property that keeps track of how many such key-value pairs exist in the object.
+  
+  - Adding non index keys creates properties of the array object, not new elements
+  
+  - The `length` property can be explicitly set (recall that arrays are zero-indexed). Setting the `length` to a value that is less than the current `length` truncates the array; re-setting the `length` to a higher value does not bring back the truncated elements. Setting the `length` to a value greater than the current `length` creates 'empty slots' (sparce arrays) in the array, but the number of actual elements does not increase.
+  
+  - Accessing these elements by index value returns `undefined`, but certain operations like `Array.prototype.forEach` ignore those missing elements. That leads to the question of whether  the missing elements are really part of the array. We can think about  this array as either a 3-element array whose values are missing, or as  an empty array whose length is 3. Which you choose depends on the  context.
+  
+  - For most purposes, the elements of a JavaScript array are accessed by an index value, a non-negative integer (0, 1, 2, ...). However, arrays are also objects, which means they can have properties whose name is not a  non-negative integer. For instance, it is possible to define a property  whose key is `"-1"` or `"foo"` on an array, and you can access its value using an index-like syntax: `array[-1]` or `array["foo"]`. As with missing elements, that raises the question of whether these  properties are, in fact, array elements. Again, the answer is  context-dependent. There may be times, for instance, when you want to  treat the `-1` and `"foo"` (but maybe not both) properties as elements, but often you won't.
+  
 
 
 
@@ -367,52 +512,54 @@ In programming, we're always concerned with the output and the return  value, as
 
 - **function declarations, function expressions, and arrow functions**
 
-  - You often need to execute a piece of code repeatedly in a program. Instead of rewriting or copying the code, most programming languages let you build constructs called *procedures*; procedures let you extract the common code to one place and use the code from anywhere else in your program. In JavaScript, we use the term *functions* to refer to procedures.
+  - (my words)
 
-  - Use arrow functions for callbacks.
+    A function is executable code that can be called repeatedly throughout the program. Functions perform a task, and require invocation. They allow for more reuasable, maintainable, and organized code. Future changes to that code only require change in a single location.  Functions often return useful values which you can capture with variables and use elsewhere.
 
-  -  Use function declarations or function expressions for other functions, but choose one or the other as your primary choice.
+    (DECLARATION)
 
-  -  If you use function expressions, named function expressions are better for debugging purposes. They also help clarify the intent of those functions.
+    Function declarations, or function statements, use the `function` keyword, the name of the function (required in a declaration), optional parameters, and a block of statements.  The declaration creates a functional variable with the same name as the function that has a value of  the function itself, and therefor is of the type `function`.  
 
-  - <u>*Declaration/ aka function statement*</u>
+    -------
 
-    -  A function declaration (sometimes called a "function statement") defines a variable (in this case, `hello`) whose type is `function`. It does not require assignment to a variable. The value of the function variable is the function itself. This "functional variable" obeys general scoping rules, and we can use it exactly like other JavaScript variables.
-    -  A function defined using a function declaration must always have a name (it cannot be an anonymous function). In addition to creating a named function, a function declaration also creates a variable with the same name as that function's name.
-    -  Function declarations are similar to variable declarations. Just as variable declarations must start with `let` or `const`, function declarations must start with `function`.
-    -  One way to define functions is to declare them. A function declaration has the following structure:
-       - The `function` keyword
-       - The name of the function
-       - A list of comma separated parameters
-       - A block of statements (the function body)
+    EXPRESSION - *<u>NOT MY WORDS</u>- Our example declares a variable named `greetPeople` and  assigns it to the function expression after the `=` sign. We can do that since JavaScript functions are **first-class functions***
 
-  - <u>*Expression*</u>
+    ----
 
-    - A function expression defines a function as part of a larger expression syntax (typically a variable assignment).
+    (EXPRESSION) 
 
-    - We can define an anonymous function (one without a name) and assign it to the variable. We then use the variable to invoke the function.
+    A function expression does not begin with the keyword `function` and is typically assigned to a variable. You can either have an anonymous function expression or a named function expression, but that name will only be availble within the function as a local variable.  Named expressions are helpful for debugging and recursive functions. Both named and anonymous function expressions can be assigned to variables. It is not hoisted like a function declaration, and so cannot be used prior to it appearing in the program.
 
-      -  *"anonymous function assigned to `foo` returns.."*
+    *"anonymous function assigned to `foo` returns.."*
 
-    - We can also name function expressions, like this:
+    (ARROW)
 
-    - ```js
-      let hello = function foo() {
-        console.log(typeof foo);   // function
-      };
-      
-      hello();
-      
-      foo();                       // Uncaught ReferenceError: foo is not defined                
-      ```
+    An arrow function expression gives us a shorthand for writing a tradional function expressions.  They are always anonymous, but they can be assigned to a variable. We see them most often as callback functions. You can omit the `function` keyword, and also the `{}` and `return` keyword if the body contains a single expression.  After the parameters the arrow syntax,  `=>`, is used followed by the body. Again, because it is not a function declaration, it behaves as a typical function expression as far as hoisting is concerned. 
 
-    - However, the function's name, `foo`, is only available inside the function (i.e., it can only be used from within the function's local scope). With named function expressions, the name of the function is contained within its own scope (i.e., inside the variable `hello`).
+    (PARAMS/ ARGUMENTS/ RETURN)
 
-      Although most function expressions use anonymous functions, named function expressions are useful for debugging. The debugger can show the function's name in the call stack, providing a valuable clue. Named function expressions can also be useful for recursive functions.
+    The parameters declare local variables for the function, and are initialized to the values of the correspinding arguments passed into the function upon invocation.  This allows for the function to have access to data that may be out of scope, or to simply have local variables in the function assigned to the appropriate values upon invocation.  If there is a missing argument, the local variable with the parameter name is initialized to `undefined`.  Functions implicitly return `undefined` unless there is an explicit `return` statement in the function.   A return statement can be anywhere within the function, and when encountered JavaScript evaluates the expression, terminates the function, and returns the value. 
+
+    To invoke a function we must append `()` to the function name, or we will just return the function object. 
+
+    --------
+
+    (see `[Function: foo]` in notes.md for examples)
+
+    <u>NOT MY WORDS</u>
+
+  - During execution, JavaScript makes the arguments passed to a function available to the function as local variables with the same names as the function's parameters. Within the function body, these local variables are called arguments
+
+    Function names are just local variables, so you can assign it to a new local variable and call the function using a new name 
+
+    - The difference between functions and other variables is that the  function has to be run in order to determine its value. When you need to access that value in multiple places in your code, it is more efficient to run the function once and assign the value returned to a variable.  That variable is used in the rest of the calculations.
+    - You can say "the blank function call returns"
+
+    - search in notes.md
+      - 1) `Default Parameter`
+        2) `Nested Method`
 
   - <u>*Arrow Function*</u>
-
-    - think of arrow functions as a shorthand way to write a function expression.
 
     - ```js
       const multiply = (a, b) => {
@@ -430,15 +577,15 @@ In programming, we're always concerned with the output and the return  value, as
         [1, 2, 3].map((element) => 2 * element); // returns [2, 4, 6]
         ```
 
-      - Arrow functions also have another use that makes them immensely popular: they inherit the "execution context" from the surrounding code. 
+  
 
-- **implicit return value of function invocations**
+  
 
-  - "If a function does not contain an explicit `return` statement, or the `return` statement does not include a value, the function implicitly returns the value `undefined`". This is a reason why functions are said to "have returned" rather than "finished execution". When we talk about closures in a later course this distinction will become more apparent. For now, just be mindful of the disambiguation between the `return` value (explicit or implicit) of a function and the statement that a *"function that has returned or returns"*.
-
-    
+  
 
 - **first-class functions**
+
+  - function names are variables (see `traditional variables` in notes.md)
 
   - A programming language is said to have **First-class functions** when functions in that language are treated like any other variable. For example, in such a language, a function can be passed as an argument to other functions, can be returned by another function and can be assigned as a value to a variable.
 
@@ -514,6 +661,18 @@ In programming, we're always concerned with the output and the return  value, as
       //We assigned an Anonymous Function in a Variable, then we used that variable to invoke the function by adding parentheses () at the end.
       
       //Note: Even if your function was named, you can use the variable name to invoke it. Naming it will be helpful when debugging your code. But it won't affect the way we invoke it.
+      
+      
+      function foo(bar) {
+        console.log(bar, bar, bar);
+      }
+      
+      let bar = foo;
+      
+      foo("hello"); // prints "hello hello hello"
+      bar("hi");    // prints "hi hi hi
+      
+      //We can actually assign another variable to the function name and call the function by the other variable name 
       ```
 
   - When you pass a function as an argument to another function, that other  function can call the function represented by the argument. 
@@ -523,6 +682,34 @@ In programming, we're always concerned with the output and the return  value, as
     
 
 - **partial function application**
+
+  - ```js
+    function add(first, second) {
+      return first + second;
+    }
+    
+    function makeAdder(firstNumber) {
+      return function(secondNumber) {
+        return add(firstNumber, secondNumber);
+      };
+    }
+    
+    let addFive = makeAdder(5);
+    let addTen = makeAdder(10);
+    
+    console.log(addFive(3));  // 8
+    console.log(addFive(55)); // 60
+    console.log(addTen(3));   // 13
+    console.log(addTen(55));  // 65
+    ```
+
+  - A function such as `makeAdder` is said to use **partial function application**. It applies some of the function's arguments (the `add` function's `first` argument here) when called, and supplies the remaining arguments when you call the returned function. Partial function application refers to the creation of a function that can call a second function with fewer arguments than the second function expects. The created function supplies the remaining arguments.
+
+  - Partial function application is most useful when you need to pass a function to another function that won't call the passed function with enough arguments. It lets you create a function that fills in the gaps by supplying the missing elements. For instance, suppose you have a function that downloads an arbitrary file from the Internet. The download may fail, so the function also expects a callback function that it can call when an error occurs:
+
+  - Partial function application requires a reduction in the **number of arguments** you have to provide when you call a function. If the number of arguments isn't reduced, it isn't partial function application. 
+
+  - A closure is when you combine some state or context with code so that you can execute that code later bound to those state values even when the origin of the values is now gone. **Partial application is when you bind one or more (but not all) arguments of a function to values using a closure**.
 
   - Partial application starts with a function. We take this function and create a new one with one or more of its arguments already “set” or *partially applied*. It will reduce the number of parameters needed for our functions.
 
@@ -1081,7 +1268,37 @@ Loops: Looping keyword, condition, block (loop body)
 
    On line 8, however, we reassign `myArray` to a new array, `[1, 2]`. Reassignments of variables never mutate the value or object that was originally referenced by that variable. Instead, reassignment creates a completely new value or object, and changes the variable so it references that new item. The reassignment, however, **does not change** any other variable that may be referencing the original item - the other variables still reference the old item. Thus, on lines 9, we see that the array referenced by `myArray` is now `[1, 2]`, but the array referenced by `myOtherArray` on line 10 still refers to `[1, 2, 3]`.
 
+8) `For Loop`
 
+   1) ```js
+      let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];
+      let upperNames = [];
+      
+      for (let index = 0; index < names.length; index += 1) {
+        let upperCaseName = names[index].toUpperCase();
+        upperNames.push(upperCaseName);
+      }
+      
+      console.log(upperNames); // => ['CHRIS', 'KEVIN', 'NAVEED', 'PETE', 'VICTOR']
+      ```
+
+   2) Execute the initialization statement. Note that the statement may include variable declarations.
+
+   3. Evaluate the condition. The loop terminates if the condition has a falsy value.
+
+   4. Execute the body of the loop.
+
+   5. Execute the increment expression.
+
+   6. Return to step 2 for the next iteration.
+
+   - `for` loops let you see and understand the looping logic at a single glance. The syntax also lets you move the `index` variable from the global scope into the scope of the `for` statement, and it helps make your code cleaner and more organized.
+   - Same purpose at `while` loop with a condensed syntax that works well when iterating over arrays and other sequences 
+   - A `for` loop combines variable initialization, a loop condition, and the variable increment/decrement expression all on the same line:
+   - All 3 components of the `for` loop are optional
+   - for ([initialExpression]; [condition]; [incrementExpression]) {  statement }
+     - A good way to write this:
+       - In our solution code, we initialize `i` to 10, and decrement `i` by 1 on each iteration, using the short-hand expression `i -= 1`. Once `i` is equal to 0, the condition provided to our `for` loop is false and the loop terminates. Finally, we log `'Launch!'`.
 
 
 
@@ -1400,3 +1617,113 @@ if (x = 5) {
 let isOk = !!(foo || bar);
 ```
 
+**String Concatenation** (see `510` in notes.md for a description)
+
+- ```javascript
+  > 'foo' + 'bar'
+  = 'foobar'
+  
+  > '1' + 2					\\coerces number to string
+  = '12'
+  
+  > '5' - 3					\\coerces string to number
+  = 2
+  ```
+
+  - **Implicit Type Conversion**
+    - Unlike Ruby, the number 2 is coerced into a string and then concatenated
+    - No matter what.. undefined, null, Infinity + a string operand will always be coerced and concatenated
+
+```js
+> Number('1');
+= 1
+
++('123')        // 123
++(true)         // 1
++(false)        // 0
++('')           // 0
++(' ')          // 0
++('\n')         // 0
++(null)         // 0
++(undefined)    // NaN
++('a')          // NaN
++('1a')         // NaN
+
+> Number('foo');
+= NaN
+```
+
+- When one of the operands is an object (including arrays and functions),  both operands are converted to strings and concatenated together: (non- mutating)
+
+```js
+[1] + 2                     // "12"
+[1] + '2'                   // "12"
+[1, 2] + 3                  // "1,23"
+[] + 5                      // "5"
+[] + true                   // "true"
+42 + {}                     // "42[object Object]"
+(function foo() {}) + 42    // "function foo() {}42"
+```
+
+
+- The other arithmetic operators, `-`, `*`, `/`, `%`, are only defined for numbers, so JavaScript converts both operands to numbers:
+
+  ```js
+  1 - true                // 0
+  '123' * 3               // 369 -- the string is coerced to a number
+  '8' - '1'               // 7
+  -'42'                   // -42
+  null - 42               // -42
+  false / true            // 0
+  true / false            // Infinity
+  '5' % 2                 // 1
+  > 9-'hi'
+  NaN
+  > 1-undefined
+  NaN
+  > 1+undefined
+  NaN
+  >[1] * 2;              // 2 -- becomes '1' * 2, then 1 * 2
+  >[1, 2] * 2;           // NaN -- becomes '1,2' * 2, then NaN * 2
+  >[5] - 2;              // 3
+  >[5] - [2];            // 3
+  >5 - [2];              // 3
+  >5 - [2, 3];           // NaN -- becomes 5 - '2,3', then 5 - NaN
+  >[] + [];              // '' -- becomes '' + ''
+  >[] - [];              // 0 -- becomes '' - '', then 0 - 0
+  >+[];                  // 0
+  >-[];                  // -0
+  ```
+
+  **Coerce Number/Boolean to String**
+
+  ```js
+  > String(20); //function
+  = '20'
+  
+  > (123).toString(); //method
+  
+  //can do this, but avoid it
+  
+  123 + '';                // "123"
+  '' + 123.12;             // "123.12"
+  
+  
+  String(true); 
+  = "true"
+  
+  true.toString(); 
+  
+  1 + true       // true is coerced to the number 1, so the result is 2
+  '4' + 3        // 3 is coerced to the string '3', so the result is '43'
+  
+  
+  1 + true        // 2
+  1 + false       // 1
+  true + false    // 1
+  null + false    // 0
+  null + null     // 0
+  1 + undefined   // NaN undefined gets coerced to NaN (which is still considered a number)
+  ```
+
+  
