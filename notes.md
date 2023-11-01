@@ -400,7 +400,7 @@ Note that non-idiomatic names are not invalid names. Non-idiomatic  names are co
 
 MY WORDS 
 
-An expression is any valid code that evaluates to a single value, even `undefined` or `null`.  An expression can assign a value to variable, or just simply resolve to a value.  We call expressions joined by operators complex expressions. The most common expression types are arithmatic (evaluates to a number), string (evalues to a string), and logical (evaluates to a boolean or one of the operands).  
+An expression is any valid code that evaluates to a single value, even `undefined` or `null`.  An expression can assign a value to variable, or just simply resolve to a value.  We call expressions joined by operators complex expressions. The most common expression types are arithmatic (evaluates to a number), string (evalues to a string), and logical (evaluates to one of the operands).  
 
 *look up `if / else` in test_prep.ms, `comparison` in test_prep.md*
 
@@ -541,16 +541,7 @@ Variable names are often referred to by the broader term, **identifiers**. In Ja
 
 The term *variable name* includes all of these identifiers except property names of objects.
 
-**Variable**
 
--   Variables declared with `let` and `var`
--   Constants declared with `const`
-    -   When we use the terms *variable* or *variable name*, we are usually including constants declared by `const` in that same discussion.
-
--   Properties of the global object
--   Function names
--   Function parameters
--   Class names
 
 Not all object properties are variables; only those on the global object.
 
@@ -1515,121 +1506,92 @@ let result = product(2, 3, 4, 5);
 
 
 
-**Objects** (SOLID)
+**Objects** (SOLID) abcdef
 
-An object is a data type in JavaScript that can store primitive values and/or other objects as key- value pairs. These pairs are referred to as object properties.  These keyed collections are generally mutable.  We are able to use these keys to access data within the object.  
+An object is a data type in JavaScript that can store primitive values and/or other objects as key- value pairs. JavaScript will coerce all non-string keys to strings, yet will allow for any data type as a value. These pairs are referred to as object properties and comprise the state of an object.  Objects that have function expressions as values define behavior for that object, but are also properties of the object.  They are invoked as methods by the calling object. These keyed collections are mutable.  We are able to use these keys to access data within the object.  
 
 So, as we know, arrays are also considered objects.  The main difference is that when we are using a non-array object, we are usually needing to associate values with non- index keys.  An array is the correct choice when we are needing an ordered indexed collection of values. Unlike arrays, objects don't have a length property.
 
-JavaScript will coerce all non-string keys to strings, yet will allow for any type of value.  Objects use `{}` to enclose the object.  Bracket notation or dot notation are used to access the values of an object. JavaScript will evaluate the expression within the bracket to a value, meaning that is accepts dynamic keys.  Dot notation accepts static keys and is typed directly.
+Objects use `{}` to enclose the object.  Bracket notation or dot notation are used to access and assign/ re-assign the values of an object. JavaScript will evaluate the expression within the bracket to a value, meaning that is accepts dynamic keys.  Dot notation accepts static keys and is typed directly.
+
+<u>Pass by value of the reference</u>
+
+JavaScript is always pass- by- value.  However, when it comes to objects, the value of the reference is passed.  This is because objects are reference types, which allows them to be mutated.  If an object is passed as an argument to a function, changes made to that object internally will affect the original object as they are both referring to the same object. These are mutating, or destructive, methods/ functions. If the variable is reassigned, then it will not affect the original object. 
+
+Let's examine how this works:
+
+When JavaScript encounters a variable declaration, it sets aside memory to hold something.  If the value is a primitive, the actual value is stored here, and the variable points to it.  If the value is an object, JavaScript will place a pointer here to another memory space, which will hold the object's value. It's as if we give two separate mailboxes a letter with an address on it.  When we assign a variable to another variable, as we do when we pass an argument to a function, we are passing this value (the letter) to it. So the local variable within the function with the name of the paramater and the variable whose value was passed in as an argument now both reference a different memory space (pass by value).  BUT, these memory spaces both hold the same address.  This address points to the same object (pass by reference).  So it's as if the function then goes to the actual house located at that address, and can change things.  This change will then be seen by the original variable.
+
+To simplify, the object is not copied when we assign a variable referencing an object to another variable.  The pointer is copied, which allows for both variables to point to the same object. 
+
+(SEE test_prep.md for objects examples)
+
+(SEE notes.md object extras)
 
 ---------
 
 
 
-- **objects** that have **behavior** (they perform actions) and **state** (they have characteristics that distinguish between different objects). 
+
+
+
+
+
+
+- ```javascript
+  > person.height = '5 ft'
+  = '5 ft'
+  
+  > person['gender'] = 'female'
+  = 'female'
+  
+  > person
+  = { name: 'Jane', age: 37, hobbies: ['photography', 'genealogy'], height: '5 ft', gender: 'female' }
+  
+  > delete person.age
+  = true
+  
+  > delete person['gender']
+  = true
+  
+  > delete person['hobbies']
+  = true
+  
+  > person
+  = { name: 'Jane', height: '5 ft' }
+  ```
+
+- *delete* keyword 
+
+  -  removes the key-value pair from the object and returns `true` unless it cannot delete the property (for instance, if the property is non-configurable).
+  -  If you use delete in an array it leaves a hole, use splice
 
   
 
-  -   - Be careful! 
+- If a variable declared with `const` is initialized with an  object, you can't change what object that variable refers to. You can,  however, modify that object's properties and property values:
 
-      - ```javascript
-        > let myObj = {}
-        > myObj[true] = 'hello'
-        > myObj['true'] = 'world'
-        > myObj[true]
-        = 'world'
-        ```
-    
-        
+- ```javascript
+  > const MyObj = { foo: "bar", qux: "xyz" }
+  > MyObj.qux = "hey there"
+  > MyObj.pi = 3.1415
+  > MyObj
+  = { foo: 'bar', qux: 'hey there', pi: 3.1415 }
+  
+  > MyObj = {} // Uncaught TypeError: Assignment to constant variable.
+  ```
+
+- You can use `Object.freeze` with objects to freeze the property values of an object, just like you can with arrays:
+
+- ```javascript
+  > const MyObj = Object.freeze({ foo: "bar", qux: "xyz" })
+  > MyObj.qux = "hey there"
+  > MyObj
+  = { foo: 'bar', qux: 'xyz' 
+     
+     //FREEZE DOESNT FREEZE NESTED OBJECTS
+  ```
 
   
-
-  - ```javascript
-    > person.height = '5 ft'
-    = '5 ft'
-    
-    > person['gender'] = 'female'
-    = 'female'
-    
-    > person
-    = { name: 'Jane', age: 37, hobbies: ['photography', 'genealogy'], height: '5 ft', gender: 'female' }
-    
-    > delete person.age
-    = true
-    
-    > delete person['gender']
-    = true
-    
-    > delete person['hobbies']
-    = true
-    
-    > person
-    = { name: 'Jane', height: '5 ft' }
-    ```
-
-  - *delete* keyword 
-
-    -  removes the key-value pair from the object and returns `true` unless it cannot delete the property (for instance, if the property is non-configurable).
-    -  If you use delete in an array it leaves a hole, use splice
-
-    
-
-  - If a variable declared with `const` is initialized with an  object, you can't change what object that variable refers to. You can,  however, modify that object's properties and property values:
-
-  - ```javascript
-    > const MyObj = { foo: "bar", qux: "xyz" }
-    > MyObj.qux = "hey there"
-    > MyObj.pi = 3.1415
-    > MyObj
-    = { foo: 'bar', qux: 'hey there', pi: 3.1415 }
-    
-    > MyObj = {} // Uncaught TypeError: Assignment to constant variable.
-    ```
-
-  - You can use `Object.freeze` with objects to freeze the property values of an object, just like you can with arrays:
-
-  - ```javascript
-    > const MyObj = Object.freeze({ foo: "bar", qux: "xyz" })
-    > MyObj.qux = "hey there"
-    > MyObj
-    = { foo: 'bar', qux: 'xyz' 
-       
-       //FREEZE DOESNT FREEZE NESTED OBJECTS
-    ```
-
-  - Objects include, but aren't limited to, the following types:
-
-    -   Simple Objects
-
-    -   Arrays
-
-    -   Dates
-
-    -   Functions
-
-
-    
-
-  - We can also define functions to return other functions
-
-    - ```javascript
-      function greeter(greeting) {
-        return function(name) {
-          return console.log(`${greeting} ${name}`);
-        }
-      }
-      
-      let hello = greeter('Hello');
-      let hi = greeter('Hi');
-      
-      console.log(hello('Trevor'));  // prints "Hello Trevor"
-      console.log(hello('Ginni'));   // prints "Hello Ginni"
-      console.log(hi('Spencer'));    // prints "Hi Spencer"
-      console.log(hi('Grace'));      // prints "Hi Grace"
-      ```
-
-
 
 
 
@@ -2028,6 +1990,8 @@ let result = bar('Victor', 'Antonina');
 
 **Math**
 
+The math object **provides you properties and methods for mathematical constants and functions**. Unlike other global objects, Math is not a constructor. All the properties and methods of Math are static and can be called by using Math as an object without creating it.
+
 ```javascript
 > Math.sqrt(36)
 = 6
@@ -2045,6 +2009,8 @@ let result = bar('Victor', 'Antonina');
 
 
 **Dates**
+
+JavaScript Date objects **represent a single moment in time in a platform-independent format**. Date objects encapsulate an integral number that represents milliseconds since the midnight at the beginning of January 1, 1970, UTC (the epoch). Note: TC39 is working on Temporal, a new Date/Time API.
 
 - You don't have to work that hard, however. JavaScript's `Date` constructor creates objects that represent a time and date. The objects provide methods that let you work with those values (0 = Sunday)
 
@@ -2591,69 +2557,6 @@ console.log(global.foo); // undefined
 
 
 
-
-
-HERE I AM 
-
-**Closure envelope model**
-
-
-
-- We usually think of variables as pointers to objects, not as something that we can point to. We can point to the object that a variable references, but we can't point to the variable. That's the way JavaScript is defined. However, internally, it can do anything it needs to do, including pointing to variables. In this case, it needs a pointer to the variable so that it can see any changes made to what the variable references or contains:
-
-- ```javascript
-  let numbers = [1, 2, 3];
-  
-  function printNumbers() {
-    console.log(numbers);
-  }
-  
-  printNumbers(); // => [ 1, 2, 3 ]
-  
-  numbers = [4, 5];
-  printNumbers(); // => [ 4, 5 ]
-  
-  //or
-  
-  let number = 42;
-  
-  function printNumber() {
-    console.log(number);
-  }
-  
-  printNumber(); // => 42
-  
-  number = 3.1415;
-  printNumber(); // => 3.1415
-  ```
-
-  - If the closure pointed to the value instead of the variable, it wouldn't be able to tell that we reassigned `numbers` on line 9. That is also true for primitive values: we need a pointer to the variable so the closure can see any changes.
-  - When a function encounters a variable name during execution, it first looks inside its local scope for that name. If it can't find the name, it peeks inside the envelope to see whether the variable is mentioned there. If it is, JavaScript can follow the pointer and get the current value of the variable. In fact, this is how scope works in JavaScript: it first checks for local variables by a given name, then it looks to the closure if it can't find it.
-
-  - **first-class value** or **first-class object** - Clearly, in JavaScript, primitive values, arrays, and objects all meet this criteria. What you might not realize is that functions also do.
-
-    - They can be assigned to a variable or an element of a data structure (such as an array or object).
-    - They can be passed as an argument to a function.
-    - They can be returned as the return value of a function.
-
-  -  Since functions can be treated as values, we can create functions that can take other functions as arguments and return other functions. That, in turn, allows for a more declarative and expressive style of programming.
-
-  - ```javascript
-    function foo() {
-      let name = "Pete";
-      return function() {
-        console.log(name);
-      };
-    }
-    
-    let printPete = foo();
-    printPete(); // Pete
-    ```
-
-    - In this example, we first call `foo` and capture its return value, a function that logs the value of the `name`variable defined in the lexical scope of `foo`. At a minimum, the closure formed by the returned function's definition contains a pointer to `name` in its envelope. That pointer means that `name`'s value won't get discarded (garbage collected -- we'll meet this concept later) when `foo` is done. Though `name` is out of scope when `foo` finishes, the returned function has an envelope that contains a pointer to `name`. Thus, the function can still follow the pointer to the original variable, and find its current value, and that lets `printPete()` print `Pete'.
-
-
-
 https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
 
 **Closures are good for:**
@@ -2670,186 +2573,122 @@ https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
 
 
 
-**How does Javascript look up a variable?**
 
-- When a variable is referenced, JavaScript will first look for a variable with the same name in the current scope, then keep moving up through subsequent outer scopes until the variable is found. If JavaScript reaches the outermost (global) scope without finding the variable, a `ReferenceError` will be raised in most situations, but this is not always the case, as you will see in the next exercise.
-- What if ther is no variable declaration?
-  - Notice that on line 2 there is no variable declaration for `myVar` (i.e., there is no `var` keyword before `myVar`). As a result of this, JavaScript looks in the outer scope for the declaration. Since it doesn't exist, JavaScript binds `myVar` to be a "property" of the *global* object. This is "almost" the same as if `myVar` was globally declared. We will discuss more about why this is "almost"—but not "exactly"—the same in a later course when we cover the global / `window` object.zxf
 
-**Objects vs Primitive**
-
-- Primitive values are *immutable*: you cannot modify them. Operations on these values return a new value of the same type.
-- Objects are *mutable*: you can modify them without changing their identity. Objects contain data inside themselves; it's this inner data that you can change.
-
-- Some of the built in objects share their names with some of the primitive data types (String and Number)- they are not the same
-
-- They are primitive values so we cant theoretically call methods on them, so js temporarily coerces them into their object counterpart (object data type)
-
-- undefined has no built in object counterpart and null
-
-  - Null and undefined are not objects 
-
-- With this, we have the benefit of not having to explicitly create the  object form of strings, numbers, and booleans to use methods on them.
-
-- ```javascript
-  let a = 'hi';                        // Create a primitive string with value "hi"
-  typeof a;                            // "string"; This is a primitive string value
-  
-  let stringObject = new String('hi'); // Create a string object
-  typeof stringObject;                 // "object"; This is a String object
-  
-  a.toUpperCase();                     // "HI"
-  stringObject.toUpperCase();          // "HI"
-  
-  typeof a;                            // "string"; The coercion is only temporary
-  typeof stringObject;                 // "object"
-  ```
+**Object Extras**
 
 
 
-**Object Properties**
+How to define methods in an object- dont use arrow functions 
 
-- Objects are containers for two things: data and behavior 
+```javascript
+let myObj = {
+  foo(who) {
+    console.log(`hello ${who}`);
+  },
 
-  - named items with values represent attributes of the object (associations between a name (or key) and a value)
+  bar(x, y) {
+    return x + y;
+  },
+};
+```
 
-    - These are properties 
+- Property Names and Values 
 
-    - Get values of an object property with `.propertyName`
+  - A property name for an object can be any valid string, and a property value can be any valid expression:
 
-      - ```javascript
-        let animal = 'turtle';
-        animal.length;          // 6
-        
-        let colors = {
-          red: '#f00',
-          orange: '#ff0',
-        };
-        
-        colors.red;             // "#f00"
-        
-        'blue'.length;          // 4 - works with primitives too
-        ```
+  - ```javascript
+    let object = {
+      a: 1,                           // a is a string with quotes omitted
+      'foo': 2 + 1,                   // property name with quotes
+      'two words': 'this works too',  // a two word string
+      true: true,                     // property name is implicitly converted to string "true"
+      b: {                            // object as property value
+        name: 'Jane',
+        gender: 'female',
+      },
+      c: function () {                // function expression as property value
+        return 2;
+      },
+      d() {                           // compact method syntax
+        return 4;
+      }
+    };
+    ```
 
-      - You can set a new value for a property with assignment:
+  - Access property values by dot notation or bracket notation
 
-      - Methods are the behaviors
-
-      - To call a method on an object you access it like a property bc it is! and then append () and even pass arguments 
-
-        - methods are functions with some special behavior
-
-        How to define methods in an object- dont use arrow functions 
-
-        ```javascript
-        let myObj = {
-          foo(who) {
-            console.log(`hello ${who}`);
-          },
-        
-          bar(x, y) {
-            return x + y;
-          },
-        };
-        ```
-
-  - Property Names and Values 
-
-    - A property name for an object can be any valid string, and a property value can be any valid expression:
-
-    - ```javascript
-      let object = {
-        a: 1,                           // a is a string with quotes omitted
-        'foo': 2 + 1,                   // property name with quotes
-        'two words': 'this works too',  // a two word string
-        true: true,                     // property name is implicitly converted to string "true"
-        b: {                            // object as property value
-          name: 'Jane',
-          gender: 'female',
-        },
-        c: function () {                // function expression as property value
-          return 2;
-        },
-        d() {                           // compact method syntax
-          return 4;
-        }
-      };
-      ```
-
-    - Access property values by dot notation or bracket notation
+  - ```javascript
+    let object = {
+      a: 'hello',
+      b: 'world',
+    };
     
+    object.a;                 // "hello", dot notation
+    object['b'];              // "world", bracket notation
+    object.c;                 // undefined when property is not defined
+    
+    let foo = {
+      a: 1,
+      good: true,
+      'a name': 'hello',
+      person: {
+        name: 'Jane',
+        gender: 'female',
+      },
+      c: function () {        // function expression as property value
+        return 2;
+      },
+      d() {                   // compact method syntax
+        return 4;
+      }
+    };
+    
+    foo['a name'];            // "hello", use bracket notation when property name is an invalid identifier
+    foo['goo' + 'd'];         // true, bracket notation can take expressions
+    let a = 'a';
+    foo[a];                   // 1, bracket notation works with variables since they are expressions
+    foo.person.name;          // "Jane", dot notation can be chained to "dig into" nested objects
+    foo.c();                  // 2, Call the method 'c'
+    foo.d();                  // 4, Call the method 'd'
+    ```
+
+  - Adding and updating properties 
+
+  - ```javascript
+    let object = {};              // empty object
+    
+    object.a = 'foo';
+    object.a;                     // "foo"
+    
+    object['a name'] = 'hello';
+    object['a name'];             // "hello"
+    
+    object;                       // { a: "foo", "a name": "hello" }
+    ```
+
+  - deleting properties (use `delete` keyword)
+
     - ```javascript
-      let object = {
+      let foo = {
         a: 'hello',
         b: 'world',
       };
       
-      object.a;                 // "hello", dot notation
-      object['b'];              // "world", bracket notation
-      object.c;                 // undefined when property is not defined
+      delete foo.a;
+      foo;                      // { b: "world" }
       
-      let foo = {
-        a: 1,
-        good: true,
-        'a name': 'hello',
-        person: {
-          name: 'Jane',
-          gender: 'female',
-        },
-        c: function () {        // function expression as property value
-          return 2;
-        },
-        d() {                   // compact method syntax
-          return 4;
-        }
-      };
-      
-      foo['a name'];            // "hello", use bracket notation when property name is an invalid identifier
-      foo['goo' + 'd'];         // true, bracket notation can take expressions
-      let a = 'a';
-      foo[a];                   // 1, bracket notation works with variables since they are expressions
-      foo.person.name;          // "Jane", dot notation can be chained to "dig into" nested objects
-      foo.c();                  // 2, Call the method 'c'
-      foo.d();                  // 4, Call the method 'd'
+      We can also use delete for arrays (use bracket notation)
+      a = [1,2,3,4,5]
+      delete a[1]
       ```
-    
-    - Adding and updating properties 
-    
-    - ```javascript
-      let object = {};              // empty object
-      
-      object.a = 'foo';
-      object.a;                     // "foo"
-      
-      object['a name'] = 'hello';
-      object['a name'];             // "hello"
-      
-      object;                       // { a: "foo", "a name": "hello" }
-      ```
-    
-    - deleting properties (use `delete` keyword)
-    
-      - ```javascript
-        let foo = {
-          a: 'hello',
-          b: 'world',
-        };
-        
-        delete foo.a;
-        foo;                      // { b: "world" }
-        
-        We can also use delete for arrays (use bracket notation)
-        a = [1,2,3,4,5]
-        delete a[1]
-        ```
 
 **Arrays Length Property**
 
 - JS's built in Array methods (join, forEach, push, splice, etc) take the value of the length property into consideration while performing their operations 
 
-- Referring to the [ECMAScript documentation](http://www.ecma-international.org/ecma-262/5.1/#sec-15.4), here are some key points about `Array.length`:
+  
 
-  - Its value is always a non-negative integer less than 232 (roughly 4.2 billion).
   - The value of the `length` property is numerically one greater than the largest **array index** in the Array. If you take all of the property names from the Array that represent non-negative integer values, then the property name with the largest numeric value is the largest array index.
   - You can set the value of the `length` property explicitly.
 
@@ -2978,6 +2817,8 @@ https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
 
   - **Shallow copy of an array**
 
+    - A shallow copy means that certain (sub-)values are **still connected** to the original variable.
+
   - The critical thing to be aware of is what level you're working at, especially when working with nested collections and using variables as pointers. Are you working at the level of an outer array or object or at the level of an object within that?
 
     - ```javascript
@@ -3027,6 +2868,8 @@ https://medium.com/dailyjs/i-never-understood-javascript-closures-9663703368e8
       ```
 
 - **Deep copy of an array**
+
+  A deep copy means that **all of the values of the new variable are copied and disconnected from the original variable**. A shallow copy means that certain (sub-)values are still connected to the original variable. To really understand copying, you have to get into how JavaScript stores values.
 
 ​	-JavaScript doesn't have an explicit method or function for deep copying objects, but there is an indirect way to do it. However, it only works with nested arrays and plain objects. Objects that have methods and complex objects like dates or custom objects cannot be deep-cloned with this technique. Most use cases of deep copying objects involve only plain objects and arrays, so this technique is useful to learn:
 

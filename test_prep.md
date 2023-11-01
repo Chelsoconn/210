@@ -11,11 +11,15 @@ In programming, we're always concerned with the output and the return  value, as
 
 
 
+**How does Javascript look up a variable?** (SOLID)
 
+The scope of a variable or function determines its' accessibility throughout the program. Once a variable is referenced, JavaScript will check within the current scope to find a variable with the same name.  If it is not resolved, it will search in a lexical manner the subsequant parent scopes.  Lexical scoping is determined by the structure of the code, not the execution.  As such, variables will resolve by traversing the scope hierarchy.  It will search through this scope chain incrementally until it reaches the global scope.  If at any point, the variable is resolved, the search stops. If it does not find the variable in the global scope, it will either raise a `ReferenceError` or make a property of the global object if there is no variable declaration and an assignement. 
 
 
 
 - **Variables** 
+
+  - Variables are pointers to values. We point to the value that a variable references.
 
   - Also see `identifier` in notes.md , `declaring constants` in notes.md
 
@@ -31,7 +35,7 @@ In programming, we're always concerned with the output and the return  value, as
 
   - Unless mentioned specifically, we use the term **variable** in the broadest sense possible. On this exam, that means that all of the following should be treated as variables:
 
-    -   Variables declared with `let` or `const`
+    -   Variables declared with `let` or `const` `var` , properties of global object
     -   Function parameters
     -   Function names
 
@@ -80,15 +84,21 @@ In programming, we're always concerned with the output and the return  value, as
 
 
 
-- **Primitive Values** (SOLID)
+- **Primitive Values** (SOLID) (look up pyx)
 
-  A primitive value, or data type, is represented at the lowest level of the language implementation.  These values are immutable, and because primitives are not objects, they have no methods or properties.  How then are primitive values able to call methods? For example:
+  A primitive value, or data type, is represented at the lowest level of the language implementation.  These values are immutable (you cannot modify them), and because primitives are not objects, they have no methods or properties.  How then are primitive values able to call methods? For example:
 
   ```js 
   'hello'.slice(0,2) //he
   ```
 
-  JavaScript actually converts the primitive, in this case `hello`, to it's corresponding object.  So the primitive string values gets a temporary object wrapper, which allows it to access these object functionalities when a method is called. After the method runs, the object wrapper is destroyed and we're left again with our primitive value.  Primitives remain lightweight and fast, but we are able to do things with the values with the help of the object's methods. Note that this does not happen with the primitives `undefined` and `null`.  
+  JavaScript actually converts the primitive, in this case `hello`, to it's corresponding object.  So the primitive string values gets a temporary object wrapper, which allows it to access these object functionalities when a method is called. After the method runs, the object wrapper is destroyed and we're left again with our primitive value.  Primitives remain lightweight and fast, but we are able to do things with the values with the help of the object's methods. Note that this does not happen with the primitives `undefined` and `null`, as they don't have an object counterpart.  
+
+  When a variable is declared in Javascript, it allocates a space in memory to hold something.  If the variable is initialized to a primitive, the actual value will be stored in this space and the variable will point to it. When a primitive is reassigned, it will simply store the new value in this same location.  
+
+  When a primitive value is passed in as an argument or a variable is simply assigned to another variable, it acts as pass by value, and a copy of value will be stored in a different memory spot that the new variable points to.
+
+  ----------
 
   
 
@@ -143,17 +153,7 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
 
 
-- **Object Properties and Mutation**
 
-  - To define a new object property (or to re-assign the value of an existing property), we can again use either dot notation or bracket notation, together with simple assignment syntax to set the desired value.
-
-  - A property value can be any valid expression, including a function expression. When the value is a function and it is invoked with an explicit caller, as seen on line 13 of the original code, it is called *method*invocation. 
-
-  - when we use bracket notation to assign or access an object property, the expression inside the brackets must be a string value; if it is not, JavaScript will convert it into one.
-
-  - Object property names are always strings. When we omit quotes around our property names, JavaScript implicitly converts the name to a string. So `true` is not a property defined on `obj`, but `'true'` is. You can check this for example as follows:
-
-    
 
 - **Understand the Differences Between Loose and Strict Equality**
 
@@ -186,6 +186,12 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
 - **How Passing an Argument into a Function may or may not Permanently Change the Value that a Variable Contains or Points to**
 
+  - Search (objects in notes.md)
+
+  - Parameters are the names assigned to a function's arguments; arguments are the values that get passed to the function.
+
+  - Variables are not passed to or returned by functions: **values** or **references** are passed.
+
   - <u>Mutation (only for objects):</u> Methods and functions can mutate
 
     -  When a method permanently mutates the object that invokes the method 
@@ -210,6 +216,10 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
   - <u>Reassignment</u> 
 
+    - Parameters are the names assigned to a function's arguments; arguments are the values that get passed to the function.
+
+    - Variables are not passed to or returned by functions: **values** or **references** are passed.
+
     - Change what value is assigned or bound to a variable 
 
     - Makes that name (variable) refer to a completely different place in memory 
@@ -232,9 +242,7 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
       obj = { b: 1, c: 2 }      // Reassignment: now refers to a different object
       ```
 
-  - Parameters are the names assigned to a function's arguments; arguments are the values that get passed to the function.
-
-  - Variables are not passed to or returned by functions: **values** or **references** are passed.
+  - 
 
   - Truthiness vs Boolean values (see above)
 
@@ -263,6 +271,8 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
     -  A callback function is a function that you can pass to another function as an argument.  During iterative methods, the callback function is invoked with each element's value being passed as an argument one at a time. 
 
+    -----------
+
     
 
 "ARRAY LOOPING ABSTRACTIONS" DO NOT ITERATE OVER NON ELEMENTS
@@ -277,7 +287,7 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
      });
      ```
      
-   - To use `forEach`, you need a **callback** function that you pass to `forEach` as an argument. The called function invokes the callback function when it runs. The `forEach` method invokes its callback once for each element, passing it the element's value as an argument. `forEach` always returns undefined.
+   - To use `forEach`, you n2eed a **callback** function that you pass to `forEach` as an argument. The called function invokes the callback function when it runs. The `forEach` method invokes its callback once for each element, passing it the element's value as an argument. `forEach` always returns undefined.
    
 
  - `map` method:
@@ -350,11 +360,13 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
     = true
     ```
   
-  - Arrays and Objects are data structures in JavaScript.
+    SOLID 
   
-  - Recall that [Arrays are implemented with Objects](https://launchschool.com/lessons/79b41804/assignments/5dc08268) internally in JavaScript. One thing that differentiates the two is that arrays have a `length` property, while objects do not. Arrays can be thought of as special objects that have only non-negative integer values (from 0 up to 2 32 - 1) as keys, and have an extra `length` property that keeps track of how many such key-value pairs exist in the object.
+    Arrays are data types in JavaScript that can store a collection of data.  They are implemented with objects, and the elements of an array have non- negative indexes as their respective keys.  Arrays also have a length property (always one more than the highest index), that is used for many of Array object's iterative methods.  Non-array objects do not have this length property.  While you can add non- index keys to an array, they will be properties of the array object. It is important to note that the length property does not recognize these properties as elements, therefor iterative methods on the array do not iterate over these properties. Instead, you must use static Object method's (`Object.keys()`or `Object.values()`) to access and iterate over these properties. You can also use a `for...in` statement to iterate over all the keys in an array, but a `for...of` statement will actually give you the entire non-element property value as a string, which is generally not what you want. It is best to use an array when you require a data structure that is ordered and indexed, and values do not have associated keys other than numbers. Otherwise, using an Object to store key: value pairs is a better option.
   
-  - Adding non index keys creates properties of the array object, not new elements
+    -----
+  
+    
   
   - The `length` property can be explicitly set (recall that arrays are zero-indexed). Setting the `length` to a value that is less than the current `length` truncates the array; re-setting the `length` to a higher value does not bring back the truncated elements. Setting the `length` to a value greater than the current `length` creates 'empty slots' (sparce arrays) in the array, but the number of actual elements does not increase.
   
@@ -365,25 +377,33 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
 
 
-- **[variables as pointers](https://launchschool.com/books/javascript/read/more_stuff#variablesaspointers)**
+- **[variables as pointers](https://launchschool.com/books/javascript/read/more_stuff#variablesaspointers)** (SOLID)
 
-  - Developers sometimes talk about **references** instead of pointers
+  
 
-  - You can say that a variable points to or references an object in memory, and you can also say that the pointers stored in variables are  references. 
+  Variables point to, or reference, a spot in memory that holds something.  This can be the value itself in the case of primitives, or another pointer if the variable is assigned to an object.
 
-  - Every  time a JavaScript program creates a new variable, JavaScript allocates a spot somewhere in its memory to hold its value. With (most) primitive  values, the variable's actual value gets stored in this allocated  memory.
+  When a variable is declared in Javascript, it allocates a space in memory to hold something.  If the variable is initialized to a primitive, the actual value will be stored in this space and the variable will point to it. When a primitive is reassigned, it will simply store the new value in this same location.  
+
+  Because primitives are immutable, a new value will always be returned if there is some operation performed on the value. 
+
+  When a primitive value is passed in as an argument or a variable is simply assigned to another variable, it acts as pass by value, and a copy of value will be stored in a different memory spot that the new variable points to.  As such, a function can never affect the original value that a variable points to that is passed in as an argument.
+
+  
+
+  "The main underlying concept is the the way in which variables, including function parameters, act as pointers. "!!!!! use when things are not mutated
+
+  --------
+
+  
 
   - **Primitive**
 
-    - Different than Ruby.... when primitive values are stored they are stored to different memory addresses and reassignement just changes the value in that space..it doesnt point to a new space
-
-      -   Primitive values are **immutable**. That means their values never change; operations on immutable values always return new values. Operations on **mutable** values (arrays and objects) may or may not return a new value and may or may not mutate data.
-
-    - However, since primitive values are stored in the memory address allocated for the variable, they can never be aliases for each other. If you give one variable a new primitive value, it doesn't affect the  other. (JavaScript stores primitive values in variables)
-
     - **Pass by Value**
 
-      - The concept of "pass-by-value" traditionally means that when you use a variable to pass an argument to a function, the function can't do anything that sets the original variable to a different value. No matter what happens in the function, the variable will still contain the same value that was passed to the function.  The main underlying concept is the the way in which variables, including function parameters, act as pointers. 
+      - The concept of "pass-by-value" traditionally means that when you use a variable to pass an argument to a function, the function can't do anything that sets the original variable to a different value. No matter what happens in the function, the variable will still contain the same value that was passed to the function.  
+
+        The main underlying concept is the the way in which variables, including function parameters, act as pointers. 
 
       - ```js
         let word = 'Hello';
@@ -406,12 +426,18 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
   - **Objects**
 
-    -  *Objects and Non-Mutating Operations*
+    - In this example, the variable `obj` is always at address `0x1234`. The value at that address is a pointer to the actual object. While the  pointer to the object can change -- we can see it change when `{ b: 2 }` is reassigned to `obj` -- `obj` itself always has the same address. 
+    - Objects include, but aren't limited to, the following types:
 
-       - However, with objects, JavaScript doesn't store  the object's value in the same place. Instead, it allocates additional  memory for the object and places a pointer to the object in the  variable. Thus, we need to follow two pointers to get the value of our  object from its variable name. The process looks like this:
-       - In this example, the variable `obj` is always at address `0x1234`. The value at that address is a pointer to the actual object. While the  pointer to the object can change -- we can see it change when `{ b: 2 }` is reassigned to `obj` -- `obj` itself always has the same address. 
+      -   Simple Objects
 
-    -  | Code             | Address `c` -> pointer(value) -> referenced object | addr `d` -> pointer -> object |
+      -   Arrays
+
+      -   Dates
+
+      -   Functions
+
+    - | Code             | Address `c` -> pointer(value) -> referenced object | addr `d` -> pointer -> object |
        | :--------------- | :------------------------------------------------: | :---------------------------: |
        | `let c = [1, 2]` |            `0x28` -> `0x34` -> `[1, 2]`            |                               |
        | `let d = c`      |            `0x28` -> `0x34` -> `[1, 2]`            | `0x68` -> `0x34` -> `[1, 2]`  |
@@ -431,34 +457,24 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
       Primitives, like strings or numbers, are compared by their value. Arrays, however, are objects and not primitives. JavaScript compares whether two objects are strictly equal by checking whether they are the *same object*, i.e. whether they reference the same location in memory. Since we constructed two array objects, one on line 1 and one on line 2, they don't have the same reference.
 
-      - **Pass by Reference**
+      **PASS by REFERENCE EXAMPLE**
 
-        - If JavaScript were purely pass-by-value, there wouldn't be any way for the function to change the original object. 
+      - ```js
+        function changeMyWords(words) {
+          console.log(words);
+          words[0] = 'Hi';
+        }
+        
+        let myWords = ['Hello', 'Goodbye'];
+        changeMyWords(myWords);
+        console.log(myWords);
+        ```
 
-          1. When an operation within the function mutates its argument, it affects the original object.
-          2. However, the matter is more complicated when using objects (arrays and plain objects for example). With objects, JavaScript exhibits a combination of behaviors from both pass-by-reference as well as pass-by-value. Some people call this *pass-by- value-of-the-reference* or *call-by-sharing*. Whatever you call it, the most important concept you should remember is: Functions and methods that mutate their callers are called destructive functions or methods.
+        - This will log `['Hello', 'Goodbye']` and then `['Hi', 'Goodbye']` to the console.
 
-        - ```js
-          function changeMyWords(words) {
-            console.log(words);
-            words[0] = 'Hi';
-          }
-          
-          let myWords = ['Hello', 'Goodbye'];
-          changeMyWords(myWords);
-          console.log(myWords);
-          ```
+          In this exercise, the `myWords` variable is initialized to an array containing two elements, the strings `'Hello'`and `'Goodbye'`. Because an array is a reference type rather than a primitive, when we pass `myWords` into the `changeMyWords` function invocation, this acts like *pass-by-reference*. The `myWords` variable and the `words`function parameter both point to the *same* array. When we initially log `words` on line 2 we see the same array elements from the array literal to which we initialized `myWords`. We then mutate the array on line 3 by assigning index `0` to the string `'Hi'`. When we subsequently log `myWords` on line 8, we see the mutated array.
 
-          - This will log `['Hello', 'Goodbye']` and then `['Hi', 'Goodbye']` to the console.
-
-            In this exercise, the `myWords` variable is initialized to an array containing two elements, the strings `'Hello'`and `'Goodbye'`. Because an array is a reference type rather than a primitive, when we pass `myWords` into the `changeMyWords` function invocation, this acts like *pass-by-reference*. The `myWords` variable and the `words`function parameter both point to the *same* array. When we initially log `words` on line 2 we see the same array elements from the array literal to which we initialized `myWords`. We then mutate the array on line 3 by assigning index `0` to the string `'Hi'`. When we subsequently log `myWords` on line 8, we see the mutated array.
-
-      - **Mutating Methods**
-        - Pointers have a curious effect when you assign a variable that  references an object to another variable. Instead of copying the object, JavaScript only copies the pointer. Thus, when we initialize `f` with `e`, we're making both `e` and `f` point to the same array: `[1, 2]`. It's not just the same value but the same array in the same memory  location. The two variables are independent, but since they point to the same array, that array is dependent on what you do to both `e` and `f`.
-        - Some developers call this aliasing: `e` and `f` are aliases for the same value. e = f
-        - Change the value of the thing that is bound to the variable 
-        - Changes the value that is actually stored in the memory that the name  refers to
-        - After mutating the value assigned to a variable, the variable continues to refer to the same place in memory.
+      
 
       **Shallow Copy**
 
@@ -496,18 +512,18 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 - **Function definition and function invocation**
 
   | If you are...           | Then you should use... |
-| :---------------------- | :--------------------- |
+  | :---------------------- | :--------------------- |
   | **Defining** a function | *parameters*           |
   | **Invoking** a function | *arguments*            |
-  
+
   
 
   - ```javascriptfunction greet(greeting = 'Hello') {
-  function greet(greeting = 'Hello') {
+    function greet(greeting = 'Hello') {
       console.log(greeting + ', world!');
     }
     ```
-  
+
     Default parameters are a great way to assign a default value to a parameter. This default value is used in case the parameter is `undefined`, which is the case if `greet` is called without an argument.
 
 - **function declarations, function expressions, and arrow functions**
@@ -538,7 +554,7 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
     (PARAMS/ ARGUMENTS/ RETURN)
 
-    The parameters declare local variables for the function, and are initialized to the values of the correspinding arguments passed into the function upon invocation.  This allows for the function to have access to data that may be out of scope, or to simply have local variables in the function assigned to the appropriate values upon invocation.  If there is a missing argument, the local variable with the parameter name is initialized to `undefined`.  Functions implicitly return `undefined` unless there is an explicit `return` statement in the function.   A return statement can be anywhere within the function, and when encountered JavaScript evaluates the expression, terminates the function, and returns the value. 
+    The parameters declare local variables for the function, and are initialized to the values of the corresponding arguments passed into the function upon invocation.  This allows for the function to have access to data that may be out of scope, or to simply have local variables in the function assigned to the appropriate values upon invocation.  If there is a missing argument, the local variable with the parameter name is initialized to `undefined`.  Functions implicitly return `undefined` unless there is an explicit `return` statement in the function.   A return statement can be anywhere within the function, and when encountered JavaScript evaluates the expression, terminates the function, and returns the value. 
 
     To invoke a function we must append `()` to the function name, or we will just return the function object. 
 
@@ -583,97 +599,101 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
   
 
-- **first-class functions**
+- **first-class functions** (SOLID)
 
-  - function names are variables (see `traditional variables` in notes.md)
+  JavaScript functions are first- class functions, which means that they are treated like any other variable. Functions are actually objects that can be assigned to a variable or element, passed as an argument to a function, and even returned by another function.  
 
-  - A programming language is said to have **First-class functions** when functions in that language are treated like any other variable. For example, in such a language, a function can be passed as an argument to other functions, can be returned by another function and can be assigned as a value to a variable.
+  The declaration of a function actually creates a functional variable with the same name as the function that has a value of  the function itself, and therefor is of the type `function`.  
 
-    - **Callback function**
+  ----------
 
-      -  The function that we pass as an argument to another function is called a *[callback function](https://developer.mozilla.org/en-US/docs/Glossary/Callback_function)*. 
+  
 
-    - ```js
-      //RETURNING A FUNCTION
-      
-      function sayHello() {
-        return () => {
-          console.log("Hello!");
-        };
-      }
-      //In this example, we are returning a function from another function - We can return a function because functions in JavaScript are treated as values.
-      
-      //A function that returns a function or takes other functions as arguments is called a higher-order function.
-      
-      
-      function one() {
-        function log(result) {
-          console.log(result);
-        }
-      
-        function anotherOne(...args) {
-          let result = '';
-          for (let i = 0; i < args.length; i += 1) {
-            result += String.fromCharCode(args[i]);
-          }
-      
-          log(result);
-        }
-      
-        function anotherAnotherOne() {
-          console.log(String.fromCharCode(87, 101, 108, 99, 111, 109, 101));
-          anotherOne(116, 111);
-        }
-      
-        anotherAnotherOne();
-        anotherOne(116, 104, 101);
-        return anotherOne;
-      }
-      
-      one()(77, 97, 116, 114, 105, 120, 33);
-      
-      //The trick to solving this problem is to follow the sequence of function calls. The call to the one function may look confusing, but it is actually just two successive function calls (because the one function returns the anotherOne function). Notice that when the anotherOne function is returned, it still has access to the log function that is declared in its enclosing scope (closure) inside the one function.
-      ```
+  - **Callback function**
 
-    - ```JS
-      //PASSING A FUNCTION AS AN ARGUMENT
-      
-      function sayHello() {  
-        return "Hello, ";
-      }
-      function greeting(helloMessage, name) {
-        console.log(helloMessage() + name);
-      }
-      // Pass `sayHello` as an argument to `greeting` function
-      greeting(sayHello, "JavaScript!"); //say hello is a calllback function
-      // Hello, JavaScript!
-      //We are passing our sayHello() function as an argument to the greeting() function, this explains how we are treating the function as a value.
-      ```
+    -  The function that we pass as an argument to another function is called a *[callback function](https://developer.mozilla.org/en-US/docs/Glossary/Callback_function)*. 
 
-    - ```js
-      //ASSIGNING A FUNCTION TO A VARIABLE 
-      
-      const foo = () => {
-        console.log("foobar");
+  - ```js
+    //RETURNING A FUNCTION
+    
+    function sayHello() {
+      return () => {
+        console.log("Hello!");
       };
-      foo(); // Invoke it using the variable
-      // foobar
-      //We assigned an Anonymous Function in a Variable, then we used that variable to invoke the function by adding parentheses () at the end.
-      
-      //Note: Even if your function was named, you can use the variable name to invoke it. Naming it will be helpful when debugging your code. But it won't affect the way we invoke it.
-      
-      
-      function foo(bar) {
-        console.log(bar, bar, bar);
+    }
+    //In this example, we are returning a function from another function - We can return a function because functions in JavaScript are treated as values.
+    
+    //A function that returns a function or takes other functions as arguments is called a higher-order function.
+    
+    
+    function one() {
+      function log(result) {
+        console.log(result);
       }
-      
-      let bar = foo;
-      
-      foo("hello"); // prints "hello hello hello"
-      bar("hi");    // prints "hi hi hi
-      
-      //We can actually assign another variable to the function name and call the function by the other variable name 
-      ```
+    
+      function anotherOne(...args) {
+        let result = '';
+        for (let i = 0; i < args.length; i += 1) {
+          result += String.fromCharCode(args[i]);
+        }
+    
+        log(result);
+      }
+    
+      function anotherAnotherOne() {
+        console.log(String.fromCharCode(87, 101, 108, 99, 111, 109, 101));
+        anotherOne(116, 111);
+      }
+    
+      anotherAnotherOne();
+      anotherOne(116, 104, 101);
+      return anotherOne;
+    }
+    
+    one()(77, 97, 116, 114, 105, 120, 33);
+    
+    //The trick to solving this problem is to follow the sequence of function calls. The call to the one function may look confusing, but it is actually just two successive function calls (because the one function returns the anotherOne function). Notice that when the anotherOne function is returned, it still has access to the log function that is declared in its enclosing scope (closure) inside the one function.
+    ```
+
+  - ```JS
+    //PASSING A FUNCTION AS AN ARGUMENT
+    
+    function sayHello() {  
+      return "Hello, ";
+    }
+    function greeting(helloMessage, name) {
+      console.log(helloMessage() + name);
+    }
+    // Pass `sayHello` as an argument to `greeting` function
+    greeting(sayHello, "JavaScript!"); //say hello is a calllback function
+    // Hello, JavaScript!
+    //We are passing our sayHello() function as an argument to the greeting() function, this explains how we are treating the function as a value.
+    ```
+
+  - ```js
+    //ASSIGNING A FUNCTION TO A VARIABLE 
+    
+    const foo = () => {
+      console.log("foobar");
+    };
+    foo(); // Invoke it using the variable
+    // foobar
+    //We assigned an Anonymous Function in a Variable, then we used that variable to invoke the function by adding parentheses () at the end.
+    
+    //Note: Even if your function was named, you can use the variable name to invoke it. Naming it will be helpful when debugging your code. But it won't affect the way we invoke it.
+    
+    
+    function foo(bar) {
+      console.log(bar, bar, bar);
+    }
+    
+    let bar = foo;
+    
+    foo("hello"); // prints "hello hello hello"
+    bar("hi");    // prints "hi hi hi
+    
+    //We can actually assign another variable to the function name and call the function by the other variable name 
+    ```
 
   - When you pass a function as an argument to another function, that other  function can call the function represented by the argument. 
 
@@ -681,7 +701,13 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
 
     
 
-- **partial function application**
+- **partial function application** (SOLID)
+
+  Partial function application is when we have a nested function, and the enclosing function provides some of the nested functions arguments.  When we call the returned function, we supply the remaining arguments if necessary.  To clarify, the first function call will return another function.  This returned function can then be called with less arguments than expected, because these arguments were provided in the initial function call.  These can be especially useful when you know that you won't have the correct number of arguments when calling a function. 
+
+  Partial Function Application uses closures to access those variables available to the nested function during creation. (GO TO CLOSURES)
+
+  -------
 
   - ```js
     function add(first, second) {
@@ -701,11 +727,25 @@ These implicit coercions allow JavaScript to fail silently, which can cause issu
     console.log(addFive(55)); // 60
     console.log(addTen(3));   // 13
     console.log(addTen(55));  // 65
+    
+    
+    const add = function(a, b) { // primary 
+      return a + b;
+    }
+    
+    
+    
+    function outer(arg1) { // generator
+      return function inner(arg2) { // applicator
+        return add(arg1, arg2);
+      }
+    }
+    
+    fir = outer(4) // returns another function (applicator)
+    fir(3)
     ```
 
-  - A function such as `makeAdder` is said to use **partial function application**. It applies some of the function's arguments (the `add` function's `first` argument here) when called, and supplies the remaining arguments when you call the returned function. Partial function application refers to the creation of a function that can call a second function with fewer arguments than the second function expects. The created function supplies the remaining arguments.
-
-  - Partial function application is most useful when you need to pass a function to another function that won't call the passed function with enough arguments. It lets you create a function that fills in the gaps by supplying the missing elements. For instance, suppose you have a function that downloads an arbitrary file from the Internet. The download may fail, so the function also expects a callback function that it can call when an error occurs:
+    
 
   - Partial function application requires a reduction in the **number of arguments** you have to provide when you call a function. If the number of arguments isn't reduced, it isn't partial function application. 
 
@@ -1268,7 +1308,7 @@ Loops: Looping keyword, condition, block (loop body)
 
    On line 8, however, we reassign `myArray` to a new array, `[1, 2]`. Reassignments of variables never mutate the value or object that was originally referenced by that variable. Instead, reassignment creates a completely new value or object, and changes the variable so it references that new item. The reassignment, however, **does not change** any other variable that may be referencing the original item - the other variables still reference the old item. Thus, on lines 9, we see that the array referenced by `myArray` is now `[1, 2]`, but the array referenced by `myOtherArray` on line 10 still refers to `[1, 2, 3]`.
 
-8) `For Loop`
+8) `For Loop` (Keep declaration and initalization in loop)
 
    1) ```js
       let names = ['Chris', 'Kevin', 'Naveed', 'Pete', 'Victor'];

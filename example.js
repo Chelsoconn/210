@@ -1,9 +1,12 @@
+let foo = ["a", 1, ["a"], { 1: 1 }, null];
 
+let filteredFoo = foo.filter((item) => {
+  let newItem;
+  if (typeof item === "object" && !Array.isArray(item)) {
+    newItem = item;
+  }
+  return newItem;
+});
 
-
-function bar() {
-  console.log('world');
-}
-bar = 'hello';
-bar();             // raises "TypeError: bar is not a function"
-
+console.log(filteredFoo);
+// [{ '1': 1 }]

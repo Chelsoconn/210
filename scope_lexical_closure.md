@@ -20,7 +20,7 @@ Digging deeper.. the execution context is comprised of two elements, or phases: 
 
 In the creation phase, Javascript creates the execution context by storing all function declarations (in their entirety) and declared variables within that context in a memory heap.  Variables declared with the `var` keyword, including function expressions assigned to variables, are initialized to `undefined`.  Variables declared with `let` and `const` do not have default initialization.  
 
-During this process, these declarations get hoisted to the top of their scope.  The body is included in the function, which is why functions can be called and variables declared with `var` can be referenced before they are declared.  Note that variables declared with `let` and `const` do not have a default initialization and therefor are in a temporal dead zone if referenced prior to their declaration. 
+During this process, these declarations get hoisted to the top of their scope.  The body is included in the function, which is why functions can be called and variables declared with `var` can be referenced before they are declared.  Note that variables declared with `let` and `const` do not have a default initialization and therefor are in a temporal dead zone if referenced prior to their initialization. 
 
 The execution phase is where variables are initialized and the code is executed.  The GEC is always executed, whereas the FEC is executed upon invocation.
 
@@ -76,7 +76,7 @@ These are a number of ways to create a variable in the current scope:
 
 - When a function is created, a closure is created.  A closure can be thought of as an envelope attached to the function object that gets created to store relevant information.
 
-- Closures' usefulness can be highlighted when using nested functions.  If we declare a function within another function, the inner function creates a closure which encloses it's lexical environment at time of creation. By lexical, I mean that where it is invoked is unimportant. Closures are created based on where the function is defined. 
+- Closures' usefulness can be highlighted when using nested functions.  If we declare a function within another function, the inner function creates a closure which encloses it's lexical environment at time of creation. By lexical, I mean where it is invoked is unimportant. Closures are created based on where the function is defined. 
 
 - This means that regardless of if the variables are in scope at the time of execution, the function can still access them if they were in scope at the time of definition. The closure will only form around variable that the function needs.
 
@@ -95,7 +95,7 @@ These are a number of ways to create a variable in the current scope:
   innerFunc();  //'closure'
   ```
 
-- Here we can see that the function `createsClosure` is returned from the function invocation of `example`.  Although the global scope does not have access to the `name` local variable within the `example` function, the `createsClosure` function created a closure which allows it to access it's lexical scope at time of creation.  To reiterate, the closure ensures that the function has access to all the variables in the enclosing scope at time of creation, not execution.  Even more, the variable's values are dynamically resolved, and not fixed to what they were at time of creation. 
+- Here we can see that the function `createsClosure` is returned from the function invocation of `example`.  Although the global scope does not have access to the `name` local variable within the `example` function, the `createsClosure` function created a closure which allows it to access it's lexical scope at time of creation.  To reiterate, the closure ensures that the function has access to all the variables in the enclosing scope at time of creation, not execution.  Even more, the variable's values are dynamically resolved, and not fixed to what they were at time of creation. By that I mean that the closure retains a pointer to the variable, and not the value.  JavaScript will first try to resolve the variable  locally in the function, and if not found, it will look to the closure.  The variable will resolve to the current value assigned to the variable.
 
   
 
@@ -203,7 +203,7 @@ ex/
 
     On line 8, `console.log(myVar)` logs `"This is global"` because the two `myVar` variables, on lines 1 and 4, belong to different scopes. `someFunction` has its own local "inner" scope, so the `myVar` declaration within the function has no effect on the global "outer" scope.
 
-    
+  - (SEE NOTES.MD "How does JavaScript look up a variable")
 
 
 
